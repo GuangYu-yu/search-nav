@@ -200,6 +200,146 @@
             -webkit-backdrop-filter: blur(20px);
         }
         
+        /* 搜索聚焦时的镜头拉近和背景虚化效果 */
+        .search-focused {
+            position: relative;
+        }
+        
+        .search-focused::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: inherit;
+            background-size: 110% 110%;
+            background-position: center;
+            filter: blur(8px);
+            z-index: -2;
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0;
+        }
+        
+        .search-focused::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: -1;
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0;
+        }
+        
+        .search-focused.zoom-active::before {
+            opacity: 1;
+            background-size: 120% 120%;
+            filter: blur(12px);
+        }
+        
+        .search-focused.zoom-active::after {
+            opacity: 1;
+        }
+        
+        .search-focused.zoom-active .container {
+            transform: scale(1.05);
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* 搜索框在聚焦时的增强效果 */
+        .search-focused.zoom-active .search-box {
+            transform: scale(1.1);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            border-color: var(--primary-color);
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+        }
+        
+        /* 其他元素在聚焦时完全隐藏 */
+        .search-focused.zoom-active .global-controls,
+        .search-focused.zoom-active .settings-btn,
+        .search-focused.zoom-active .header,
+        .search-focused.zoom-active .mode-switcher,
+        .search-focused.zoom-active .quick-links {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* 搜索聚焦时的镜头拉近和背景虚化效果 */
+        .search-focused {
+            position: relative;
+        }
+        
+        .search-focused::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: inherit;
+            background-size: 110% 110%;
+            background-position: center;
+            filter: blur(8px);
+            z-index: -2;
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0;
+        }
+        
+        .search-focused::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: -1;
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0;
+        }
+        
+        .search-focused.zoom-active::before {
+            opacity: 1;
+            background-size: 120% 120%;
+            filter: blur(12px);
+        }
+        
+        .search-focused.zoom-active::after {
+            opacity: 1;
+        }
+        
+        .search-focused.zoom-active .container {
+            transform: scale(1.05);
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* 搜索框在聚焦时的增强效果 */
+        .search-focused.zoom-active .search-box {
+            transform: scale(1.1);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            border-color: var(--primary-color);
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+        }
+        
+        /* 其他元素在聚焦时完全隐藏 */
+        .search-focused.zoom-active .global-controls,
+        .search-focused.zoom-active .settings-btn,
+        .search-focused.zoom-active .header,
+        .search-focused.zoom-active .mode-switcher,
+        .search-focused.zoom-active .quick-links {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
         .mode-btn {
             padding: 8px 20px;
             border: none;
@@ -241,6 +381,7 @@
             position: relative;
             margin: 25px 0;
             transition: all 0.3s ease;
+            z-index: 10;
         }
         
         .search-container.focused {
@@ -292,13 +433,13 @@
             background-position: center;
         }
         
-        .google-icon { background-image: url('https://favicon.io/favicon.ico?url=https://google.com'); }
-        .bing-icon { background-image: url('https://favicon.io/favicon.ico?url=https://bing.com'); }
-        .yandex-icon { background-image: url('https://favicon.io/favicon.ico?url=https://yandex.com'); }
-        .duckduckgo-icon { background-image: url('https://favicon.io/favicon.ico?url=https://duckduckgo.com'); }
-        .ecosia-icon { background-image: url('https://favicon.io/favicon.ico?url=https://ecosia.org'); }
-        .deepl-icon { background-image: url('https://favicon.io/favicon.ico?url=https://deepl.com'); }
-        .baidu-icon { background-image: url('https://favicon.io/favicon.ico?url=https://baidu.com'); }
+        .google-icon { background-image: url('https://google.com/favicon.ico'); }
+        .bing-icon { background-image: url('https://bing.com/favicon.ico'); }
+        .yandex-icon { background-image: url('https://yandex.com/favicon.ico'); }
+        .duckduckgo-icon { background-image: url('https://duckduckgo.com/favicon.ico'); }
+        .ecosia-icon { background-image: url('https://ecosia.org/favicon.ico'); }
+        .deepl-icon { background-image: url('https://deepl.com/favicon.ico'); }
+        .baidu-icon { background-image: url('https://baidu.com/favicon.ico'); }
         
         .engine-name { font-size: 14px; font-weight: 500; color: var(--text-color); }
         
@@ -981,7 +1122,7 @@
         }
         
         .gradient5-bg {
-            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            background: linear-gradient(135deg, #667eea 0%, #f093fb 100%);
         }
         
         .custom-wallpaper h4 {
@@ -1729,7 +1870,8 @@
             try {
                 // 确保URL格式正确
                 const fullUrl = url.startsWith('http') ? url : 'https://' + url;
-                return `https://favicon.io/favicon.ico?url=${encodeURIComponent(fullUrl)}`;
+                const domain = new URL(fullUrl).hostname;
+                return `https://${domain}/favicon.ico`;
             } catch {
                 return 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23666"%3E%3Cpath d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.94-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/%3E%3C/svg%3E';
             }
@@ -1887,7 +2029,7 @@
                     backgroundStyle = 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)';
                     break;
                 case 'gradient5':
-                    backgroundStyle = 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)';
+                    backgroundStyle = 'linear-gradient(135deg, #667eea 0%, #f093fb 100%)';
                     break;
             }
             
@@ -2080,4 +2222,107 @@
         }
     </script>
 </body>
-</html>
+</html>l>         
+            const gradient = `linear-gradient(${direction}, ${color1} 0%, ${color2} 100%)`;
+            
+            document.body.style.background = gradient;
+            localStorage.setItem('customWallpaper', gradient);
+            alert('自定义背景应用成功！');
+        }
+        
+        // 初始化颜色混色器
+        function initColorMixer() {
+            // 方向按钮事件
+            document.querySelectorAll('.direction-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.direction-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    updateGradientPreview();
+                });
+            });
+            
+            // 颜色输入事件 - 自动刷新
+            document.getElementById('color1').addEventListener('input', updateGradientPreview);
+            document.getElementById('color2').addEventListener('input', updateGradientPreview);
+            
+            // 初始预览
+            updateGradientPreview();
+        }
+    </script>
+</body>
+</html>l>              document.querySelectorAll('.direction-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    updateGradientPreview();
+                });
+            });
+            
+            // 颜色输入事件 - 自动刷新
+            document.getElementById('color1').addEventListener('input', updateGradientPreview);
+            document.getElementById('color2').addEventListener('input', updateGradientPreview);
+            
+            // 初始预览
+            updateGradientPreview();
+        }
+    </script>
+</body>
+</html>l>rt('自定义背景应用成功！');
+        }
+        
+        // 初始化颜色混色器
+        function initColorMixer() {
+            // 方向按钮事件
+            document.querySelectorAll('.direction-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.direction-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    updateGradientPreview();
+                });
+            });
+            
+            // 颜色输入事件 - 自动刷新
+            document.getElementById('color1').addEventListener('input', updateGradientPreview);
+            document.getElementById('color2').addEventListener('input', updateGradientPreview);
+            
+            // 初始预览
+            updateGradientPreview();
+        }
+    </script>
+</body>
+</html>l>初始预览
+            updateGradientPreview();
+        }
+    </script>
+</body>
+</html>l>iew();
+        }
+    </script>
+</body>
+</html>l>rt('自定义背景应用成功！');
+        }
+        
+        // 初始化颜色混色器
+        function initColorMixer() {
+            // 方向按钮事件
+            document.querySelectorAll('.direction-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.direction-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    updateGradientPreview();
+                });
+            });
+            
+            // 颜色输入事件 - 自动刷新
+            document.getElementById('color1').addEventListener('input', updateGradientPreview);
+            document.getElementById('color2').addEventListener('input', updateGradientPreview);
+            
+            // 初始预览
+            updateGradientPreview();
+        }
+    </script>
+</body>
+</html>l>初始预览
+            updateGradientPreview();
+        }
+    </script>
+</body>
+</html>l>
