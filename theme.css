@@ -1,0 +1,146 @@
+/* 设置全局过渡效果 */
+* {
+    transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* 响应式布局 */
+.container {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* 搜索框响应式宽度 */
+.search-container {
+    width: 100%;
+    max-width: 600px;
+    min-width: 300px;
+}
+
+/* 亮色主题 */
+[data-theme="light"] {
+    --background-color: #f5f5f7;
+    --card-background: #ffffff;
+    --text-color: #1d1d1f;
+    --text-secondary: #86868b;
+    --primary-color: #0071e3;
+    --primary-color-rgb: 0, 113, 227;
+    --border-color: #e5e5ea;
+    --hover-color: #f2f2f2;
+    --input-background: #f5f5f7;
+}
+
+/* 响应式断点 */
+@media (max-width: 768px) {
+    .container {
+        padding: 0 15px;
+    }
+    
+    .header h1 {
+        font-size: 2.2em;
+    }
+    
+    .search-container {
+        width: 100%;
+    }
+    
+    .quick-links-grid {
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+        gap: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 20px 10px;
+    }
+    
+    .container {
+        padding: 0 10px;
+    }
+    
+    .header h1 {
+        font-size: 1.8em;
+    }
+    
+    .search-box {
+        flex-direction: column;
+        padding: 12px;
+    }
+    
+    .engine-selector {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 8px;
+        margin-bottom: 8px;
+    }
+    
+    .search-input {
+        width: 100%;
+    }
+    
+    .search-buttons {
+        width: 100%;
+        justify-content: center;
+        margin-top: 8px;
+    }
+    
+    .quick-links-grid {
+        grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+        gap: 10px;
+    }
+}
+
+/* 暗色主题 */
+[data-theme="dark"] {
+    --background-color: #121212;
+    --card-background: #1e1e1e;
+    --text-color: #ffffff;
+    --text-secondary: #a1a1a6;
+    --primary-color: #0071e3;
+    --primary-color-rgb: 0, 113, 227;
+    --border-color: #2c2c2e;
+    --hover-color: #2c2c2e;
+    --input-background: #2c2c2e;
+}
+
+/* 姨妈红主题 */
+[data-theme="red"] {
+    --background-color: #fff5f5;
+    --card-background: #ffffff;
+    --text-color: #2d3748;
+    --text-secondary: #718096;
+    --primary-color: #e53e3e;
+    --primary-color-rgb: 229, 62, 62;
+    --border-color: #fed7d7;
+    --hover-color: #fed7d7;
+    --input-background: #fff5f5;
+}
+
+/* 科技紫主题 */
+[data-theme="purple"] {
+    --background-color: #faf5ff;
+    --card-background: #ffffff;
+    --text-color: #2d3748;
+    --text-secondary: #718096;
+    --primary-color: #9f7aea;
+    --primary-color-rgb: 159, 122, 234;
+    --border-color: #e9d8fd;
+    --hover-color: #e9d8fd;
+    --input-background: #faf5ff;
+}
+
+/* 尊贵金主题 */
+[data-theme="gold"] {
+    --background-color: #fffaf0;
+    --card-background: #ffffff;
+    --text-color: #2d3748;
+    --text-secondary: #718096;
+    --primary-color: #d69e2e;
+    --primary-color-rgb: 214, 158, 46;
+    --border-color: #fbd38d;
+    --hover-color: #fbd38d;
+    --input-background: #fffaf0;
+}
