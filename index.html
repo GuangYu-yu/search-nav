@@ -17,8 +17,8 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             background-color: var(--background-color);
             color: var(--text-color);
-            min-height: 100vh;
-            padding: 40px;
+            height: 100vh;
+            padding: 20px;
             transition: background-color 0.3s ease;
         }
         
@@ -31,8 +31,9 @@
             flex-direction: column;
             align-items: center;
             justify-content: flex-start;
-            min-height: 100vh;
-            padding-top: 60px;
+            height: calc(100vh - 40px);
+            padding-top: 40px;
+            overflow-y: auto;
         }
         
         /* 全局控制栏 */
@@ -871,7 +872,7 @@
             padding: 8px;
             justify-content: center;
             margin: 0 auto;
-            max-width: calc(6 * (80px + 16px) - 16px); /* 6个书签的宽度 */
+            max-width: calc(6 * (80px + 16px) + 32px); /* 6个书签的宽度 + 额外空间 */
             max-height: 300px; /* 限制最大高度，约3行书签 */
             overflow-y: auto; /* 垂直滚动 */
             border-radius: 12px;
@@ -2222,107 +2223,4 @@
         }
     </script>
 </body>
-</html>l>         
-            const gradient = `linear-gradient(${direction}, ${color1} 0%, ${color2} 100%)`;
-            
-            document.body.style.background = gradient;
-            localStorage.setItem('customWallpaper', gradient);
-            alert('自定义背景应用成功！');
-        }
-        
-        // 初始化颜色混色器
-        function initColorMixer() {
-            // 方向按钮事件
-            document.querySelectorAll('.direction-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    document.querySelectorAll('.direction-btn').forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    updateGradientPreview();
-                });
-            });
-            
-            // 颜色输入事件 - 自动刷新
-            document.getElementById('color1').addEventListener('input', updateGradientPreview);
-            document.getElementById('color2').addEventListener('input', updateGradientPreview);
-            
-            // 初始预览
-            updateGradientPreview();
-        }
-    </script>
-</body>
-</html>l>              document.querySelectorAll('.direction-btn').forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    updateGradientPreview();
-                });
-            });
-            
-            // 颜色输入事件 - 自动刷新
-            document.getElementById('color1').addEventListener('input', updateGradientPreview);
-            document.getElementById('color2').addEventListener('input', updateGradientPreview);
-            
-            // 初始预览
-            updateGradientPreview();
-        }
-    </script>
-</body>
-</html>l>rt('自定义背景应用成功！');
-        }
-        
-        // 初始化颜色混色器
-        function initColorMixer() {
-            // 方向按钮事件
-            document.querySelectorAll('.direction-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    document.querySelectorAll('.direction-btn').forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    updateGradientPreview();
-                });
-            });
-            
-            // 颜色输入事件 - 自动刷新
-            document.getElementById('color1').addEventListener('input', updateGradientPreview);
-            document.getElementById('color2').addEventListener('input', updateGradientPreview);
-            
-            // 初始预览
-            updateGradientPreview();
-        }
-    </script>
-</body>
-</html>l>初始预览
-            updateGradientPreview();
-        }
-    </script>
-</body>
-</html>l>iew();
-        }
-    </script>
-</body>
-</html>l>rt('自定义背景应用成功！');
-        }
-        
-        // 初始化颜色混色器
-        function initColorMixer() {
-            // 方向按钮事件
-            document.querySelectorAll('.direction-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    document.querySelectorAll('.direction-btn').forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    updateGradientPreview();
-                });
-            });
-            
-            // 颜色输入事件 - 自动刷新
-            document.getElementById('color1').addEventListener('input', updateGradientPreview);
-            document.getElementById('color2').addEventListener('input', updateGradientPreview);
-            
-            // 初始预览
-            updateGradientPreview();
-        }
-    </script>
-</body>
-</html>l>初始预览
-            updateGradientPreview();
-        }
-    </script>
-</body>
-</html>l>
+</html>
