@@ -376,6 +376,16 @@ function addLink() {
 // 删除书签
 function deleteLink(index) {
     if (confirm('确定要删除这个书签吗？')) {
+        // 清除对应域名的favicon缓存
+        try {
+            const deletedLink = links[index];
+            const domain = new URL(deletedLink.url).hostname;
+            const cacheKey = `favicon_cache_${domain}`;
+            localStorage.removeItem(cacheKey);
+        } catch (e) {
+            // URL解析失败时忽略
+        }
+        
         links.splice(index, 1);
         localStorage.setItem('navLinks', JSON.stringify(links));
         renderLinks();
@@ -390,7 +400,7 @@ function getFaviconUrl(url) {
         // 确保URL格式正确
         const fullUrl = url.startsWith('http') ? url : 'https://' + url;
         const domain = new URL(fullUrl).hostname;
-        return `https://${domain}/favicon.ico`;
+        return `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
     } catch {
         return 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23666"%3E%3Cpath d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.94-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/%3E%3C/svg%3E';
     }
@@ -418,7 +428,7 @@ function getCachedFaviconUrl(url) {
         }
         
         // 生成新的favicon URL
-        const faviconUrl = `https://${domain}/favicon.ico`;
+        const faviconUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
         
         // 保存到缓存
         const cacheData = {
@@ -555,6 +565,15 @@ function saveLink(index, name, url) {
     
     // 确保URL格式正确
     const formattedUrl = url.startsWith('http') ? url : 'https://' + url;
+    
+    // 清除旧域名的favicon缓存
+    try {
+        const oldDomain = new URL(links[index].url).hostname;
+        const oldCacheKey = `favicon_cache_${oldDomain}`;
+        localStorage.removeItem(oldCacheKey);
+    } catch (e) {
+        // URL解析失败时忽略
+    }
     
     // 获取favicon URL
     const faviconUrl = getFaviconUrl(formattedUrl);
@@ -767,9 +786,7 @@ function randomColors() {
     document.querySelectorAll('.direction-btn').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.direction === randomDirection);
     });
-    
 
-    
     // 自动更新预览
     updateGradientPreview();
 }
@@ -782,7 +799,8 @@ function applyCustomGradient() {
     
     const gradient = `linear-gradient(${direction}, ${color1} 0%, ${color2} 100%)`;
     
-    document.body.style.background = gradient;
+    const wallpaperContainer = document.getElementById('wallpaperContainer');
+    wallpaperContainer.style.background = gradient;
     localStorage.setItem('customWallpaper', gradient);
     alert('自定义背景应用成功！');
 }
@@ -790,7 +808,7 @@ function applyCustomGradient() {
 // 统一处理焦点状态的 transform 和 transition
 function applyFocusTransition(isFocused) {
     if (isFocused) {
-        // 应用焦点状态 - 只使用CSS类，保持毛玻璃效果
+        // 应用焦点状态
         document.body.classList.add('search-focused');
         
         // 添加自定义类来控制额外的变换效果
@@ -799,7 +817,7 @@ function applyFocusTransition(isFocused) {
         // 恢复默认状态
         document.body.classList.remove('search-focused');
         
-        // 延迟移除过渡类，确保动画完成
+        // 延迟移除过渡类
         setTimeout(() => {
             document.body.classList.remove('search-transition-active');
         }, 300);

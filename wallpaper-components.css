@@ -102,8 +102,6 @@
     border: none;
     border-radius: 50%;
     background: rgba(var(--primary-color-rgb), 0.9);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
     color: white;
     cursor: pointer;
     display: flex;
@@ -111,6 +109,22 @@
     justify-content: center;
     transition: all 0.2s ease;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.icon-btn::after {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+    background: inherit;
+    background-size: cover;
+    filter: blur(10px);
+    z-index: -1;
+    transform: scale(1.2);
 }
 
 .icon-btn:hover {

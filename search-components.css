@@ -110,15 +110,31 @@
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
+    position: relative;
+    overflow: hidden;
 }
 
-.google-icon { background-image: url('https://google.com/favicon.ico'); }
-.bing-icon { background-image: url('https://bing.com/favicon.ico'); }
-.yandex-icon { background-image: url('https://yandex.com/favicon.ico'); }
-.duckduckgo-icon { background-image: url('https://duckduckgo.com/favicon.ico'); }
-.ecosia-icon { background-image: url('https://ecosia.org/favicon.ico'); }
-.deepl-icon { background-image: url('https://deepl.com/favicon.ico'); }
-.baidu-icon { background-image: url('https://baidu.com/favicon.ico'); }
+.engine-icon::after {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+    background: inherit;
+    background-size: cover;
+    filter: blur(10px);
+    z-index: -1;
+    transform: scale(1.2);
+}
+
+.google-icon { background-image: url('https://www.google.com/s2/favicons?domain=google.com&sz=128'); }
+.bing-icon { background-image: url('https://www.google.com/s2/favicons?domain=bing.com&sz=128'); }
+.yandex-icon { background-image: url('https://www.google.com/s2/favicons?domain=yandex.com&sz=128'); }
+.duckduckgo-icon { background-image: url('https://www.google.com/s2/favicons?domain=duckduckgo.com&sz=128'); }
+.ecosia-icon { background-image: url('https://www.google.com/s2/favicons?domain=ecosia.org&sz=128'); }
+.deepl-icon { background-image: url('https://www.google.com/s2/favicons?domain=deepl.com&sz=128'); }
+.baidu-icon { background-image: url('https://www.google.com/s2/favicons?domain=baidu.com&sz=128'); }
 
 .engine-name { 
     font-size: 14px; 
@@ -147,8 +163,6 @@
     border: none;
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.2);
     color: var(--text-color);
     cursor: pointer;
@@ -156,7 +170,36 @@
     align-items: center;
     justify-content: center;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.search-btn::after {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+    background: inherit;
+    background-size: cover;
+    filter: blur(20px);
+    z-index: -1;
+    transform: scale(1.2);
+}
+
+.search-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.3);
+    pointer-events: none;
+    z-index: 1;
 }
 
 .search-btn:hover {
