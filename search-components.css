@@ -15,6 +15,7 @@
     border-radius: 20px;
     padding: 4px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.3s ease;
 }
 
 .mode-btn {
@@ -65,13 +66,9 @@
     transform: translateY(-30px);
 }
 
-/* 模式切换器独立动画控制 */
-.mode-switcher {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.mode-switcher.collapsed {
+.mode-switcher.collapsed .mode-switcher-container {
     opacity: 0;
+    visibility: hidden;
     transform: scale(0.9) translateY(-20px);
     pointer-events: none;
 }
