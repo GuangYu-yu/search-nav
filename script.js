@@ -618,23 +618,6 @@ function setCustomWallpaper() {
     img.src = url;
 }
 
-// 下载壁纸
-function downloadWallpaper() {
-    const url = document.getElementById('customWallpaperUrl').value.trim();
-    if (!url) {
-        alert('没有可下载的壁纸URL');
-        return;
-    }
-    
-    // 创建一个临时的a标签来触发下载
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'wallpaper.jpg'; // 默认文件名
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-}
-
 // 初始化事件监听
 document.addEventListener('DOMContentLoaded', function() {
     // 初始更新引擎下拉菜单
