@@ -592,11 +592,12 @@ function setWallpaper(type) {
             break;
     }
     
+    const wallpaperContainer = document.getElementById('wallpaperContainer');
     if (backgroundStyle) {
-        document.body.style.background = backgroundStyle;
+        wallpaperContainer.style.background = backgroundStyle;
         localStorage.setItem('customWallpaper', backgroundStyle);
     } else {
-        document.body.style.background = '';
+        wallpaperContainer.style.background = '';
         localStorage.removeItem('customWallpaper');
     }
 }
@@ -613,7 +614,8 @@ function setCustomWallpaper() {
     const img = new Image();
     img.onload = function() {
         const backgroundStyle = `url('${url}') center/cover no-repeat`;
-        document.body.style.background = backgroundStyle;
+        const wallpaperContainer = document.getElementById('wallpaperContainer');
+        wallpaperContainer.style.background = backgroundStyle;
         localStorage.setItem('customWallpaper', backgroundStyle);
         // 保存输入框的值
         localStorage.setItem('customWallpaperUrl', url);
@@ -654,6 +656,10 @@ document.addEventListener('DOMContentLoaded', function() {
         quickLinks.classList.add('collapsed');
         // 统一 transform 和 transition 逻辑，避免重绘问题
         applyFocusTransition(true);
+        // 壁纸缩放虚化效果
+        const wallpaperContainer = document.getElementById('wallpaperContainer');
+        wallpaperContainer.style.transform = 'scale(1.1)';
+        wallpaperContainer.style.filter = 'blur(10px) brightness(0.8)';
     });
     
     searchInput.addEventListener('blur', () => {
@@ -664,6 +670,10 @@ document.addEventListener('DOMContentLoaded', function() {
         quickLinks.classList.remove('collapsed');
         // 统一恢复逻辑
         applyFocusTransition(false);
+        // 恢复壁纸效果
+        const wallpaperContainer = document.getElementById('wallpaperContainer');
+        wallpaperContainer.style.transform = 'scale(1)';
+        wallpaperContainer.style.filter = 'none';
     });
     
     // 加载保存的主题
@@ -697,7 +707,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // 加载保存的壁纸
     const savedWallpaper = localStorage.getItem('customWallpaper');
     if (savedWallpaper) {
-        document.body.style.background = savedWallpaper;
+        const wallpaperContainer = document.getElementById('wallpaperContainer');
+        wallpaperContainer.style.background = savedWallpaper;
     }
     
     // 恢复自定义壁纸URL输入框的值

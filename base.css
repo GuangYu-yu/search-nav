@@ -11,7 +11,21 @@ body {
     color: var(--text-color);
     height: 100vh;
     padding: 20px;
-    transition: background-color 0.3s ease;
+    overflow: hidden;
+    position: relative;
+}
+
+/* 壁纸容器 */
+.wallpaper-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    background: var(--background-color);
+    transform-origin: center;
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), filter 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .container {
