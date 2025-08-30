@@ -279,6 +279,13 @@ function renderQuickLinks() {
         linkElement.appendChild(name);
         container.appendChild(linkElement);
     });
+    
+    // 检查是否需要显示滚动条（超过三行时）
+    if (layout.rows > 3) {
+        container.classList.add('overflowing');
+    } else {
+        container.classList.remove('overflowing');
+    }
 }
 
 
@@ -641,14 +648,22 @@ document.addEventListener('DOMContentLoaded', function() {
     
     searchInput.addEventListener('focus', () => {
         searchContainer.classList.add('focused');
-        // 使用CSS类控制，简单可靠
-        document.body.classList.add('search-focused');
+        // 模式切换器收起动画
+        modeSwitcher.classList.add('collapsed');
+        // 快速链接收起动画
+        quickLinks.classList.add('collapsed');
+        // 统一 transform 和 transition 逻辑，避免重绘问题
+        applyFocusTransition(true);
     });
     
     searchInput.addEventListener('blur', () => {
         searchContainer.classList.remove('focused');
-        // 移除CSS类，自动恢复
-        document.body.classList.remove('search-focused');
+        // 模式切换器展开动画
+        modeSwitcher.classList.remove('collapsed');
+        // 快速链接展开动画
+        quickLinks.classList.remove('collapsed');
+        // 统一恢复逻辑
+        applyFocusTransition(false);
     });
     
     // 加载保存的主题
@@ -759,6 +774,25 @@ function applyCustomGradient() {
     document.body.style.background = gradient;
     localStorage.setItem('customWallpaper', gradient);
     alert('自定义背景应用成功！');
+}
+
+// 统一处理焦点状态的 transform 和 transition
+function applyFocusTransition(isFocused) {
+    if (isFocused) {
+        // 应用焦点状态 - 只使用CSS类，保持毛玻璃效果
+        document.body.classList.add('search-focused');
+        
+        // 添加自定义类来控制额外的变换效果
+        document.body.classList.add('search-transition-active');
+    } else {
+        // 恢复默认状态
+        document.body.classList.remove('search-focused');
+        
+        // 延迟移除过渡类，确保动画完成
+        setTimeout(() => {
+            document.body.classList.remove('search-transition-active');
+        }, 300);
+    }
 }
 
 // 初始化颜色混色器

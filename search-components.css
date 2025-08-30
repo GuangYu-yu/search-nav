@@ -1,0 +1,213 @@
+/* 搜索组件模块 */
+.mode-switcher {
+    display: flex;
+    margin: 20px 0;
+    justify-content: center;
+}
+
+.mode-switcher-container {
+    position: relative;
+    display: flex;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 4px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.mode-btn {
+    padding: 8px 20px;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-radius: 16px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 2;
+    min-width: 100px;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.mode-btn:hover {
+    color: var(--text-color);
+}
+
+.mode-btn.active {
+    color: white;
+    font-weight: 500;
+}
+
+.mode-slider {
+    position: absolute;
+    height: calc(100% - 8px);
+    width: 100px;
+    background: var(--primary-color);
+    border-radius: 16px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    top: 4px;
+    left: 4px;
+    z-index: 1;
+}
+
+.search-container {
+    position: relative;
+    margin: 25px 0;
+    transition: all 0.3s ease;
+    z-index: 10;
+}
+
+.search-container.focused {
+    transform: translateY(-30px);
+}
+
+/* 模式切换器独立动画控制 */
+.mode-switcher {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mode-switcher.collapsed {
+    opacity: 0;
+    transform: scale(0.9) translateY(-20px);
+    pointer-events: none;
+}
+
+.search-box {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 30px;
+    padding: 8px 16px;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.search-box:focus-within {
+    border-color: var(--primary-color);
+    box-shadow: 0 4px 20px rgba(var(--primary-color-rgb), 0.2);
+    transform: translateY(-10px);
+}
+
+.engine-selector {
+    display: flex;
+    align-items: center;
+    padding: 6px 0;
+    cursor: pointer;
+    min-width: 20px;
+}
+
+.engine-icon {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.google-icon { background-image: url('https://google.com/favicon.ico'); }
+.bing-icon { background-image: url('https://bing.com/favicon.ico'); }
+.yandex-icon { background-image: url('https://yandex.com/favicon.ico'); }
+.duckduckgo-icon { background-image: url('https://duckduckgo.com/favicon.ico'); }
+.ecosia-icon { background-image: url('https://ecosia.org/favicon.ico'); }
+.deepl-icon { background-image: url('https://deepl.com/favicon.ico'); }
+.baidu-icon { background-image: url('https://baidu.com/favicon.ico'); }
+
+.engine-name { 
+    font-size: 14px; 
+    font-weight: 500; 
+    color: var(--text-color); 
+}
+
+.search-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 12px 16px;
+    font-size: 16px;
+    background: transparent;
+    color: var(--text-color);
+}
+
+.search-buttons { 
+    display: flex; 
+    gap: 8px; 
+}
+
+.search-btn {
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: var(--text-color);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.search-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.05);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.header-controls {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.engine-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 200px;
+    background: var(--card-background);
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    padding: 8px;
+    margin-top: 8px;
+    z-index: 1000;
+    border: 1px solid var(--border-color);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
+}
+
+.engine-dropdown.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.engine-option {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    gap: 12px;
+}
+
+.engine-option:hover { 
+    background: var(--hover-color); 
+}
