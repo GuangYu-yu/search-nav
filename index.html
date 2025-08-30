@@ -157,17 +157,33 @@
                                 </div>
                             </div>
                             
-                            <div class="gradient-preview" id="gradientPreview"></div>
-                            
-                            <div class="action-buttons">
-                                <button class="action-btn random-btn" onclick="randomColors()">随机混色</button>
-                                <button class="action-btn apply-btn" onclick="applyCustomGradient()">应用背景</button>
+                            <div class="gradient-action-container">
+                                <div class="gradient-preview" id="gradientPreview"></div>
+                                <div class="action-buttons">
+                                    <button class="icon-action-btn random-btn" onclick="randomColors()" title="随机混色">
+                                        <i class="fas fa-random"></i>
+                                    </button>
+                                    <button class="icon-action-btn apply-btn" onclick="applyCustomGradient()" title="应用背景">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                         
                         <h4 style="margin-top: 24px;">图片壁纸</h4>
-                        <input type="text" class="add-link-input" id="customWallpaperUrl" placeholder="输入图片URL">
-                        <button class="add-btn" onclick="setCustomWallpaper()">应用自定义壁纸</button>
+                        <div class="custom-wallpaper-controls">
+                            <div class="wallpaper-input-group">
+                                <input type="text" class="wallpaper-url-input" id="customWallpaperUrl" placeholder="输入图片URL">
+                                <div class="wallpaper-buttons">
+                                    <button class="icon-btn" onclick="setCustomWallpaper()" title="应用壁纸">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                    <button class="icon-btn" onclick="downloadWallpaper()" title="下载壁纸">
+                                        <i class="fas fa-download"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

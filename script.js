@@ -264,7 +264,9 @@ function renderQuickLinks() {
         
         const icon = document.createElement('div');
         icon.className = 'quick-link-icon';
-        icon.style.backgroundImage = `url('${getFaviconUrl(link.url)}')`;
+        // 使用保存的favicon URL，如果没有则动态生成
+        const faviconUrl = link.faviconUrl || getCachedFaviconUrl(link.url);
+        icon.style.backgroundImage = `url('${faviconUrl}')`;
         icon.style.backgroundSize = 'contain';
         icon.style.backgroundRepeat = 'no-repeat';
         icon.style.backgroundPosition = 'center';
@@ -349,7 +351,10 @@ function addLink() {
     // 确保URL格式正确
     const formattedUrl = url.startsWith('http') ? url : 'https://' + url;
     
-    links.push({ name, url: formattedUrl });
+    // 获取favicon URL
+    const faviconUrl = getCachedFaviconUrl(formattedUrl);
+    
+    links.push({ name, url: formattedUrl, faviconUrl });
     localStorage.setItem('navLinks', JSON.stringify(links));
     
     // 清空输入框
@@ -384,6 +389,43 @@ function getFaviconUrl(url) {
     }
 }
 
+// 获取带缓存的网站favicon（30分钟缓存）
+function getCachedFaviconUrl(url) {
+    try {
+        // 确保URL格式正确
+        const fullUrl = url.startsWith('http') ? url : 'https://' + url;
+        const domain = new URL(fullUrl).hostname;
+        const faviconKey = `favicon_${domain}`;
+        const cacheKey = `favicon_cache_${domain}`;
+        
+        // 检查是否有缓存
+        const cachedData = localStorage.getItem(cacheKey);
+        if (cachedData) {
+            const cache = JSON.parse(cachedData);
+            const now = Date.now();
+            
+            // 如果缓存未过期（30分钟内），直接返回缓存的favicon
+            if (now - cache.timestamp < 30 * 60 * 1000) {
+                return cache.faviconUrl;
+            }
+        }
+        
+        // 生成新的favicon URL
+        const faviconUrl = `https://${domain}/favicon.ico`;
+        
+        // 保存到缓存
+        const cacheData = {
+            faviconUrl: faviconUrl,
+            timestamp: Date.now()
+        };
+        localStorage.setItem(cacheKey, JSON.stringify(cacheData));
+        
+        return faviconUrl;
+    } catch {
+        return 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23666"%3E%3Cpath d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.94-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/%3E%3C/svg%3E';
+    }
+}
+
 // 渲染设置中的书签列表
 function renderLinks() {
     const container = document.getElementById('linksContainer');
@@ -397,7 +439,7 @@ function renderLinks() {
         // 网站图标
         const favicon = document.createElement('div');
         favicon.className = 'link-favicon';
-        favicon.style.backgroundImage = `url('${getFaviconUrl(link.url)}')`;
+        favicon.style.backgroundImage = `url('${getCachedFaviconUrl(link.url)}')`;
         
         // 网站信息
         const details = document.createElement('div');
@@ -507,7 +549,10 @@ function saveLink(index, name, url) {
     // 确保URL格式正确
     const formattedUrl = url.startsWith('http') ? url : 'https://' + url;
     
-    links[index] = { name, url: formattedUrl };
+    // 获取favicon URL
+    const faviconUrl = getFaviconUrl(formattedUrl);
+    
+    links[index] = { name, url: formattedUrl, faviconUrl };
     localStorage.setItem('navLinks', JSON.stringify(links));
     
     // 重新渲染
@@ -563,13 +608,31 @@ function setCustomWallpaper() {
         const backgroundStyle = `url('${url}') center/cover no-repeat`;
         document.body.style.background = backgroundStyle;
         localStorage.setItem('customWallpaper', backgroundStyle);
-        // 保持输入框的值，不清空
+        // 保存输入框的值
+        localStorage.setItem('customWallpaperUrl', url);
         alert('壁纸设置成功！');
     };
     img.onerror = function() {
         alert('图片加载失败，请检查URL是否正确');
     };
     img.src = url;
+}
+
+// 下载壁纸
+function downloadWallpaper() {
+    const url = document.getElementById('customWallpaperUrl').value.trim();
+    if (!url) {
+        alert('没有可下载的壁纸URL');
+        return;
+    }
+    
+    // 创建一个临时的a标签来触发下载
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'wallpaper.jpg'; // 默认文件名
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 }
 
 // 初始化事件监听
@@ -637,6 +700,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const savedWallpaper = localStorage.getItem('customWallpaper');
     if (savedWallpaper) {
         document.body.style.background = savedWallpaper;
+    }
+    
+    // 恢复自定义壁纸URL输入框的值
+    const savedWallpaperUrl = localStorage.getItem('customWallpaperUrl');
+    if (savedWallpaperUrl) {
+        document.getElementById('customWallpaperUrl').value = savedWallpaperUrl;
     }
     
     // 初始化自定义颜色混色功能
