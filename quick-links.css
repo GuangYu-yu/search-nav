@@ -47,6 +47,13 @@
     pointer-events: none;
 }
 
+/* 快速链接淡入淡出动画 */
+.quick-links.fade-out {
+    opacity: 0;
+    transform: scale(0.9) translateY(-20px);
+    pointer-events: none;
+}
+
 /* 搜索聚焦效果 */
 .search-focused {
     position: relative;
@@ -81,63 +88,20 @@
     opacity: 0;
 }
 
-.search-focused.zoom-active::before {
-    opacity: 1;
-    background-size: 120% 120%;
-    filter: blur(12px);
-}
-
-.search-focused.zoom-active::after {
-    opacity: 1;
-}
-
-.search-focused.zoom-active .container {
-    transform: scale(1.05);
-    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* 搜索框在聚焦时的增强效果 */
-.search-focused.zoom-active .search-box {
-    transform: scale(1.1);
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    border-color: var(--primary-color);
-    background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(30px);
-    -webkit-backdrop-filter: blur(30px);
-}
-
-/* 保持元素可见性，只移除淡入淡出效果 */
-.search-focused.zoom-active .global-controls,
-.search-focused.zoom-active .settings-btn,
-.search-focused.zoom-active .header,
-.search-focused.zoom-active .mode-switcher,
-.search-focused.zoom-active .quick-links {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-    transition: all 0.3s ease;
-}
-
 body:not(.search-focused) .global-controls,
 body:not(.search-focused) .settings-btn,
 body:not(.search-focused) .header,
-body:not(.search-focused) .mode-switcher,
-body:not(.search-focused) .quick-links,
-body .global-controls,
-body .settings-btn,
-body .header,
-body .mode-switcher,
-body .quick-links {
+body:not(.search-focused) .mode-switcher {
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
     transition: all 0.3s ease;
 }
 
-/* 搜索聚焦时的毛玻璃效果 */
-.search-focused .mode-switcher-container {
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+/* 确保书签图标的毛玻璃效果在搜索聚焦时不被影响 */
+.search-focused .quick-link-icon {
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
 }
 
 /* 快速链接项样式 */
@@ -166,29 +130,17 @@ body .quick-links {
     align-items: center;
     justify-content: center;
     background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.2);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.1);
-    transition: all 0.2s ease;
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
     cursor: pointer;
     position: relative;
     overflow: hidden;
-}
-
-.quick-link-icon::after {
-    content: '';
-    position: absolute;
-    top: -10px;
-    left: -10px;
-    right: -10px;
-    bottom: -10px;
-    background: inherit;
-    background-size: cover;
-    filter: blur(20px);
-    z-index: -1;
-    transform: scale(1.2);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .quick-link-icon::before {
@@ -201,7 +153,7 @@ body .quick-links {
     border-radius: 50%;
     box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.3);
     pointer-events: none;
-    z-index: 1;
+    z-index: -1;
 }
 
 .quick-link:hover .quick-link-icon {

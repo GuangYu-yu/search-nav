@@ -178,18 +178,6 @@ function setTheme(theme) {
     }, 50);
 }
 
-
-
-// 根据字符串生成颜色
-function getColorFromString(str) {
-    const colors = ['#667eea', '#764ba2', '#f093fb', '#f5576c', '#4ecdc4', '#45b7d1', '#96c93d', '#ff6b6b'];
-    let hash = 0;
-    for (let i = 0; i < str.length; i++) {
-        hash = str.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    return colors[Math.abs(hash) % colors.length];
-}
-
 // 计算书签网格布局
 function calculateGridLayout(totalItems) {
     if (totalItems <= 6) {
@@ -330,14 +318,6 @@ function switchTab(tabName) {
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.tab === tabName);
     });
-    
-    // 移动滑块
-    const slider = document.querySelector('.tab-slider');
-    if (tabName === 'wallpaper') {
-        slider.style.transform = 'translateX(calc(100% + 4px))';
-    } else {
-        slider.style.transform = 'translateX(0)';
-    }
     
     // 更新标签内容显示
     document.querySelectorAll('.tab-content').forEach(content => {
@@ -590,25 +570,13 @@ function saveLink(index, name, url) {
 function setWallpaper(type) {
     let backgroundStyle = '';
     
-    switch(type) {
-        case 'default':
-            backgroundStyle = '';
-            break;
-        case 'gradient1':
-            backgroundStyle = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
-            break;
-        case 'gradient2':
-            backgroundStyle = 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)';
-            break;
-        case 'gradient3':
-            backgroundStyle = 'linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%)';
-            break;
-        case 'gradient4':
-            backgroundStyle = 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)';
-            break;
-        case 'gradient5':
-            backgroundStyle = 'linear-gradient(135deg, #667eea 0%, #f093fb 100%)';
-            break;
+    if (type.startsWith('gradient')) {
+        const gradientIndex = parseInt(type.replace('gradient', '')) - 1;
+        const gradientPairs = getGradientPairs();
+        if (gradientIndex >= 0 && gradientIndex < gradientPairs.length) {
+            const [color1, color2] = gradientPairs[gradientIndex];
+            backgroundStyle = `linear-gradient(135deg, ${color1} 0%, ${color2} 100%)`;
+        }
     }
     
     const wallpaperContainer = document.getElementById('wallpaperContainer');
@@ -671,8 +639,8 @@ document.addEventListener('DOMContentLoaded', function() {
         searchContainer.classList.add('focused');
         // 模式切换器收起动画
         modeSwitcher.classList.add('collapsed');
-        // 快速链接收起动画
-        quickLinks.classList.add('collapsed');
+        // 快速链接淡出动画
+        quickLinks.classList.add('fade-out');
         // 统一 transform 和 transition 逻辑，避免重绘问题
         applyFocusTransition(true);
         // 壁纸缩放虚化效果
@@ -685,8 +653,8 @@ document.addEventListener('DOMContentLoaded', function() {
         searchContainer.classList.remove('focused');
         // 模式切换器展开动画
         modeSwitcher.classList.remove('collapsed');
-        // 快速链接展开动画
-        quickLinks.classList.remove('collapsed');
+        // 快速链接淡入动画
+        quickLinks.classList.remove('fade-out');
         // 统一恢复逻辑
         applyFocusTransition(false);
         // 恢复壁纸效果
@@ -758,14 +726,31 @@ function updateGradientPreview() {
     preview.style.background = gradient;
 }
 
-// 随机生成颜色
-function randomColors() {
-    const colors = [
+// 获取所有可用颜色
+function getAllColors() {
+    return [
         '#667eea', '#764ba2', '#f093fb', '#f5576c', '#4ecdc4', '#44a08d',
-        '#ff6b6b', '#4ecdc4', '#45b7d1', '#96c93d', '#feca57', '#ff9ff3',
+        '#ff6b6b', '#45b7d1', '#96c93d', '#feca57', '#ff9ff3',
         '#54a0ff', '#5f27cd', '#00d2d3', '#ff9f43', '#10ac84', '#ee5a24',
         '#0abde3', '#006ba6', '#f38ba8', '#a8e6cf', '#ffd93d', '#6c5ce7'
     ];
+}
+
+// 获取预定义的渐变颜色对
+function getGradientPairs() {
+    const colors = getAllColors();
+    return [
+        [colors[0], colors[1]],   // #667eea, #764ba2
+        [colors[2], colors[3]],   // #f093fb, #f5576c
+        [colors[4], colors[5]],   // #4ecdc4, #44a08d
+        [colors[6], colors[7]],   // #ff6b6b, #45b7d1
+        [colors[0], colors[2]]    // #667eea, #f093fb
+    ];
+}
+
+// 随机生成颜色
+function randomColors() {
+    const colors = getAllColors();
     
     const color1 = colors[Math.floor(Math.random() * colors.length)];
     let color2 = colors[Math.floor(Math.random() * colors.length)];
@@ -810,17 +795,9 @@ function applyFocusTransition(isFocused) {
     if (isFocused) {
         // 应用焦点状态
         document.body.classList.add('search-focused');
-        
-        // 添加自定义类来控制额外的变换效果
-        document.body.classList.add('search-transition-active');
     } else {
         // 恢复默认状态
         document.body.classList.remove('search-focused');
-        
-        // 延迟移除过渡类
-        setTimeout(() => {
-            document.body.classList.remove('search-transition-active');
-        }, 300);
     }
 }
 

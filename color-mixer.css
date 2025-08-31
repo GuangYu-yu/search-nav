@@ -202,12 +202,11 @@
     -webkit-backdrop-filter: blur(10px);
 }
 
-/* 图标按钮样式 */
 .icon-action-btn {
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
     border: none;
-    border-radius: 50%;
+    border-radius: 12px;
     background: rgba(var(--primary-color-rgb), 0.9);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
@@ -216,14 +215,38 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s ease;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    position: relative;
+    overflow: hidden;
+    font-size: 16px;
+}
+
+.icon-action-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
 
 .icon-action-btn:hover {
     background: rgba(var(--primary-color-rgb), 1);
-    transform: scale(1.05);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+}
+
+.icon-action-btn:hover::before {
+    opacity: 1;
+}
+
+.icon-action-btn:active {
+    transform: translateY(0) scale(0.98);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
 }
 
 .random-btn {
@@ -231,7 +254,15 @@
     color: white;
 }
 
+.random-btn:hover {
+    background: rgba(255, 165, 0, 1);
+}
+
 .apply-btn {
     background: rgba(56, 161, 105, 0.9);
     color: white;
+}
+
+.apply-btn:hover {
+    background: rgba(56, 161, 105, 1);
 }
