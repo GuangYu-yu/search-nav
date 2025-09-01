@@ -287,8 +287,8 @@ function addLink() {
     const name = document.getElementById('linkName').value.trim();
     const url = document.getElementById('linkUrl').value.trim();
     
-    if (!name || !url) {
-        alert('请填写完整的网站名称和地址');
+    if (!url) {
+        alert('请填写网站地址');
         return;
     }
     
@@ -495,8 +495,8 @@ function editLink(index) {
 
 // 保存编辑的书签
 function saveLink(index, name, url) {
-    if (!name || !url) {
-        alert('请填写完整的网站名称和地址');
+    if (!url) {
+        alert('请填写网站地址');
         return;
     }
     
