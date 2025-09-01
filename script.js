@@ -136,7 +136,9 @@ function selectEngine(engine, displayName) {
 // 处理搜索
 function handleSearch() {
     const query = document.getElementById('searchQuery').value.trim();
-    if (!query) return;
+    if (!query) {
+        return;
+    }
     
     let url;
     if (currentMode === 'translate') {
@@ -180,102 +182,57 @@ function setTheme(theme) {
 
 // 计算书签网格布局
 function calculateGridLayout(totalItems) {
-    if (totalItems <= 6) {
+    const maxColumns = 6;
+
+    if (totalItems <= maxColumns) {
         return { columns: totalItems, rows: 1 };
     }
-    
-    // 计算最佳行数和列数分配
-    const maxColumns = 6;
+
     const rows = Math.ceil(totalItems / maxColumns);
-    
-    if (rows === 2) {
-        // 两行的情况，尽量平均分配
-        const firstRowItems = Math.ceil(totalItems / 2);
-        const secondRowItems = totalItems - firstRowItems;
-        return { 
-            columns: Math.max(firstRowItems, secondRowItems),
-            rows: 2,
-            firstRowItems,
-            secondRowItems
-        };
-    } else {
-        // 多行的情况，也要尽量均分
-        const itemsPerRow = Math.ceil(totalItems / rows);
-        const lastRowItems = totalItems - (rows - 1) * itemsPerRow;
-        
-        // 如果最后一行太少，重新分配
-        if (lastRowItems < itemsPerRow / 2 && rows > 2) {
-            const newItemsPerRow = Math.ceil(totalItems / (rows - 1));
-            return { 
-                columns: newItemsPerRow, 
-                rows: rows - 1,
-                itemsPerRow: newItemsPerRow
-            };
-        }
-        
-        return { 
-            columns: itemsPerRow, 
-            rows: rows,
-            itemsPerRow: itemsPerRow
-        };
-    }
+    const itemsPerRow = Math.ceil(totalItems / rows);
+
+    return { 
+        columns: itemsPerRow,
+        rows: rows
+    };
 }
 
 // 渲染快速链接
 function renderQuickLinks() {
     const container = document.getElementById('quickLinksContainer');
     container.innerHTML = '';
-    
-    if (links.length === 0) return;
-    
+    if (!links.length) return;
+
     const layout = calculateGridLayout(links.length);
-    
+
     // 设置网格样式
-    if (links.length <= 6) {
-        container.style.gridTemplateColumns = `repeat(${layout.columns}, 80px)`;
-        container.style.gridTemplateRows = '1fr';
-    } else if (layout.rows === 2) {
-        // 两行情况，需要特殊处理
-        container.style.gridTemplateColumns = `repeat(${layout.columns}, 80px)`;
-        container.style.gridTemplateRows = 'repeat(2, 1fr)';
-    } else {
-        // 多行情况
-        container.style.gridTemplateColumns = `repeat(${layout.columns}, 80px)`;
-        container.style.gridTemplateRows = `repeat(${layout.rows}, 1fr)`;
-    }
-    
-    // 渲染每个链接
-    links.forEach((link, index) => {
+    container.style.gridTemplateColumns = `repeat(${layout.columns}, 80px)`;
+    container.style.gridTemplateRows = `repeat(${layout.rows}, 1fr)`;
+
+    const fragment = document.createDocumentFragment();
+
+    links.forEach(link => {
         const linkElement = document.createElement('div');
         linkElement.className = 'quick-link';
         linkElement.onclick = () => window.open(link.url, '_blank');
-        
+
         const icon = document.createElement('div');
         icon.className = 'quick-link-icon';
-        // 使用保存的favicon URL，如果没有则动态生成
-        const faviconUrl = link.faviconUrl || getCachedFaviconUrl(link.url);
-        icon.style.backgroundImage = `url('${faviconUrl}')`;
-        icon.style.backgroundSize = 'contain';
-        icon.style.backgroundRepeat = 'no-repeat';
-        icon.style.backgroundPosition = 'center';
-        
+        icon.style.backgroundImage = `url('${link.faviconUrl || getCachedFaviconUrl(link.url)}')`;
+
         const name = document.createElement('div');
         name.className = 'quick-link-name';
         name.textContent = link.name;
-        
-        linkElement.appendChild(icon);
-        linkElement.appendChild(name);
-        container.appendChild(linkElement);
-    });
-    
-    // 检查是否需要显示滚动条（超过三行时）
-    if (layout.rows > 3) {
-        container.classList.add('overflowing');
-    } else {
-        container.classList.remove('overflowing');
-    }
-}
 
+        linkElement.append(icon, name);
+        fragment.appendChild(linkElement);
+    });
+
+    container.appendChild(fragment);
+
+    // 超过三行显示滚动条
+    container.classList.toggle('overflowing', layout.rows > 3);
+}
 
 // 切换主题切换器显示状态
 function toggleThemeSwitcher() {
@@ -640,7 +597,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // 模式切换器收起动画
         modeSwitcher.classList.add('collapsed');
         // 快速链接淡出动画
-        quickLinks.classList.add('fade-out');
+        quickLinks.classList.add('collapsed');
         // 统一 transform 和 transition 逻辑，避免重绘问题
         applyFocusTransition(true);
         // 壁纸缩放虚化效果
@@ -654,13 +611,18 @@ document.addEventListener('DOMContentLoaded', function() {
         // 模式切换器展开动画
         modeSwitcher.classList.remove('collapsed');
         // 快速链接淡入动画
-        quickLinks.classList.remove('fade-out');
+        quickLinks.classList.remove('collapsed');
         // 统一恢复逻辑
         applyFocusTransition(false);
         // 恢复壁纸效果
         const wallpaperContainer = document.getElementById('wallpaperContainer');
         wallpaperContainer.style.transform = 'scale(1)';
         wallpaperContainer.style.filter = 'none';
+    });
+    
+    // 搜索按钮mousedown事件 - 阻止默认行为，避免触发搜索框blur
+    document.querySelector('.search-btn').addEventListener('mousedown', (e) => {
+        e.preventDefault();
     });
     
     // 加载保存的主题

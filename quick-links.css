@@ -1,8 +1,12 @@
-/* 快速链接组件模块 */
+/* 快速链接组件模块 - 修复版本 */
 .quick-links {
     margin: 15px 0;
     width: 100%;
     max-width: 800px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
 }
 
 .quick-links h3 {
@@ -22,13 +26,14 @@
     max-width: calc(6 * (80px + 16px) + 32px);
     overflow-y: hidden;
     border-radius: 12px;
+    isolation: isolate;
 }
 
 .quick-links-grid.overflowing {
-    max-height: 300px; /* 超过三行时显示滚动条 */
+    max-height: 300px;
     overflow-y: auto;
-    scrollbar-width: none; /* Firefox 隐藏滚动条 */
-    -ms-overflow-style: none; /* IE 和 Edge 隐藏滚动条 */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
 }
 
 /* Chrome, Safari 和 Opera 隐藏滚动条 */
@@ -37,71 +42,11 @@
 }
 
 /* 快速链接独立动画控制 */
-.quick-links {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
 .quick-links.collapsed {
     opacity: 0;
     transform: scale(0.9) translateY(-20px);
     pointer-events: none;
-}
-
-/* 快速链接淡入淡出动画 */
-.quick-links.fade-out {
-    opacity: 0;
-    transform: scale(0.9) translateY(-20px);
-    pointer-events: none;
-}
-
-/* 搜索聚焦效果 */
-.search-focused {
-    position: relative;
-}
-
-.search-focused::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: inherit;
-    background-size: 110% 110%;
-    background-position: center;
-    filter: blur(8px);
-    z-index: -2;
-    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-    opacity: 0;
-}
-
-.search-focused::after {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.3);
-    z-index: -1;
-    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-    opacity: 0;
-}
-
-body:not(.search-focused) .global-controls,
-body:not(.search-focused) .settings-btn,
-body:not(.search-focused) .header,
-body:not(.search-focused) .mode-switcher {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-    transition: all 0.3s ease;
-}
-
-/* 确保书签图标的毛玻璃效果在搜索聚焦时不被影响 */
-.search-focused .quick-link-icon {
-    backdrop-filter: blur(20px) !important;
-    -webkit-backdrop-filter: blur(20px) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* 快速链接项样式 */
@@ -115,6 +60,8 @@ body:not(.search-focused) .mode-switcher {
     min-width: 80px;
     flex-shrink: 0;
     transition: all 0.2s ease;
+    /* 确保每个链接都有正确的渲染上下文 */
+    transform: translateZ(0);
 }
 
 .quick-link:hover {
@@ -123,24 +70,41 @@ body:not(.search-focused) .mode-switcher {
 }
 
 .quick-link-icon {
-    width: 48px;
-    height: 48px;
+    width: 56px;
+    height: 56px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.1);
-    background-size: contain;
+    /* 高对比度背景 */
+    background: rgba(255, 255, 255, 0.9);
+    /* 双层边框确保对比度 */
+    border: 2px solid #ffffff;
+    box-shadow: 
+        0 0 0 2px #000000, /* 外层深色边框 */
+        0 4px 20px rgba(0, 0, 0, 0.4), 
+        0 0 20px rgba(255, 255, 255, 0.6); /* 光晕效果增强可见性 */
+    background-size: 85%;
     background-repeat: no-repeat;
     background-position: center;
     cursor: pointer;
     position: relative;
     overflow: hidden;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateZ(0);
+    will-change: transform;
+}
+
+.quick-link-icon:hover {
+    transform: scale(1.1);
+    box-shadow: 
+        0 0 0 2px #000000,
+        0 6px 25px rgba(0, 0, 0, 0.5), 
+        0 0 25px rgba(255, 255, 255, 0.8);
+}
+
+.quick-link-icon:active {
+    transform: scale(0.95);
 }
 
 .quick-link-icon::before {
@@ -172,4 +136,9 @@ body:not(.search-focused) .mode-switcher {
     white-space: nowrap;
     font-weight: 400;
     pointer-events: none;
+}
+
+/* 添加针对搜索聚焦状态的特定样式 */
+.search-focused .quick-link-icon {
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
