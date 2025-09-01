@@ -5,7 +5,8 @@ const searchEngines = {
     baidu: 'https://www.baidu.com/s?wd=',
     yandex: 'https://yandex.com/search/?text=',
     duckduckgo: 'https://duckduckgo.com/?q=',
-    ecosia: 'https://www.ecosia.org/search?q='
+    ecosia: 'https://www.ecosia.org/search?q=',
+    yahoo: 'https://search.yahoo.com/search?p='
 };
 
 const translateEngines = {
@@ -102,6 +103,10 @@ function updateEngineDropdown() {
             <div class="engine-option" onclick="selectEngine('ecosia', 'Ecosia')">
                 <div class="engine-icon ecosia-icon"></div>
                 <span class="engine-name">Ecosia</span>
+            </div>
+            <div class="engine-option" onclick="selectEngine('yahoo', 'Yahoo!')">
+                <div class="engine-icon yahoo-icon"></div>
+                <span class="engine-name">Yahoo!</span>
             </div>
         `;
     }
@@ -218,6 +223,7 @@ function renderQuickLinks() {
 
         const icon = document.createElement('div');
         icon.className = 'quick-link-icon';
+        // 使用自定义图片URL或缓存的favicon
         icon.style.backgroundImage = `url('${link.faviconUrl || getCachedFaviconUrl(link.url)}')`;
 
         const name = document.createElement('div');
@@ -286,6 +292,7 @@ function switchTab(tabName) {
 function addLink() {
     const name = document.getElementById('linkName').value.trim();
     const url = document.getElementById('linkUrl').value.trim();
+    const imageUrl = document.getElementById('linkImageUrl').value.trim();
     
     if (!url) {
         alert('请填写网站地址');
@@ -295,8 +302,8 @@ function addLink() {
     // 确保URL格式正确
     const formattedUrl = url.startsWith('http') ? url : 'https://' + url;
     
-    // 获取favicon URL
-    const faviconUrl = getCachedFaviconUrl(formattedUrl);
+    // 获取favicon URL，如果有自定义图片URL则使用自定义的
+    const faviconUrl = imageUrl || getCachedFaviconUrl(formattedUrl);
     
     links.push({ name, url: formattedUrl, faviconUrl });
     localStorage.setItem('navLinks', JSON.stringify(links));
@@ -304,6 +311,7 @@ function addLink() {
     // 清空输入框
     document.getElementById('linkName').value = '';
     document.getElementById('linkUrl').value = '';
+    document.getElementById('linkImageUrl').value = '';
     
     // 重新渲染
     renderLinks();
@@ -445,7 +453,7 @@ function editLink(index) {
     const editBtn = linkItem.querySelector('.edit-btn');
     const deleteBtn = linkItem.querySelector('.delete-btn');
     
-    // 将名称和URL改为输入框
+    // 将名称、URL和图片URL改为输入框
     const nameInput = document.createElement('input');
     nameInput.type = 'text';
     nameInput.value = link.name;
@@ -455,6 +463,14 @@ function editLink(index) {
     urlInput.type = 'text';
     urlInput.value = link.url;
     urlInput.style.cssText = 'width: 100%; padding: 2px 4px; border: 1px solid var(--border-color); border-radius: 3px; font-size: 12px; background: transparent; color: var(--text-secondary); box-sizing: border-box; outline: none;';
+    
+    const imageUrlInput = document.createElement('input');
+    imageUrlInput.type = 'text';
+    // 判断是否是自定义图片URL（不是默认的favicon URL）
+    const isCustomImage = link.faviconUrl && !link.faviconUrl.includes('google.com/s2/favicons') && !link.faviconUrl.startsWith('data:image/svg+xml');
+    imageUrlInput.value = isCustomImage ? link.faviconUrl : '';
+    imageUrlInput.placeholder = '图片URL（可选）';
+    imageUrlInput.style.cssText = 'width: 100%; padding: 2px 4px; border: 1px solid var(--border-color); border-radius: 3px; font-size: 12px; background: transparent; color: var(--text-secondary); box-sizing: border-box; outline: none; margin-top: 4px;';
     
     // 添加焦点事件来改善视觉效果
     nameInput.addEventListener('focus', function() {
@@ -477,16 +493,27 @@ function editLink(index) {
         this.style.backgroundColor = 'transparent';
     });
     
+    imageUrlInput.addEventListener('focus', function() {
+        this.style.borderColor = 'var(--primary-color)';
+        this.style.backgroundColor = 'var(--input-background, var(--card-background))';
+    });
+    
+    imageUrlInput.addEventListener('blur', function() {
+        this.style.borderColor = 'var(--border-color)';
+        this.style.backgroundColor = 'transparent';
+    });
+    
     // 替换文本为输入框
     nameDiv.innerHTML = '';
     nameDiv.appendChild(nameInput);
     urlDiv.innerHTML = '';
     urlDiv.appendChild(urlInput);
+    urlDiv.appendChild(imageUrlInput);
     
     // 修改按钮文字和功能
     editBtn.textContent = '保存';
     editBtn.className = 'save-btn';
-    editBtn.onclick = () => saveLink(index, nameInput.value.trim(), urlInput.value.trim());
+    editBtn.onclick = () => saveLink(index, nameInput.value.trim(), urlInput.value.trim(), imageUrlInput.value.trim());
     
     deleteBtn.textContent = '取消';
     deleteBtn.className = 'cancel-btn';
@@ -494,7 +521,7 @@ function editLink(index) {
 }
 
 // 保存编辑的书签
-function saveLink(index, name, url) {
+function saveLink(index, name, url, imageUrl = '') {
     if (!url) {
         alert('请填写网站地址');
         return;
@@ -512,8 +539,8 @@ function saveLink(index, name, url) {
         // URL解析失败时忽略
     }
     
-    // 获取favicon URL
-    const faviconUrl = getFaviconUrl(formattedUrl);
+    // 获取favicon URL，如果有自定义图片URL则使用自定义的
+    const faviconUrl = imageUrl.trim() || getFaviconUrl(formattedUrl);
     
     links[index] = { name, url: formattedUrl, faviconUrl };
     localStorage.setItem('navLinks', JSON.stringify(links));
@@ -642,7 +669,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const defaultSearchEngine = localStorage.getItem('defaultSearchEngine') || 'google';
     const displayName = defaultSearchEngine === 'google' ? 'Google' : 
                        defaultSearchEngine === 'bing' ? 'Bing' : 
-                       defaultSearchEngine === 'baidu' ? '百度' : 'DuckDuckGo';
+                       defaultSearchEngine === 'baidu' ? '百度' : 
+                       defaultSearchEngine === 'yahoo' ? 'Yahoo!' : 'DuckDuckGo';
     selectEngine(defaultSearchEngine, displayName);
     
     // 渲染快速链接
