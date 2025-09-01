@@ -164,8 +164,8 @@ function handleSearch() {
 
 // 设置主题
 function setTheme(theme) {
-    // 禁用过渡效果以避免毛玻璃闪烁
-    document.body.style.transition = 'none';
+    // 添加过渡类来启用平滑过渡
+    document.documentElement.classList.add('theme-transitioning');
     
     // 立即应用新主题
     document.documentElement.setAttribute('data-theme', theme);
@@ -179,10 +179,9 @@ function setTheme(theme) {
         }
     });
     
-    // 重新启用过渡效果
     setTimeout(() => {
-        document.body.style.transition = '';
-    }, 50);
+        document.documentElement.classList.remove('theme-transitioning');
+    }, 300);
 }
 
 // 计算书签网格布局
