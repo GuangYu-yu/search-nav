@@ -6,14 +6,16 @@ const searchEngines = {
     yandex: 'https://yandex.com/search/?text=',
     duckduckgo: 'https://duckduckgo.com/?q=',
     ecosia: 'https://www.ecosia.org/search?q=',
-    yahoo: 'https://search.yahoo.com/search?p='
+    yahoo: 'https://search.yahoo.com/search?p=',
+    searx: 'https://searx.org/?q='
 };
 
 const translateEngines = {
     google: 'https://translate.google.com/?sl=auto&tl=zh-CN&text=',
     bing: 'https://www.bing.com/translator?text=',
     deepl: 'https://www.deepl.com/zh/translator#zh/en-us/',
-    baidu: 'https://fanyi.baidu.com/#auto/zh/'
+    baidu: 'https://fanyi.baidu.com/#auto/zh/',
+    yandex: 'https://translate.yandex.com/?source_lang=en&target_lang=zh&text='
 };
 
 // 初始化数据 - 根据需求不再内置网站，只保留空数组
@@ -76,6 +78,10 @@ function updateEngineDropdown() {
                 <div class="engine-icon baidu-icon"></div>
                 <span class="engine-name">百度翻译</span>
             </div>
+            <div class="engine-option" onclick="selectEngine('yandex', 'Yandex翻译')">
+                <div class="engine-icon yandex-icon"></div>
+                <span class="engine-name">Yandex翻译</span>
+            </div>
         `;
     } else {
         // 搜索模式下显示所有搜索引擎
@@ -107,6 +113,10 @@ function updateEngineDropdown() {
             <div class="engine-option" onclick="selectEngine('yahoo', 'Yahoo!')">
                 <div class="engine-icon yahoo-icon"></div>
                 <span class="engine-name">Yahoo!</span>
+            </div>
+            <div class="engine-option" onclick="selectEngine('searx', 'Searx')">
+                <div class="engine-icon searx-icon"></div>
+                <span class="engine-name">Searx</span>
             </div>
         `;
     }
