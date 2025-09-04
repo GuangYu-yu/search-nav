@@ -61,8 +61,6 @@
     background: linear-gradient(135deg, #667eea 0%, #f093fb 100%);
 }
 
-
-
 .custom-wallpaper h4 {
     margin-bottom: 12px;
     color: var(--text-color);
@@ -186,8 +184,6 @@
     border-color: var(--primary-color);
     background: rgba(255, 255, 255, 0.15);
 }
-
-
 
 /* SVG壁纸容器 */
 .svg-wallpaper {
