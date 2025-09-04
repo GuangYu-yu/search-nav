@@ -61,6 +61,8 @@
     background: linear-gradient(135deg, #667eea 0%, #f093fb 100%);
 }
 
+
+
 .custom-wallpaper h4 {
     margin-bottom: 12px;
     color: var(--text-color);
@@ -156,4 +158,49 @@
 .icon-btn:active {
     transform: translateY(0) scale(0.98);
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* SVG输入样式 */
+.svg-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.svg-code-input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-color);
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    line-height: 1.4;
+    resize: vertical;
+    min-height: 120px;
+}
+
+.svg-code-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    background: rgba(255, 255, 255, 0.15);
+}
+
+
+
+/* SVG壁纸容器 */
+.svg-wallpaper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    pointer-events: none;
+}
+
+.svg-wallpaper svg {
+    width: 100%;
+    height: 100%;
 }

@@ -703,8 +703,33 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('customWallpaperUrl').value = savedWallpaperUrl;
     }
     
+    // 恢复SVG代码
+    const savedSVGCode = localStorage.getItem('svgCode');
+    if (savedSVGCode) {
+        document.getElementById('svgCode').value = savedSVGCode;
+    }
+    
+    // 如果之前有活动的SVG壁纸，重新创建
+    const svgActive = localStorage.getItem('svgWallpaper');
+    if (svgActive === 'active') {
+        const savedSVGCode = localStorage.getItem('svgCode');
+        if (savedSVGCode) {
+            document.getElementById('svgCode').value = savedSVGCode;
+            updateSVGWallpaper();
+        }
+    }
+    
     // 初始化自定义颜色混色功能
     initColorMixer();
+    
+    // 添加SVG代码实时更新功能
+    const svgTextarea = document.getElementById('svgCode');
+    if (svgTextarea) {
+        svgTextarea.addEventListener('input', function() {
+            localStorage.setItem('svgCode', this.value);
+            updateSVGWallpaper();
+        });
+    }
 });
 
 // 获取当前选择的渐变方向
@@ -773,6 +798,74 @@ function randomColors() {
 
     // 自动更新预览
     updateGradientPreview();
+}
+
+// 实时更新SVG壁纸
+function updateSVGWallpaper() {
+    const svgCode = document.getElementById('svgCode').value;
+    
+    // 移除现有的SVG壁纸
+    const existingSVG = document.getElementById('svgWallpaper');
+    if (existingSVG) {
+        existingSVG.remove();
+    }
+    
+    // 如果SVG代码为空，恢复默认壁纸
+    if (!svgCode || svgCode.trim() === '') {
+        const savedWallpaper = localStorage.getItem('customWallpaper');
+        if (savedWallpaper) {
+            const wallpaperContainer = document.getElementById('wallpaperContainer');
+            wallpaperContainer.style.background = savedWallpaper;
+        } else {
+            setWallpaper('default');
+        }
+        localStorage.removeItem('svgWallpaper');
+        return;
+    }
+    
+    const wallpaperContainer = document.getElementById('wallpaperContainer');
+    
+    // 创建SVG容器
+    const svgContainer = document.createElement('div');
+    svgContainer.id = 'svgWallpaper';
+    svgContainer.className = 'svg-wallpaper';
+    
+    try {
+        // 解析SVG代码
+        const parser = new DOMParser();
+        const svgDoc = parser.parseFromString(svgCode, 'image/svg+xml');
+        
+        // 检查解析错误
+        const parserError = svgDoc.querySelector('parsererror');
+        if (parserError) {
+            throw new Error('SVG解析错误：' + parserError.textContent);
+        }
+        
+        // 获取SVG元素
+        const svgElement = svgDoc.documentElement;
+        if (svgElement.nodeName !== 'svg') {
+            throw new Error('请输入有效的SVG代码');
+        }
+        
+        // 设置SVG尺寸为100%
+        svgElement.setAttribute('width', '100%');
+        svgElement.setAttribute('height', '100%');
+        svgElement.setAttribute('preserveAspectRatio', 'xMidYMid slice');
+        
+        // 添加到容器
+        svgContainer.appendChild(svgElement);
+        wallpaperContainer.appendChild(svgContainer);
+        
+        // 清除现有背景
+        wallpaperContainer.style.background = '';
+        
+        // 保存状态
+        localStorage.setItem('svgWallpaper', 'active');
+        
+    } catch (error) {
+        console.error('SVG代码错误：', error.message);
+        svgContainer.remove();
+    }
 }
 
 // 应用自定义渐变
