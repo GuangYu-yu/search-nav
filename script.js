@@ -228,7 +228,7 @@ function renderQuickLinks() {
     links.forEach(link => {
         const linkElement = document.createElement('div');
         linkElement.className = 'quick-link';
-        linkElement.onclick = () => window.open(link.url, '_blank');
+        linkElement.onclick = () => window.location.href = link.url;
 
         const icon = document.createElement('div');
         icon.className = 'quick-link-icon';
