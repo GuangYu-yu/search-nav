@@ -169,7 +169,7 @@ function handleSearch() {
         }
     }
     
-    window.open(url, '_blank');
+    window.location.href = url;
 }
 
 // 设置主题
