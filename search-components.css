@@ -230,6 +230,11 @@
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 
+/* 移除按钮默认焦点样式 */
+.search-btn:focus {
+    outline: none;
+}
+
 .header-controls {
     display: flex;
     gap: 12px;
