@@ -60,6 +60,7 @@
     -webkit-backdrop-filter: blur(10px);
     transition: all 0.3s ease;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    -webkit-tap-highlight-color: transparent; /* 禁用移动端点击高亮 */
 }
 
 .theme-btn.light { background-color: #ffffff; }

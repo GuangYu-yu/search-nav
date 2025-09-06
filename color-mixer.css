@@ -219,6 +219,7 @@
     position: relative;
     overflow: hidden;
     font-size: 16px;
+    -webkit-tap-highlight-color: transparent; /* 禁用移动端点击高亮 */
 }
 
 .icon-action-btn::before {

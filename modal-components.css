@@ -95,6 +95,7 @@
     justify-content: center;
     border-radius: 50%;
     transition: background-color 0.2s ease;
+    -webkit-tap-highlight-color: transparent; /* 禁用移动端点击高亮 */
 }
 
 .close-btn:hover { 
@@ -148,6 +149,7 @@
     cursor: pointer;
     font-weight: 500;
     transition: all 0.2s ease;
+    -webkit-tap-highlight-color: transparent; /* 禁用移动端点击高亮 */
 }
 
 .add-btn:hover { 
@@ -298,6 +300,7 @@
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     transition: all 0.2s ease;
+    -webkit-tap-highlight-color: transparent; /* 禁用移动端点击高亮 */
 }
 
 .edit-btn {
@@ -332,6 +335,7 @@
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     transition: all 0.2s ease;
+    -webkit-tap-highlight-color: transparent; /* 禁用移动端点击高亮 */
 }
 
 .save-btn {
@@ -371,6 +375,7 @@
     border: 1px solid rgba(255, 255, 255, 0.2);
     position: relative;
     overflow: hidden;
+    -webkit-tap-highlight-color: transparent; /* 禁用移动端点击高亮 */
 }
 
 .tab-btn::before {
@@ -495,6 +500,7 @@
     padding: 0;
     position: relative;
     overflow: hidden;
+    -webkit-tap-highlight-color: transparent; /* 禁用移动端点击高亮 */
 }
 
 .direction-btn::before {
@@ -614,6 +620,7 @@
     transition: all 0.2s ease;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
+    -webkit-tap-highlight-color: transparent; /* 禁用移动端点击高亮 */
 }
 
 .confirm-btn.cancel {
