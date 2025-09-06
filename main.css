@@ -16,6 +16,21 @@
     min-width: 300px;
 }
 
+/* 书签容器与搜索框间距 */
+.quick-links {
+    margin-top: 0px;
+}
+
+/* 模式切换按钮与顶部间距 */
+.mode-switcher {
+    margin-top: 80px;
+}
+
+/* 搜索框与模式切换按钮间距 */
+.search-container {
+    margin-top: 20px;
+}
+
 /* 响应式断点 */
 @media (max-width: 768px) {
     .container {

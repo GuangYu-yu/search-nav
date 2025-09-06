@@ -108,7 +108,7 @@
 }
 
 .quick-link:hover .quick-link-icon {
-    transform: translateY(-1px);
+    transform: scale(1.05);
 }
 
 .quick-link-name {

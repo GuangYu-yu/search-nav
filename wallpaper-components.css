@@ -145,7 +145,7 @@
 
 .icon-btn:hover {
     background: rgba(var(--primary-color-rgb), 1);
-    transform: translateY(-2px) scale(1.05);
+    transform: scale(1.05);
     box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
 }
 

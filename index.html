@@ -76,6 +76,51 @@
                 <button class="close-btn" onclick="closeSettings()">×</button>
             </div>
             
+            <!-- 删除确认对话框 -->
+            <div class="confirm-dialog" id="confirmDialog">
+                <div class="confirm-content">
+                    <div class="confirm-header">
+                        <h3>确认删除</h3>
+                    </div>
+                    <div class="confirm-body">
+                        <p>确定要删除这个书签吗？</p>
+                    </div>
+                    <div class="confirm-footer">
+                        <button class="confirm-btn cancel" onclick="closeConfirmDialog()">取消</button>
+                        <button class="confirm-btn confirm" onclick="confirmDeleteLink()">确定</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 编辑对话框 -->
+            <div class="confirm-dialog" id="editDialog">
+                <div class="confirm-content">
+                    <div class="confirm-header">
+                        <h3>编辑书签</h3>
+                    </div>
+                    <div class="confirm-body">
+                        <div class="edit-form">
+                            <div class="form-group">
+                                <label for="editLinkName">名称:</label>
+                                <input type="text" id="editLinkName" class="edit-input">
+                            </div>
+                            <div class="form-group">
+                                <label for="editLinkUrl">地址:</label>
+                                <input type="text" id="editLinkUrl" class="edit-input">
+                            </div>
+                            <div class="form-group">
+                                <label for="editLinkImageUrl">图片URL:</label>
+                                <input type="text" id="editLinkImageUrl" class="edit-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="confirm-footer">
+                        <button class="confirm-btn cancel" onclick="closeEditDialog()">取消</button>
+                        <button class="confirm-btn confirm" onclick="saveEditedLink()">确定</button>
+                    </div>
+                </div>
+            </div>
+            
             <!-- 标签页导航 -->
             <div class="tab-nav">
                 <button class="tab-btn active" data-tab="bookmarks" onclick="switchTab('bookmarks')">📚 书签</button>

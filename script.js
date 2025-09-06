@@ -312,7 +312,7 @@ function setTheme(theme) {
 
 // 计算书签网格布局
 function calculateGridLayout(totalItems) {
-    const maxColumns = 6;
+    const maxColumns = 5;
 
     if (totalItems <= maxColumns) {
         return { columns: totalItems, rows: 1 };
@@ -443,24 +443,109 @@ function addLink() {
     renderQuickLinks();
 }
 
+// 全局变量，用于存储待删除书签的索引
+let pendingDeleteIndex = -1;
+let currentEditIndex = -1;
+
 // 删除书签
 function deleteLink(index) {
-    if (confirm('确定要删除这个书签吗？')) {
-        // 清除对应域名的favicon缓存
+    pendingDeleteIndex = index;
+    showConfirmDialog();
+}
+
+// 显示确认对话框
+function showConfirmDialog() {
+    const dialog = document.getElementById('confirmDialog');
+    dialog.classList.add('show');
+}
+
+// 关闭确认对话框
+function closeConfirmDialog() {
+    const dialog = document.getElementById('confirmDialog');
+    dialog.classList.remove('show');
+    pendingDeleteIndex = -1;
+}
+
+// 确认删除书签
+function confirmDeleteLink() {
+    if (pendingDeleteIndex >= 0 && pendingDeleteIndex < links.length) {
+        // 清除该域名的favicon缓存
         try {
-            const deletedLink = links[index];
-            const domain = new URL(deletedLink.url).hostname;
+            const domain = new URL(links[pendingDeleteIndex].url).hostname;
             const cacheKey = `favicon_cache_${domain}`;
             localStorage.removeItem(cacheKey);
         } catch (e) {
             // URL解析失败时忽略
         }
         
-        links.splice(index, 1);
+        links.splice(pendingDeleteIndex, 1);
         localStorage.setItem('navLinks', JSON.stringify(links));
         renderLinks();
         renderQuickLinks();
     }
+    closeConfirmDialog();
+}
+
+// 显示编辑对话框
+function showEditDialog(index) {
+    currentEditIndex = index;
+    const link = links[index];
+    
+    // 填充表单数据
+    document.getElementById('editLinkName').value = link.name;
+    document.getElementById('editLinkUrl').value = link.url;
+    
+    // 判断是否是自定义图片URL
+    const isCustomImage = link.faviconUrl && !link.faviconUrl.includes('google.com/s2/favicons') && !link.faviconUrl.startsWith('data:image/svg+xml');
+    document.getElementById('editLinkImageUrl').value = isCustomImage ? link.faviconUrl : '';
+    
+    // 显示对话框
+    const dialog = document.getElementById('editDialog');
+    dialog.classList.add('show');
+}
+
+// 关闭编辑对话框
+function closeEditDialog() {
+    const dialog = document.getElementById('editDialog');
+    dialog.classList.remove('show');
+    currentEditIndex = -1;
+}
+
+// 保存编辑的书签
+function saveEditedLink() {
+    if (currentEditIndex >= 0 && currentEditIndex < links.length) {
+        const name = document.getElementById('editLinkName').value.trim();
+        const url = document.getElementById('editLinkUrl').value.trim();
+        const imageUrl = document.getElementById('editLinkImageUrl').value.trim();
+        
+        if (!url) {
+            alert('请填写网站地址');
+            return;
+        }
+        
+        // 确保URL格式正确
+        const formattedUrl = url.startsWith('http') ? url : 'https://' + url;
+        
+        // 清除旧域名的favicon缓存
+        try {
+            const oldDomain = new URL(links[currentEditIndex].url).hostname;
+            const oldCacheKey = `favicon_cache_${oldDomain}`;
+            localStorage.removeItem(oldCacheKey);
+        } catch (e) {
+            // URL解析失败时忽略
+        }
+        
+        // 获取favicon URL，如果有自定义图片URL则使用自定义的
+        const faviconUrl = imageUrl || getFaviconUrl(formattedUrl);
+        
+        links[currentEditIndex] = { name, url: formattedUrl, faviconUrl };
+        localStorage.setItem('navLinks', JSON.stringify(links));
+        
+        // 重新渲染
+        renderLinks();
+        renderQuickLinks();
+    }
+    closeEditDialog();
 }
 
 // 渲染设置中的书签列表
@@ -556,7 +641,7 @@ function renderLinks() {
         const editBtn = document.createElement('button');
         editBtn.className = 'edit-btn';
         editBtn.textContent = '修改';
-        editBtn.onclick = () => editLink(index);
+        editBtn.onclick = () => showEditDialog(index);
         
         const deleteBtn = document.createElement('button');
         deleteBtn.className = 'delete-btn';
@@ -571,84 +656,6 @@ function renderLinks() {
         linkItem.appendChild(actions);
         container.appendChild(linkItem);
     });
-}
-
-// 编辑书签
-function editLink(index) {
-    const linkItem = document.getElementById(`link-${index}`);
-    const link = links[index];
-    
-    // 获取现有元素
-    const nameDiv = linkItem.querySelector('.link-name');
-    const urlDiv = linkItem.querySelector('.link-url');
-    const editBtn = linkItem.querySelector('.edit-btn');
-    const deleteBtn = linkItem.querySelector('.delete-btn');
-    
-    // 将名称、URL和图片URL改为输入框
-    const nameInput = document.createElement('input');
-    nameInput.type = 'text';
-    nameInput.value = link.name;
-    nameInput.style.cssText = 'width: 100%; padding: 2px 4px; border: 1px solid var(--border-color); border-radius: 3px; font-size: 14px; font-weight: 500; background: transparent; color: var(--text-color); margin-bottom: 2px; box-sizing: border-box; outline: none;';
-    
-    const urlInput = document.createElement('input');
-    urlInput.type = 'text';
-    urlInput.value = link.url;
-    urlInput.style.cssText = 'width: 100%; padding: 2px 4px; border: 1px solid var(--border-color); border-radius: 3px; font-size: 12px; background: transparent; color: var(--text-secondary); box-sizing: border-box; outline: none;';
-    
-    const imageUrlInput = document.createElement('input');
-    imageUrlInput.type = 'text';
-    // 判断是否是自定义图片URL（不是默认的favicon URL）
-    const isCustomImage = link.faviconUrl && !link.faviconUrl.includes('google.com/s2/favicons') && !link.faviconUrl.startsWith('data:image/svg+xml');
-    imageUrlInput.value = isCustomImage ? link.faviconUrl : '';
-    imageUrlInput.placeholder = '图片URL（可选）';
-    imageUrlInput.style.cssText = 'width: 100%; padding: 2px 4px; border: 1px solid var(--border-color); border-radius: 3px; font-size: 12px; background: transparent; color: var(--text-secondary); box-sizing: border-box; outline: none; margin-top: 4px;';
-    
-    // 添加焦点事件来改善视觉效果
-    nameInput.addEventListener('focus', function() {
-        this.style.borderColor = 'var(--primary-color)';
-        this.style.backgroundColor = 'var(--input-background, var(--card-background))';
-    });
-    
-    nameInput.addEventListener('blur', function() {
-        this.style.borderColor = 'var(--border-color)';
-        this.style.backgroundColor = 'transparent';
-    });
-    
-    urlInput.addEventListener('focus', function() {
-        this.style.borderColor = 'var(--primary-color)';
-        this.style.backgroundColor = 'var(--input-background, var(--card-background))';
-    });
-    
-    urlInput.addEventListener('blur', function() {
-        this.style.borderColor = 'var(--border-color)';
-        this.style.backgroundColor = 'transparent';
-    });
-    
-    imageUrlInput.addEventListener('focus', function() {
-        this.style.borderColor = 'var(--primary-color)';
-        this.style.backgroundColor = 'var(--input-background, var(--card-background))';
-    });
-    
-    imageUrlInput.addEventListener('blur', function() {
-        this.style.borderColor = 'var(--border-color)';
-        this.style.backgroundColor = 'transparent';
-    });
-    
-    // 替换文本为输入框
-    nameDiv.innerHTML = '';
-    nameDiv.appendChild(nameInput);
-    urlDiv.innerHTML = '';
-    urlDiv.appendChild(urlInput);
-    urlDiv.appendChild(imageUrlInput);
-    
-    // 修改按钮文字和功能
-    editBtn.textContent = '保存';
-    editBtn.className = 'save-btn';
-    editBtn.onclick = () => saveLink(index, nameInput.value.trim(), urlInput.value.trim(), imageUrlInput.value.trim());
-    
-    deleteBtn.textContent = '取消';
-    deleteBtn.className = 'cancel-btn';
-    deleteBtn.onclick = () => renderLinks();
 }
 
 // 保存编辑的书签
@@ -721,10 +728,10 @@ function setCustomWallpaper() {
         localStorage.setItem('customWallpaper', backgroundStyle);
         // 保存输入框的值
         localStorage.setItem('customWallpaperUrl', url);
-        alert('壁纸设置成功！');
     };
     img.onerror = function() {
-        alert('图片加载失败，请检查URL是否正确');
+        // 图片加载失败处理
+        console.log('图片加载失败，请检查URL是否正确');
     };
     img.src = url;
 }
@@ -1001,7 +1008,6 @@ function applyCustomGradient() {
     const wallpaperContainer = document.getElementById('wallpaperContainer');
     wallpaperContainer.style.background = gradient;
     localStorage.setItem('customWallpaper', gradient);
-    alert('自定义背景应用成功！');
 }
 
 // 统一处理焦点状态的 transform 和 transition
