@@ -7,7 +7,40 @@ const searchEngines = {
     duckduckgo: 'https://duckduckgo.com/?q=',
     ecosia: 'https://www.ecosia.org/search?q=',
     yahoo: 'https://search.yahoo.com/search?p=',
-    searx: 'https://searx.org/?q='
+    searx: 'https://searx.org/?q=',
+    qwant: 'https://www.qwant.com/?q='
+};
+
+const resourceEngines = {
+    // 视频
+    bilibili: 'https://search.bilibili.com/all?keyword=',
+    youtube: 'https://www.youtube.com/results?search_query=',
+    
+    // 音乐
+    netease: 'https://music.163.com/#/search/m/?s=',
+    qqmusic: 'https://y.qq.com/n/ryqq/search?w=',
+    
+    // 知识/问答
+    zhihu: 'https://www.zhihu.com/search?q=',
+    baike: 'https://baike.baidu.com/search/word?word=',
+    wikipedia: 'https://zh.wikipedia.org/wiki/Special:Search?search=',
+    
+    // 社交
+    weibo: 'https://s.weibo.com/weibo?q=',
+    douyin: 'https://www.douyin.com/search/',
+    kuaishou: 'https://www.kuaishou.com/search?searchKey=',
+    
+    // 开发/开源
+    github: 'https://github.com/search?q=',
+    stackoverflow: 'https://stackoverflow.com/search?q=',
+    
+    // 影视/书籍
+    douban: 'https://www.douban.com/search?q=',
+    imdb: 'https://www.imdb.com/find?q=',
+    
+    // 电商
+    taobao: 'https://s.taobao.com/search?q=',
+    jd: 'https://search.jd.com/Search?keyword='
 };
 
 const translateEngines = {
@@ -34,6 +67,8 @@ function switchMode(mode) {
      const slider = document.querySelector('.mode-slider');
      if (mode === 'translate') {
          slider.style.transform = 'translateX(100px)'; // 与按钮宽度保持一致
+     } else if (mode === 'resource') {
+         slider.style.transform = 'translateX(200px)'; // 第三个按钮位置
      } else {
          slider.style.transform = 'translateX(0)';
      }
@@ -44,6 +79,12 @@ function switchMode(mode) {
         // 切换到翻译引擎
         selectEngine('google', 'Google翻译');
         // 更新引擎下拉菜单以显示适合翻译的选项
+        updateEngineDropdown();
+    } else if (mode === 'resource') {
+        searchInput.placeholder = '搜索各类资源...';
+        // 切换到资源引擎
+        selectEngine('bilibili', '哔哩哔哩');
+        // 更新引擎下拉菜单以显示资源搜索选项
         updateEngineDropdown();
     } else {
         searchInput.placeholder = '输入搜索内容或网址...';
@@ -83,6 +124,74 @@ function updateEngineDropdown() {
                 <span class="engine-name">Yandex翻译</span>
             </div>
         `;
+    } else if (currentMode === 'resource') {
+        // 资源模式下显示资源搜索引擎
+        dropdown.innerHTML = `
+            <div class="engine-option" onclick="selectEngine('bilibili', '哔哩哔哩')">
+                <div class="engine-icon bilibili-icon"></div>
+                <span class="engine-name">哔哩哔哩</span>
+            </div>
+            <div class="engine-option" onclick="selectEngine('youtube', 'YouTube')">
+                <div class="engine-icon youtube-icon"></div>
+                <span class="engine-name">YouTube</span>
+            </div>
+            <div class="engine-option" onclick="selectEngine('netease', '网易云音乐')">
+                <div class="engine-icon netease-icon"></div>
+                <span class="engine-name">网易云音乐</span>
+            </div>
+            <div class="engine-option" onclick="selectEngine('qqmusic', 'QQ音乐')">
+                <div class="engine-icon qqmusic-icon"></div>
+                <span class="engine-name">QQ音乐</span>
+            </div>
+            <div class="engine-option" onclick="selectEngine('zhihu', '知乎')">
+                <div class="engine-icon zhihu-icon"></div>
+                <span class="engine-name">知乎</span>
+            </div>
+            <div class="engine-option" onclick="selectEngine('baike', '百度百科')">
+                <div class="engine-icon baike-icon"></div>
+                <span class="engine-name">百度百科</span>
+            </div>
+            <div class="engine-option" onclick="selectEngine('wikipedia', '维基百科')">
+                <div class="engine-icon wikipedia-icon"></div>
+                <span class="engine-name">维基百科</span>
+            </div>
+            <div class="engine-option" onclick="selectEngine('weibo', '微博')">
+                <div class="engine-icon weibo-icon"></div>
+                <span class="engine-name">微博</span>
+            </div>
+            <div class="engine-option" onclick="selectEngine('douyin', '抖音')">
+                <div class="engine-icon douyin-icon"></div>
+                <span class="engine-name">抖音</span>
+            </div>
+            <div class="engine-option" onclick="selectEngine('kuaishou', '快手')">
+                <div class="engine-icon kuaishou-icon"></div>
+                <span class="engine-name">快手</span>
+            </div>
+            <div class="engine-option" onclick="selectEngine('github', 'GitHub')">
+                <div class="engine-icon github-icon"></div>
+                <span class="engine-name">GitHub</span>
+            </div>
+            <div class="engine-option" onclick="selectEngine('stackoverflow', 'StackOverflow')">
+                <div class="engine-icon stackoverflow-icon"></div>
+                <span class="engine-name">StackOverflow</span>
+            </div>
+            <div class="engine-option" onclick="selectEngine('douban', '豆瓣')">
+                <div class="engine-icon douban-icon"></div>
+                <span class="engine-name">豆瓣</span>
+            </div>
+            <div class="engine-option" onclick="selectEngine('imdb', 'IMDb')">
+                <div class="engine-icon imdb-icon"></div>
+                <span class="engine-name">IMDb</span>
+            </div>
+            <div class="engine-option" onclick="selectEngine('taobao', '淘宝')">
+                <div class="engine-icon taobao-icon"></div>
+                <span class="engine-name">淘宝</span>
+            </div>
+            <div class="engine-option" onclick="selectEngine('jd', '京东')">
+                <div class="engine-icon jd-icon"></div>
+                <span class="engine-name">京东</span>
+            </div>
+        `;
     } else {
         // 搜索模式下显示所有搜索引擎
         dropdown.innerHTML = `
@@ -117,6 +226,10 @@ function updateEngineDropdown() {
             <div class="engine-option" onclick="selectEngine('searx', 'Searx')">
                 <div class="engine-icon searx-icon"></div>
                 <span class="engine-name">Searx</span>
+            </div>
+            <div class="engine-option" onclick="selectEngine('qwant', 'Qwant')">
+                <div class="engine-icon qwant-icon"></div>
+                <span class="engine-name">Qwant</span>
             </div>
         `;
     }
@@ -159,6 +272,9 @@ function handleSearch() {
     if (currentMode === 'translate') {
         // 翻译模式
         url = translateEngines[currentEngine] + encodeURIComponent(query);
+    } else if (currentMode === 'resource') {
+        // 资源模式
+        url = resourceEngines[currentEngine] + encodeURIComponent(query);
     } else {
         // 搜索模式
         // 检查是否是网址
@@ -354,7 +470,7 @@ function getFaviconUrl(url) {
         // 确保URL格式正确
         const fullUrl = url.startsWith('http') ? url : 'https://' + url;
         const domain = new URL(fullUrl).hostname;
-        return `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
+        return `https://favicone.com/${domain}?s=256`;
     } catch {
         return 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23666"%3E%3Cpath d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.94-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/%3E%3C/svg%3E';
     }
@@ -366,7 +482,6 @@ function getCachedFaviconUrl(url) {
         // 确保URL格式正确
         const fullUrl = url.startsWith('http') ? url : 'https://' + url;
         const domain = new URL(fullUrl).hostname;
-        const faviconKey = `favicon_${domain}`;
         const cacheKey = `favicon_cache_${domain}`;
         
         // 检查是否有缓存
@@ -381,19 +496,26 @@ function getCachedFaviconUrl(url) {
             }
         }
         
-        // 生成新的favicon URL
-        const faviconUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
+        // 使用favicone.com服务获取图标
+        const faviconeUrl = `https://favicone.com/${domain}?s=256`;
         
         // 保存到缓存
         const cacheData = {
-            faviconUrl: faviconUrl,
+            faviconUrl: faviconeUrl,
             timestamp: Date.now()
         };
         localStorage.setItem(cacheKey, JSON.stringify(cacheData));
         
-        return faviconUrl;
+        return googleFaviconUrl;
     } catch {
-        return 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23666"%3E%3Cpath d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.94-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/%3E%3C/svg%3E';
+        // 如果Google服务失败，尝试使用<link>标签获取favicon
+        try {
+            const fullUrl = url.startsWith('http') ? url : 'https://' + url;
+            const domain = new URL(fullUrl).hostname;
+            return `https://${domain}/favicon.ico`;
+        } catch {
+            return 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23666"%3E%3Cpath d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.94-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/%3E%3C/svg%3E';
+        }
     }
 }
 

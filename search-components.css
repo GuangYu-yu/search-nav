@@ -128,15 +128,35 @@
     transform: scale(1.2);
 }
 
-.google-icon { background-image: url('https://www.google.com/s2/favicons?domain=google.com&sz=128'); }
-.bing-icon { background-image: url('https://www.google.com/s2/favicons?domain=bing.com&sz=128'); }
-.yandex-icon { background-image: url('https://www.google.com/s2/favicons?domain=yandex.com&sz=128'); }
-.duckduckgo-icon { background-image: url('https://www.google.com/s2/favicons?domain=duckduckgo.com&sz=128'); }
-.ecosia-icon { background-image: url('https://www.google.com/s2/favicons?domain=ecosia.org&sz=128'); }
-.deepl-icon { background-image: url('https://www.google.com/s2/favicons?domain=deepl.com&sz=128'); }
-.baidu-icon { background-image: url('https://www.google.com/s2/favicons?domain=baidu.com&sz=128'); }
-.yahoo-icon { background-image: url('https://www.google.com/s2/favicons?domain=yahoo.com&sz=128'); }
-.searx-icon { background-image: url('https://www.google.com/s2/favicons?domain=searx.org&sz=128'); }
+/* 搜索引擎图标 */
+.google-icon { background-image: url('https://favicone.com/google.com?s=256'); }
+.bing-icon { background-image: url('https://favicone.com/bing.com?s=256'); }
+.yandex-icon { background-image: url('https://favicone.com/yandex.com?s=256'); }
+.duckduckgo-icon { background-image: url('https://favicone.com/duckduckgo.com?s=256'); }
+.ecosia-icon { background-image: url('https://favicone.com/ecosia.org?s=256'); }
+.deepl-icon { background-image: url('https://favicone.com/deepl.com?s=256'); }
+.baidu-icon { background-image: url('https://favicone.com/baidu.com?s=256'); }
+.yahoo-icon { background-image: url('https://favicone.com/yahoo.com?s=256'); }
+.searx-icon { background-image: url('https://favicone.com/searx.org?s=256'); }
+.qwant-icon { background-image: url('https://favicone.com/qwant.com?s=256'); }
+
+/* 资源搜索引擎图标 */
+.bilibili-icon { background-image: url('https://favicone.com/bilibili.com?s=256'); }
+.youtube-icon { background-image: url('https://favicone.com/youtube.com?s=256'); }
+.netease-icon { background-image: url('https://favicone.com/music.163.com?s=256'); }
+.qqmusic-icon { background-image: url('https://y.qq.com/favicon.ico'); }
+.zhihu-icon { background-image: url('https://favicone.com/zhihu.com?s=256'); }
+.baike-icon { background-image: url('https://favicone.com/baike.baidu.com?s=256'); }
+.wikipedia-icon { background-image: url('https://favicone.com/wikipedia.org?s=256'); }
+.weibo-icon { background-image: url('https://favicone.com/weibo.com?s=256'); }
+.github-icon { background-image: url('https://favicone.com/github.com?s=256'); }
+.stackoverflow-icon { background-image: url('https://favicone.com/stackoverflow.com?s=256'); }
+.douban-icon { background-image: url('https://favicone.com/douban.com?s=256'); }
+.imdb-icon { background-image: url('https://favicone.com/imdb.com?s=256'); }
+.taobao-icon { background-image: url('https://favicone.com/taobao.com?s=256'); }
+.jd-icon { background-image: url('https://favicone.com/jd.com?s=256'); }
+.douyin-icon { background-image: url('https://favicone.com/douyin.com?s=256'); }
+.kuaishou-icon { background-image: url('https://kuaishou.com/favicon.ico'); }
 
 .engine-name { 
     font-size: 14px; 
@@ -220,7 +240,7 @@
     position: absolute;
     top: 100%;
     left: 0;
-    width: 200px;
+    width: 400px;
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
@@ -234,6 +254,9 @@
     visibility: hidden;
     transform: translateY(-10px);
     transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
 }
 
 .engine-dropdown.show {
