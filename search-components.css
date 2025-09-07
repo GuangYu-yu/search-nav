@@ -161,8 +161,10 @@
 .github-icon { background-image: url('https://favicone.com/github.com?s=256'); }
 .stackoverflow-icon { background-image: url('https://favicone.com/stackoverflow.com?s=256'); }
 .douban-icon { background-image: url('https://www.douban.com/favicon.ico'); }
-.imdb-icon { background-image: url('https://favicone.com/imdb.com?s=256'); }
 .taobao-icon { background-image: url('https://www.taobao.com/favicon.ico'); }
+.pdd-icon { background-image: url('https://www.pinduoduo.com/favicon.png'); }
+.xiaohongshu-icon { background-image: url('https://www.xiaohongshu.com/favicon.ico'); }
+.tieba-icon { background-image: url('https://tieba.baidu.com/favicon.ico'); }
 .jd-icon { background-image: url('https://www.jd.com/favicon.ico'); }
 .douyin-icon { background-image: url('https://www.douyin.com/favicon.ico'); }
 .kuaishou-icon { background-image: url('https://m.kuaishou.com/favicon.ico'); }
@@ -237,6 +239,14 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 4px;
+    max-height: 250px; /* 限制最大高度 */
+    overflow-y: auto; /* 超出时显示垂直滚动条 */
+}
+
+/* 隐藏滚动条 */
+.engine-dropdown::-webkit-scrollbar {
+    width: 0;
+    background: transparent;
 }
 
 .engine-dropdown.show {

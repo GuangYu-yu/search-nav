@@ -36,11 +36,15 @@ const resourceEngines = {
     
     // 影视/书籍
     douban: 'https://www.douban.com/search?q=',
-    imdb: 'https://www.imdb.com/find?q=',
     
     // 电商
     taobao: 'https://s.taobao.com/search?q=',
-    jd: 'https://search.jd.com/Search?keyword='
+    pdd: 'https://search.pinduoduo.com/search_result?keyword=',
+    jd: 'https://search.jd.com/Search?keyword=',
+    
+    // 社交/论坛
+    xiaohongshu: 'https://www.xiaohongshu.com/search_result?keyword=',
+    tieba: 'https://tieba.baidu.com/f?kw='
 };
 
 const translateEngines = {
@@ -179,17 +183,25 @@ function updateEngineDropdown() {
                 <div class="engine-icon douban-icon"></div>
                 <span class="engine-name">豆瓣</span>
             </div>
-            <div class="engine-option" onclick="selectEngine('imdb', 'IMDb')">
-                <div class="engine-icon imdb-icon"></div>
-                <span class="engine-name">IMDb</span>
-            </div>
             <div class="engine-option" onclick="selectEngine('taobao', '淘宝')">
                 <div class="engine-icon taobao-icon"></div>
                 <span class="engine-name">淘宝</span>
             </div>
+            <div class="engine-option" onclick="selectEngine('pdd', '拼多多')">
+                <div class="engine-icon pdd-icon"></div>
+                <span class="engine-name">拼多多</span>
+            </div>
             <div class="engine-option" onclick="selectEngine('jd', '京东')">
                 <div class="engine-icon jd-icon"></div>
                 <span class="engine-name">京东</span>
+            </div>
+            <div class="engine-option" onclick="selectEngine('xiaohongshu', '小红书')">
+                <div class="engine-icon xiaohongshu-icon"></div>
+                <span class="engine-name">小红书</span>
+            </div>
+            <div class="engine-option" onclick="selectEngine('tieba', '百度贴吧')">
+                <div class="engine-icon tieba-icon"></div>
+                <span class="engine-name">百度贴吧</span>
             </div>
         `;
     } else {
