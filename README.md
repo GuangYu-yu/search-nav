@@ -20,7 +20,7 @@
 | 豆瓣小组      | [https://www.douban.com/group/search?cat=1019\&q=](https://www.douban.com/group/search?cat=1019&q=)              | [https://www.douban.com/favicon.ico](https://www.douban.com/favicon.ico)           |
 | Reddit    | [https://www.reddit.com/search/?q=](https://www.reddit.com/search/?q=)                                           | [https://favicone.com/reddit.com?s=256](https://favicone.com/reddit.com?s=256)     |
 | Facebook  | [https://www.facebook.com/search/top?q=](https://www.facebook.com/search/top?q=)                                 | [https://favicone.com/facebook.com?s=256](https://favicone.com/facebook.com?s=256) |
-| Twitter/X | [https://twitter.com/search?q=](https://twitter.com/search?q=)                                                   | [https://favicone.com/twitter.com?s=256](https://favicone.com/twitter.com?s=256)   |
+| X | [https://twitter.com/search?q=](https://x.com/search?q=)                                                                 | [https://favicone.com/twitter.com?s=256](https://favicone.com/x.com?s=256)         |
 | LinkedIn  | [https://www.linkedin.com/search/results/all/?keywords=](https://www.linkedin.com/search/results/all/?keywords=) | [https://favicone.com/linkedin.com?s=256](https://favicone.com/linkedin.com?s=256) |
 | Discord   | [https://discord.com/channels/@me](https://discord.com/channels/@me)                                             | [https://favicone.com/discord.com?s=256](https://favicone.com/discord.com?s=256)   |
 
