@@ -41,6 +41,95 @@ let currentEngine = 'google';
 let links = JSON.parse(localStorage.getItem('navLinks')) || [];
 let resources = JSON.parse(localStorage.getItem('navResources')) || [];
 
+// 初始化数据预览
+function initializeDataPreview() {
+    const data = {
+        links: links,
+        resources: resources
+    };
+    const dataStr = JSON.stringify(data, null, 2);
+    updateDataPreview(dataStr);
+}
+
+// 在页面加载完成后初始化数据预览
+document.addEventListener('DOMContentLoaded', function() {
+    initializeDataPreview();
+    
+    // 使数据预览区域可编辑
+    const dataPreview = document.getElementById('dataPreview');
+    if (dataPreview) {
+        dataPreview.setAttribute('contenteditable', 'true');
+        
+        // 添加保存提示
+        dataPreview.addEventListener('input', function() {
+            // 可以在这里添加自动保存或其他逻辑
+        });
+    }
+});
+
+// 数据管理功能
+function saveDataConfig() {
+    const previewElement = document.getElementById('dataPreview');
+    if (previewElement) {
+        try {
+            const data = JSON.parse(previewElement.textContent);
+            if (data.links && data.resources) {
+                links = data.links;
+                resources = data.resources;
+                localStorage.setItem('navLinks', JSON.stringify(links));
+                localStorage.setItem('navResources', JSON.stringify(resources));
+                renderLinks();
+                renderResources();
+                renderQuickLinks(); // 添加这行来更新搜索框下方的书签
+                updateEngineDropdown(); // 添加这行来更新资源下拉菜单
+                alert('配置已保存');
+            } else {
+                alert('数据格式不正确');
+            }
+        } catch (err) {
+            console.error('保存失败:', err);
+            alert('保存失败，数据不是有效的JSON格式');
+        }
+    }
+}
+
+function applyDataFromURL() {
+    const urlInput = document.getElementById('dataUrlInput');
+    const url = urlInput.value.trim();
+    if (!url) {
+        alert('请输入URL');
+        return;
+    }
+    
+    fetch(url)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('网络响应不正常');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.links && data.resources) {
+                const dataStr = JSON.stringify(data, null, 2);
+                updateDataPreview(dataStr);
+                alert('数据已从URL获取，请点击保存配置应用更改');
+            } else {
+                alert('URL中的数据格式不正确');
+            }
+        })
+        .catch(err => {
+            console.error('从URL获取数据失败:', err);
+            alert('从URL获取数据失败，请检查URL是否正确');
+        });
+}
+
+function updateDataPreview(data) {
+    const previewElement = document.getElementById('dataPreview');
+    if (previewElement) {
+        previewElement.textContent = data;
+    }
+}
+
 // 切换模式
 function switchMode(mode) {
     currentMode = mode;
@@ -420,6 +509,9 @@ function addLink() {
     // 重新渲染
     renderLinks();
     renderQuickLinks();
+    
+    // 更新数据预览
+    initializeDataPreview();
 }
 
 // 添加资源
@@ -449,6 +541,9 @@ function addResource() {
     
     // 重新渲染
     renderResources();
+    
+    // 更新数据预览
+    initializeDataPreview();
     
     // 更新引擎下拉菜单
     if (currentMode === 'resource') {
@@ -503,6 +598,9 @@ function confirmDeleteResource() {
         localStorage.setItem('navResources', JSON.stringify(resources));
         renderResources();
         
+        // 更新数据预览
+        initializeDataPreview();
+        
         // 更新引擎下拉菜单
         if (currentMode === 'resource') {
             updateEngineDropdown();
@@ -540,6 +638,9 @@ function confirmDeleteLink() {
         localStorage.setItem('navLinks', JSON.stringify(links));
         renderLinks();
         renderQuickLinks();
+        
+        // 更新数据预览
+        initializeDataPreview();
     }
     closeConfirmDialog();
 }
@@ -627,6 +728,9 @@ function saveEditedLink() {
         // 重新渲染
         renderLinks();
         renderQuickLinks();
+        
+        // 更新数据预览
+        initializeDataPreview();
     }
     closeEditDialog();
 }
@@ -663,6 +767,9 @@ function saveEditedResource() {
         
         // 重新渲染
         renderResources();
+        
+        // 更新数据预览
+        initializeDataPreview();
         
         // 更新引擎下拉菜单
         if (currentMode === 'resource') {
@@ -864,6 +971,9 @@ function saveLink(index, name, url, imageUrl = '') {
     // 重新渲染
     renderLinks();
     renderQuickLinks();
+    
+    // 更新数据预览
+    initializeDataPreview();
 }
 
 // 设置壁纸

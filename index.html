@@ -171,14 +171,15 @@
                 <button class="tab-btn active" data-tab="bookmarks" onclick="switchTab('bookmarks')">📚 书签</button>
                 <button class="tab-btn" data-tab="resource" onclick="switchTab('resource')">📂 资源</button>
                 <button class="tab-btn" data-tab="wallpaper" onclick="switchTab('wallpaper')">🖼️ 壁纸</button>
+                <button class="tab-btn" data-tab="data" onclick="switchTab('data')">📊 数据</button>
             </div>
             
             <!-- 书签标签页 -->
             <div class="tab-content active" id="bookmarks-tab">
                 <div class="add-link-form">
-                    <input type="text" class="add-link-input" id="linkName" placeholder="网站名称">
-                    <input type="text" class="add-link-input" id="linkUrl" placeholder="网站地址">
-                    <input type="text" class="add-link-input" id="linkImageUrl" placeholder="图片URL（可选）">
+                    <input type="text" class="add-link-input" id="linkName" placeholder="输入网站名称">
+                    <input type="text" class="add-link-input" id="linkUrl" placeholder="输入网站地址">
+                    <input type="text" class="add-link-input" id="linkImageUrl" placeholder="输入图标URL（可选）">
                     <button class="add-btn" onclick="addLink()">添加书签</button>
                 </div>
                 
@@ -190,9 +191,9 @@
             <!-- 资源标签页 -->
             <div class="tab-content" id="resource-tab">
                 <div class="add-link-form">
-                    <input type="text" class="add-link-input" id="resourceName" placeholder="资源名称">
-                    <input type="text" class="add-link-input" id="resourceUrl" placeholder="资源地址">
-                    <input type="text" class="add-link-input" id="resourceImageUrl" placeholder="图片URL（可选）">
+                    <input type="text" class="add-link-input" id="resourceName" placeholder="输入资源名称">
+                    <input type="text" class="add-link-input" id="resourceUrl" placeholder="输入带搜索参数的资源地址">
+                    <input type="text" class="add-link-input" id="resourceImageUrl" placeholder="输入图标URL（可选）">
                     <button class="add-btn" onclick="addResource()">添加资源</button>
                 </div>
                 
@@ -293,6 +294,23 @@
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+            
+            <!-- 数据标签页 -->
+            <div class="tab-content" id="data-tab">
+                <div class="data-section">
+                    <div class="data-preview" id="dataPreview">
+                        <!-- 数据预览将在这里显示 -->
+                    </div>
+                    <div class="data-actions">
+                        <button class="data-btn" onclick="saveDataConfig()">💾 保存配置</button>
+                    </div>
+                    <div class="data-url-import">
+                        <input type="text" class="data-url-input" id="dataUrlInput" placeholder="输入JSON数据URL">
+                        <button class="data-btn" onclick="applyDataFromURL()"><i class="fas fa-check"></i></button>
+                    </div>
+
                 </div>
             </div>
         </div>

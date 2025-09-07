@@ -210,7 +210,7 @@
     position: absolute;
     top: 100%;
     left: 0;
-    width: 400px;
+    width: 300px;
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
