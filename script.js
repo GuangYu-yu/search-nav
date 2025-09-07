@@ -12,39 +12,19 @@ const searchEngines = {
 };
 
 const resourceEngines = {
-    // 视频
-    bilibili: 'https://search.bilibili.com/all?keyword=',
-    youtube: 'https://www.youtube.com/results?search_query=',
-    
-    // 音乐
-    netease: 'https://music.163.com/#/search/m/?s=',
-    qqmusic: 'https://y.qq.com/n/ryqq/search?w=',
-    
     // 知识/问答
     zhihu: 'https://www.zhihu.com/search?q=',
-    baike: 'https://baike.baidu.com/search/word?word=',
-    wikipedia: 'https://zh.wikipedia.org/wiki/Special:Search?search=',
     
     // 社交
     weibo: 'https://s.weibo.com/weibo?q=',
+    xiaohongshu: 'https://www.xiaohongshu.com/search_result?keyword=',
+    
+    // 视频
+    bilibili: 'https://search.bilibili.com/all?keyword=',
     douyin: 'https://www.douyin.com/search/',
-    kuaishou: 'https://www.kuaishou.com/search?searchKey=',
-    
-    // 开发/开源
-    github: 'https://github.com/search?q=',
-    stackoverflow: 'https://stackoverflow.com/search?q=',
-    
-    // 影视/书籍
-    douban: 'https://www.douban.com/search?q=',
     
     // 电商
-    taobao: 'https://s.taobao.com/search?q=',
-    pdd: 'https://search.pinduoduo.com/search_result?keyword=',
-    jd: 'https://search.jd.com/Search?keyword=',
-    
-    // 社交/论坛
-    xiaohongshu: 'https://www.xiaohongshu.com/search_result?keyword=',
-    tieba: 'https://tieba.baidu.com/f?kw='
+    taobao: 'https://s.taobao.com/search?q='
 };
 
 const translateEngines = {
@@ -59,6 +39,7 @@ const translateEngines = {
 let currentMode = 'search';
 let currentEngine = 'google';
 let links = JSON.parse(localStorage.getItem('navLinks')) || [];
+let resources = JSON.parse(localStorage.getItem('navResources')) || [];
 
 // 切换模式
 function switchMode(mode) {
@@ -130,80 +111,52 @@ function updateEngineDropdown() {
         `;
     } else if (currentMode === 'resource') {
         // 资源模式下显示资源搜索引擎
-        dropdown.innerHTML = `
-            <div class="engine-option" onclick="selectEngine('bilibili', '哔哩哔哩')">
-                <div class="engine-icon bilibili-icon"></div>
-                <span class="engine-name">哔哩哔哩</span>
-            </div>
-            <div class="engine-option" onclick="selectEngine('youtube', 'YouTube')">
-                <div class="engine-icon youtube-icon"></div>
-                <span class="engine-name">YouTube</span>
-            </div>
-            <div class="engine-option" onclick="selectEngine('netease', '网易云音乐')">
-                <div class="engine-icon netease-icon"></div>
-                <span class="engine-name">网易云音乐</span>
-            </div>
-            <div class="engine-option" onclick="selectEngine('qqmusic', 'QQ音乐')">
-                <div class="engine-icon qqmusic-icon"></div>
-                <span class="engine-name">QQ音乐</span>
-            </div>
+        let resourceDropdownHTML = `
             <div class="engine-option" onclick="selectEngine('zhihu', '知乎')">
                 <div class="engine-icon zhihu-icon"></div>
                 <span class="engine-name">知乎</span>
-            </div>
-            <div class="engine-option" onclick="selectEngine('baike', '百度百科')">
-                <div class="engine-icon baike-icon"></div>
-                <span class="engine-name">百度百科</span>
-            </div>
-            <div class="engine-option" onclick="selectEngine('wikipedia', '维基百科')">
-                <div class="engine-icon wikipedia-icon"></div>
-                <span class="engine-name">维基百科</span>
             </div>
             <div class="engine-option" onclick="selectEngine('weibo', '微博')">
                 <div class="engine-icon weibo-icon"></div>
                 <span class="engine-name">微博</span>
             </div>
+            <div class="engine-option" onclick="selectEngine('xiaohongshu', '小红书')">
+                <div class="engine-icon xiaohongshu-icon"></div>
+                <span class="engine-name">小红书</span>
+            </div>
+            <div class="engine-option" onclick="selectEngine('bilibili', '哔哩哔哩')">
+                <div class="engine-icon bilibili-icon"></div>
+                <span class="engine-name">哔哩哔哩</span>
+            </div>
             <div class="engine-option" onclick="selectEngine('douyin', '抖音')">
                 <div class="engine-icon douyin-icon"></div>
                 <span class="engine-name">抖音</span>
-            </div>
-            <div class="engine-option" onclick="selectEngine('kuaishou', '快手')">
-                <div class="engine-icon kuaishou-icon"></div>
-                <span class="engine-name">快手</span>
-            </div>
-            <div class="engine-option" onclick="selectEngine('github', 'GitHub')">
-                <div class="engine-icon github-icon"></div>
-                <span class="engine-name">GitHub</span>
-            </div>
-            <div class="engine-option" onclick="selectEngine('stackoverflow', 'StackOverflow')">
-                <div class="engine-icon stackoverflow-icon"></div>
-                <span class="engine-name">StackOverflow</span>
-            </div>
-            <div class="engine-option" onclick="selectEngine('douban', '豆瓣')">
-                <div class="engine-icon douban-icon"></div>
-                <span class="engine-name">豆瓣</span>
             </div>
             <div class="engine-option" onclick="selectEngine('taobao', '淘宝')">
                 <div class="engine-icon taobao-icon"></div>
                 <span class="engine-name">淘宝</span>
             </div>
-            <div class="engine-option" onclick="selectEngine('pdd', '拼多多')">
-                <div class="engine-icon pdd-icon"></div>
-                <span class="engine-name">拼多多</span>
-            </div>
-            <div class="engine-option" onclick="selectEngine('jd', '京东')">
-                <div class="engine-icon jd-icon"></div>
-                <span class="engine-name">京东</span>
-            </div>
-            <div class="engine-option" onclick="selectEngine('xiaohongshu', '小红书')">
-                <div class="engine-icon xiaohongshu-icon"></div>
-                <span class="engine-name">小红书</span>
-            </div>
-            <div class="engine-option" onclick="selectEngine('tieba', '百度贴吧')">
-                <div class="engine-icon tieba-icon"></div>
-                <span class="engine-name">百度贴吧</span>
-            </div>
         `;
+        
+        // 添加用户自定义的资源条目
+        resources.forEach((resource, index) => {
+            // 为用户自定义资源生成唯一的引擎标识符
+            const customEngineId = `custom_${index}`;
+            const searchUrl = resource.url;
+            
+            // 添加到资源引擎对象中
+            resourceEngines[customEngineId] = searchUrl;
+            
+            // 添加到下拉菜单HTML中
+            resourceDropdownHTML += `
+                <div class="engine-option" onclick="selectEngine('${customEngineId}', '${resource.name}')">
+                    <div class="engine-icon" style="background-image: url('${resource.faviconUrl || 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><text x="8" y="12" font-size="12" text-anchor="middle" fill="%23666">📂</text></svg>'}')"></div>
+                    <span class="engine-name">${resource.name}</span>
+                </div>
+            `;
+        });
+        
+        dropdown.innerHTML = resourceDropdownHTML;
     } else {
         // 搜索模式下显示所有搜索引擎
         dropdown.innerHTML = `
@@ -261,7 +214,21 @@ function selectEngine(engine, displayName) {
     const nameSpan = selector.querySelector('.engine-name');
     
     // 更新图标
-    icon.className = 'engine-icon ' + engine + '-icon';
+    // 检查是否是用户自定义的资源引擎
+    if (currentMode === 'resource' && engine.startsWith('custom_')) {
+        // 获取资源索引
+        const index = parseInt(engine.replace('custom_', ''));
+        if (index >= 0 && index < resources.length) {
+            const resource = resources[index];
+            // 设置自定义图标
+            icon.className = 'engine-icon';
+            icon.style.backgroundImage = `url('${resource.faviconUrl || 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><text x="8" y="12" font-size="12" text-anchor="middle" fill="%23666">📂</text></svg>'}')`;
+        }
+    } else {
+        icon.className = 'engine-icon ' + engine + '-icon';
+        icon.style.backgroundImage = '';
+    }
+    
     if (nameSpan) {
         nameSpan.textContent = displayName;
     }
@@ -455,14 +422,93 @@ function addLink() {
     renderQuickLinks();
 }
 
+// 添加资源
+function addResource() {
+    const name = document.getElementById('resourceName').value.trim();
+    const url = document.getElementById('resourceUrl').value.trim();
+    const imageUrl = document.getElementById('resourceImageUrl').value.trim();
+    
+    if (!url) {
+        alert('请填写资源地址');
+        return;
+    }
+    
+    // 确保URL格式正确
+    const formattedUrl = url.startsWith('http') ? url : 'https://' + url;
+    
+    // 获取favicon URL，如果有自定义图片URL则使用自定义的
+    const faviconUrl = imageUrl || getCachedFaviconUrl(formattedUrl);
+    
+    resources.push({ name, url: formattedUrl, faviconUrl });
+    localStorage.setItem('navResources', JSON.stringify(resources));
+    
+    // 清空输入框
+    document.getElementById('resourceName').value = '';
+    document.getElementById('resourceUrl').value = '';
+    document.getElementById('resourceImageUrl').value = '';
+    
+    // 重新渲染
+    renderResources();
+    
+    // 更新引擎下拉菜单
+    if (currentMode === 'resource') {
+        updateEngineDropdown();
+    }
+}
+
 // 全局变量，用于存储待删除书签的索引
 let pendingDeleteIndex = -1;
 let currentEditIndex = -1;
+// 全局变量，用于存储待删除资源的索引
+let pendingDeleteResourceIndex = -1;
 
 // 删除书签
 function deleteLink(index) {
     pendingDeleteIndex = index;
     showConfirmDialog();
+}
+
+// 删除资源
+function deleteResource(index) {
+    pendingDeleteResourceIndex = index;
+    showConfirmResourceDialog();
+}
+
+// 显示资源删除确认对话框
+function showConfirmResourceDialog() {
+    const dialog = document.getElementById('confirmResourceDialog');
+    dialog.classList.add('show');
+}
+
+// 关闭资源删除确认对话框
+function closeConfirmResourceDialog() {
+    const dialog = document.getElementById('confirmResourceDialog');
+    dialog.classList.remove('show');
+    pendingDeleteResourceIndex = -1;
+}
+
+// 确认删除资源
+function confirmDeleteResource() {
+    if (pendingDeleteResourceIndex >= 0 && pendingDeleteResourceIndex < resources.length) {
+        // 清除该域名的favicon缓存
+        try {
+            const domain = new URL(resources[pendingDeleteResourceIndex].url).hostname;
+            const cacheKey = `favicon_cache_${domain}`;
+            localStorage.removeItem(cacheKey);
+        } catch (e) {
+            // URL解析失败时忽略
+        }
+        
+        resources.splice(pendingDeleteResourceIndex, 1);
+        localStorage.setItem('navResources', JSON.stringify(resources));
+        renderResources();
+        
+        // 更新引擎下拉菜单
+        if (currentMode === 'resource') {
+            updateEngineDropdown();
+        }
+    }
+    closeConfirmResourceDialog();
 }
 
 // 显示确认对话框
@@ -516,9 +562,34 @@ function showEditDialog(index) {
     dialog.classList.add('show');
 }
 
+// 显示资源编辑对话框
+function showEditResourceDialog(index) {
+    currentEditIndex = index;
+    const resource = resources[index];
+    
+    // 填充表单数据
+    document.getElementById('editResourceName').value = resource.name;
+    document.getElementById('editResourceUrl').value = resource.url;
+    
+    // 判断是否是自定义图片URL
+    const isCustomImage = resource.faviconUrl && !resource.faviconUrl.includes('google.com/s2/favicons') && !resource.faviconUrl.startsWith('data:image/svg+xml');
+    document.getElementById('editResourceImageUrl').value = isCustomImage ? resource.faviconUrl : '';
+    
+    // 显示对话框
+    const dialog = document.getElementById('editResourceDialog');
+    dialog.classList.add('show');
+}
+
 // 关闭编辑对话框
 function closeEditDialog() {
     const dialog = document.getElementById('editDialog');
+    dialog.classList.remove('show');
+    currentEditIndex = -1;
+}
+
+// 关闭资源编辑对话框
+function closeEditResourceDialog() {
+    const dialog = document.getElementById('editResourceDialog');
     dialog.classList.remove('show');
     currentEditIndex = -1;
 }
@@ -558,6 +629,47 @@ function saveEditedLink() {
         renderQuickLinks();
     }
     closeEditDialog();
+}
+
+// 保存编辑的资源
+function saveEditedResource() {
+    if (currentEditIndex >= 0 && currentEditIndex < resources.length) {
+        const name = document.getElementById('editResourceName').value.trim();
+        const url = document.getElementById('editResourceUrl').value.trim();
+        const imageUrl = document.getElementById('editResourceImageUrl').value.trim();
+        
+        if (!url) {
+            alert('请填写资源地址');
+            return;
+        }
+        
+        // 确保URL格式正确
+        const formattedUrl = url.startsWith('http') ? url : 'https://' + url;
+        
+        // 清除旧域名的favicon缓存
+        try {
+            const oldDomain = new URL(resources[currentEditIndex].url).hostname;
+            const oldCacheKey = `favicon_cache_${oldDomain}`;
+            localStorage.removeItem(oldCacheKey);
+        } catch (e) {
+            // URL解析失败时忽略
+        }
+        
+        // 获取favicon URL，如果有自定义图片URL则使用自定义的
+        const faviconUrl = imageUrl || getFaviconUrl(formattedUrl);
+        
+        resources[currentEditIndex] = { name, url: formattedUrl, faviconUrl };
+        localStorage.setItem('navResources', JSON.stringify(resources));
+        
+        // 重新渲染
+        renderResources();
+        
+        // 更新引擎下拉菜单
+        if (currentMode === 'resource') {
+            updateEngineDropdown();
+        }
+    }
+    closeEditResourceDialog();
 }
 
 // 渲染设置中的书签列表
@@ -667,6 +779,60 @@ function renderLinks() {
         linkItem.appendChild(details);
         linkItem.appendChild(actions);
         container.appendChild(linkItem);
+    });
+}
+
+// 渲染设置中的资源列表
+function renderResources() {
+    const container = document.getElementById('resourcesContainer');
+    container.innerHTML = '';
+    
+    resources.forEach((resource, index) => {
+        const resourceItem = document.createElement('div');
+        resourceItem.className = 'link-item';
+        resourceItem.id = `resource-${index}`;
+        
+        // 资源图标
+        const favicon = document.createElement('div');
+        favicon.className = 'link-favicon';
+        favicon.style.backgroundImage = `url('${getCachedFaviconUrl(resource.url)}')`;
+        
+        // 资源信息
+        const details = document.createElement('div');
+        details.className = 'link-details';
+        
+        const name = document.createElement('div');
+        name.className = 'link-name';
+        name.textContent = resource.name;
+        
+        const url = document.createElement('div');
+        url.className = 'link-url';
+        url.textContent = resource.url;
+        
+        details.appendChild(name);
+        details.appendChild(url);
+        
+        // 操作按钮
+        const actions = document.createElement('div');
+        actions.className = 'link-actions';
+        
+        const editBtn = document.createElement('button');
+        editBtn.className = 'edit-btn';
+        editBtn.textContent = '修改';
+        editBtn.onclick = () => showEditResourceDialog(index);
+        
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'delete-btn';
+        deleteBtn.textContent = '删除';
+        deleteBtn.onclick = () => deleteResource(index);
+        
+        actions.appendChild(editBtn);
+        actions.appendChild(deleteBtn);
+        
+        resourceItem.appendChild(favicon);
+        resourceItem.appendChild(details);
+        resourceItem.appendChild(actions);
+        container.appendChild(resourceItem);
     });
 }
 
@@ -825,6 +991,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 渲染快速链接
     renderQuickLinks();
+    
+    // 渲染资源
+    renderResources();
     
     // 标签页切换事件
     document.querySelectorAll('.tab-btn').forEach(btn => {
