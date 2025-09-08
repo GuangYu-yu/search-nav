@@ -1078,6 +1078,11 @@ document.addEventListener('DOMContentLoaded', function() {
         e.preventDefault();
     });
     
+    // 引擎选择器mousedown事件 - 阻止默认行为，避免触发搜索框blur
+    document.querySelector('.engine-selector').addEventListener('mousedown', (e) => {
+        e.preventDefault();
+    });
+    
     // 加载保存的主题
     const savedTheme = localStorage.getItem('preferred-theme') || 'light';
     setTheme(savedTheme);
