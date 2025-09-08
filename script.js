@@ -1658,22 +1658,30 @@ function handleSuggestionNavigation(event) {
     switch (event.key) {
         case 'ArrowDown':
             event.preventDefault();
-            activeSuggestionIndex = (activeSuggestionIndex + 1) % currentSuggestions.length;
-            updateActiveSuggestion(suggestionItems);
+            // 只在显示的建议项范围内导航（最多6个）
+            if (suggestionItems.length > 0) {
+                activeSuggestionIndex = (activeSuggestionIndex + 1) % Math.min(currentSuggestions.length, 6);
+                updateActiveSuggestion(suggestionItems);
+            }
             break;
         case 'ArrowUp':
             event.preventDefault();
-            activeSuggestionIndex = (activeSuggestionIndex - 1 + currentSuggestions.length) % currentSuggestions.length;
-            updateActiveSuggestion(suggestionItems);
+            // 只在显示的建议项范围内导航（最多6个）
+            if (suggestionItems.length > 0) {
+                activeSuggestionIndex = (activeSuggestionIndex - 1 + Math.min(currentSuggestions.length, 6)) % Math.min(currentSuggestions.length, 6);
+                updateActiveSuggestion(suggestionItems);
+            }
             break;
         case 'Enter':
-            // 如果有激活的建议项，使用它
+            // 阻止默认行为
+            event.preventDefault();
+            // 如果有激活的建议项，使用它进行搜索
             if (activeSuggestionIndex >= 0 && activeSuggestionIndex < currentSuggestions.length) {
-                event.preventDefault();
                 const searchInput = document.getElementById('searchQuery');
                 searchInput.value = currentSuggestions[activeSuggestionIndex].text || currentSuggestions[activeSuggestionIndex];
-                handleSearch();
             }
+            // 执行搜索
+            handleSearch();
             break;
         case 'Escape':
             event.preventDefault();
