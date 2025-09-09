@@ -1,6 +1,6 @@
 /* 快速链接组件模块 */
 .quick-links {
-    margin: 12px 0;  /* 控制上下间距，左右间距 */
+    margin: 16px 0;  /* 控制上下间距，左右间距 */
     width: 100%;
     max-width: 800px;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
