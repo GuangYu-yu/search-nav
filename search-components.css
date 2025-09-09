@@ -33,6 +33,7 @@
     text-align: center;
     box-sizing: border-box;
     -webkit-tap-highlight-color: transparent; /* 禁用移动端点击高亮 */
+    user-select: none;
 }
 
 .mode-btn:hover {
@@ -171,6 +172,7 @@
     font-size: 16px;
     background: transparent;
     color: var(--text-color);
+    user-select: none;
 }
 
 .search-buttons { 
