@@ -80,6 +80,7 @@
 | Z-Library         | [https://z-lib.io/s/](https://z-lib.io/s/)                                                                   | [https://favicone.com/z-lib.io?s=256](https://favicone.com/z-lib.io?s=256)           |
 | Project Gutenberg | [https://www.gutenberg.org/ebooks/search/?query=](https://www.gutenberg.org/ebooks/search/?query=)           | [https://favicone.com/gutenberg.org?s=256](https://favicone.com/gutenberg.org?s=256) |
 | Bitsearch         | [https://bitsearch.to/search?q=](https://bitsearch.to/search?q=)                                             | [https://favicone.com/bitsearch.to?s=256](https://favicone.com/bitsearch.to?s=256) |
+| Torrent Kitty     | [https://cn.torrentkitty.ink/search/](https://cn.torrentkitty.ink/search/)                                   | [https://cn.torrentkitty.ink/favicon.ico](https://cn.torrentkitty.ink/favicon.ico) |
 
 ## 👨‍💻 开发 / 开源
 
