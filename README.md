@@ -81,7 +81,8 @@
 | Project Gutenberg | [https://www.gutenberg.org/ebooks/search/?query=](https://www.gutenberg.org/ebooks/search/?query=)           | [https://favicone.com/gutenberg.org?s=256](https://favicone.com/gutenberg.org?s=256) |
 | Bitsearch         | [https://bitsearch.to/search?q=](https://bitsearch.to/search?q=)                                             | [https://favicone.com/bitsearch.to?s=256](https://favicone.com/bitsearch.to?s=256) |
 | Torrent Kitty     | [https://cn.torrentkitty.ink/search/](https://cn.torrentkitty.ink/search/)                                   | [https://cn.torrentkitty.ink/favicon.ico](https://cn.torrentkitty.ink/favicon.ico) |
-| FitGirl Repacks   | [https://fitgirl-repacks.site/?s=](https://fitgirl-repacks.site/?s=)                                         | [https://favicone.com/fitgirl-repacks.site?s=256](https://favicone.com/fitgirl-repacks.site?s=256) |
+| FitGirl Repacks   | [https://fitgirl-repacks.site/?s=](https://fitgirl-repacks.site/?s=)                                         | [https://tellme.pw/app/bts/View/img/favicon.ico](https://tellme.pw/app/bts/View/img/favicon.ico) |
+| BTSOW             | [https://btsow.lol/#/search/](https://btsow.lol/#/search/)
 
 ## 👨‍💻 开发 / 开源
 
