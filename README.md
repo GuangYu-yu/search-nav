@@ -16,13 +16,13 @@
 
 | 名称        | 地址                                                                                                               | 图标地址                                                                               |
 | --------- | ---------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| 微博        | [https://s.weibo.com/weibo?q=](https://s.weibo.com/weibo?q=)                                                     | [https://weibo.com/favicon.ico](https://weibo.com/favicon.ico)                     |
-| 小红书       | [https://www.xiaohongshu.com/search\_result?keyword=](https://www.xiaohongshu.com/search_result?keyword=)        | [https://www.xiaohongshu.com/favicon.ico](https://www.xiaohongshu.com/favicon.ico) |
-| 贴吧        | [https://tieba.baidu.com/f?kw=](https://tieba.baidu.com/f?kw=)                                                   | [https://tieba.baidu.com/favicon.ico](https://tieba.baidu.com/favicon.ico)         |
-| 豆瓣小组      | [https://www.douban.com/group/search?cat=1019\&q=](https://www.douban.com/group/search?cat=1019&q=)              | [https://www.douban.com/favicon.ico](https://www.douban.com/favicon.ico)           |
+| 微博       | [https://s.weibo.com/weibo?q=](https://s.weibo.com/weibo?q=)                                                     | [https://weibo.com/favicon.ico](https://weibo.com/favicon.ico)                     |
+| 小红书     | [https://www.xiaohongshu.com/search\_result?keyword=](https://www.xiaohongshu.com/search_result?keyword=)        | [https://www.xiaohongshu.com/favicon.ico](https://www.xiaohongshu.com/favicon.ico) |
+| 贴吧       | [https://tieba.baidu.com/f?kw=](https://tieba.baidu.com/f?kw=)                                                   | [https://tieba.baidu.com/favicon.ico](https://tieba.baidu.com/favicon.ico)         |
+| 豆瓣小组   | [https://www.douban.com/group/search?cat=1019\&q=](https://www.douban.com/group/search?cat=1019&q=)              | [https://www.douban.com/favicon.ico](https://www.douban.com/favicon.ico)           |
 | Reddit    | [https://www.reddit.com/search/?q=](https://www.reddit.com/search/?q=)                                           | [https://favicone.com/reddit.com?s=256](https://favicone.com/reddit.com?s=256)     |
 | Facebook  | [https://www.facebook.com/search/top?q=](https://www.facebook.com/search/top?q=)                                 | [https://favicone.com/facebook.com?s=256](https://favicone.com/facebook.com?s=256) |
-| X | [https://twitter.com/search?q=](https://x.com/search?q=)                                                                 | [https://favicone.com/twitter.com?s=256](https://favicone.com/x.com?s=256)         |
+| X         | [https://twitter.com/search?q=](https://x.com/search?q=)                                                         | [https://favicone.com/twitter.com?s=256](https://favicone.com/x.com?s=256)         |
 | LinkedIn  | [https://www.linkedin.com/search/results/all/?keywords=](https://www.linkedin.com/search/results/all/?keywords=) | [https://favicone.com/linkedin.com?s=256](https://favicone.com/linkedin.com?s=256) |
 | Discord   | [https://discord.com/channels/@me](https://discord.com/channels/@me)                                             | [https://favicone.com/discord.com?s=256](https://favicone.com/discord.com?s=256)   |
 
@@ -81,6 +81,7 @@
 | Project Gutenberg | [https://www.gutenberg.org/ebooks/search/?query=](https://www.gutenberg.org/ebooks/search/?query=)           | [https://favicone.com/gutenberg.org?s=256](https://favicone.com/gutenberg.org?s=256) |
 | Bitsearch         | [https://bitsearch.to/search?q=](https://bitsearch.to/search?q=)                                             | [https://favicone.com/bitsearch.to?s=256](https://favicone.com/bitsearch.to?s=256) |
 | Torrent Kitty     | [https://cn.torrentkitty.ink/search/](https://cn.torrentkitty.ink/search/)                                   | [https://cn.torrentkitty.ink/favicon.ico](https://cn.torrentkitty.ink/favicon.ico) |
+| FitGirl Repacks   | [https://fitgirl-repacks.site/?s=](https://fitgirl-repacks.site/?s=)                                         | [https://favicone.com/fitgirl-repacks.site?s=256](https://favicone.com/fitgirl-repacks.site?s=256) |
 
 ## 👨‍💻 开发 / 开源
 
