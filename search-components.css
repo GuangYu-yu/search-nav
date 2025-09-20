@@ -150,7 +150,7 @@
 .qwant-icon { background-image: url('https://favicone.com/qwant.com?s=256'); }
 
 /* 资源搜索引擎图标 */
-.zhihu-icon { background-image: url('https://zhihu.com/favicon.ico'); }
+.zhihu-icon { background-image: url('https://static.zhihu.com/heifetz/favicon.ico'); }
 .weibo-icon { background-image: url('https://weibo.com/favicon.ico'); }
 .xiaohongshu-icon { background-image: url('https://www.xiaohongshu.com/favicon.ico'); }
 .bilibili-icon { background-image: url('https://bilibili.com/favicon.ico'); }
@@ -326,4 +326,5 @@
 .suggestions-container::-webkit-scrollbar {
     width: 0;
     background: transparent;
+
 }
