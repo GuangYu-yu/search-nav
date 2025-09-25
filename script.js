@@ -8,7 +8,8 @@ const searchEngines = {
   ecosia: "https://www.ecosia.org/search?q=",
   yahoo: "https://search.yahoo.com/search?p=",
   brave: "https://search.brave.com/search?q=",
-  qwant: "https://www.qwant.com/?q="
+  qwant: "https://www.qwant.com/?q=",
+  aol: "https://search.aol.com/aol/search?q="
 }
 
 const resourceEngines = {
@@ -289,6 +290,10 @@ function updateEngineDropdown() {
             <div class="engine-option" onclick="selectEngine('qwant', 'Qwant')">
                 <div class="engine-icon qwant-icon"></div>
                 <span class="engine-name">Qwant</span>
+            </div>
+            <div class="engine-option" onclick="selectEngine('aol', 'AOL')">
+                <div class="engine-icon aol-icon"></div>
+                <span class="engine-name">AOL</span>
             </div>
         `
   }
