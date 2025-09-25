@@ -116,9 +116,9 @@ function updateEngineDropdown() {
                 <div class="engine-icon yahoo-icon"></div>
                 <span class="engine-name">Yahoo!</span>
             </div>
-            <div class="engine-option" onclick="selectEngine('searx', 'Searx')">
-                <div class="engine-icon searx-icon"></div>
-                <span class="engine-name">Searx</span>
+            <div class="engine-option" onclick="selectEngine('brave', 'Brave')">
+                <div class="engine-icon brave-icon"></div>
+                <span class="engine-name">Brave</span>
             </div>
             <div class="engine-option" onclick="selectEngine('qwant', 'Qwant')">
                 <div class="engine-icon qwant-icon"></div>

@@ -7,7 +7,7 @@ const searchEngines = {
   duckduckgo: "https://duckduckgo.com/?q=",
   ecosia: "https://www.ecosia.org/search?q=",
   yahoo: "https://search.yahoo.com/search?p=",
-  searx: "https://searx.org/?q=",
+  brave: "https://search.brave.com/search?q=",
   qwant: "https://www.qwant.com/?q="
 }
 
