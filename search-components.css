@@ -152,11 +152,17 @@
 
 /* 资源搜索引擎图标 */
 .zhihu-icon { background-image: url('https://static.zhihu.com/heifetz/favicon.ico'); }
+.wikipedia-icon { background-image: url('https://favicone.com/wikipedia.org?s=256'); }
 .weibo-icon { background-image: url('https://weibo.com/favicon.ico'); }
 .xiaohongshu-icon { background-image: url('https://www.xiaohongshu.com/favicon.ico'); }
+.reddit-icon { background-image: url('https://favicone.com/www.redditstatic.com?s=256'); }
+.x-icon { background-image: url('https://favicone.com/x.com?s=256'); }
 .bilibili-icon { background-image: url('https://bilibili.com/favicon.ico'); }
 .douyin-icon { background-image: url('https://www.douyin.com/favicon.ico'); }
+.kuaishou-icon { background-image: url('https://m.kuaishou.com/favicon.ico'); }
 .taobao-icon { background-image: url('https://www.taobao.com/favicon.ico'); }
+.amazon-icon { background-image: url('https://www.amazon.com/favicon.ico'); }
+.jingdong-icon { background-image: url('https://www.jd.com/favicon.ico'); }
 
 .engine-name { 
     font-size: 14px; 
