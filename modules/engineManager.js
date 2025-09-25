@@ -39,6 +39,10 @@ function updateEngineDropdown() {
                 <div class="engine-icon zhihu-icon"></div>
                 <span class="engine-name">知乎</span>
             </div>
+            <div class="engine-option" onclick="selectEngine('wikipedia', 'Wikipedia')">
+                <div class="engine-icon wikipedia-icon"></div>
+                <span class="engine-name">Wikipedia</span>
+            </div>
             <div class="engine-option" onclick="selectEngine('weibo', '微博')">
                 <div class="engine-icon weibo-icon"></div>
                 <span class="engine-name">微博</span>
@@ -46,6 +50,14 @@ function updateEngineDropdown() {
             <div class="engine-option" onclick="selectEngine('xiaohongshu', '小红书')">
                 <div class="engine-icon xiaohongshu-icon"></div>
                 <span class="engine-name">小红书</span>
+            </div>
+            <div class="engine-option" onclick="selectEngine('reddit', 'Reddit')">
+                <div class="engine-icon reddit-icon"></div>
+                <span class="engine-name">Reddit</span>
+            </div>
+            <div class="engine-option" onclick="selectEngine('x', 'X')">
+                <div class="engine-icon x-icon"></div>
+                <span class="engine-name">X</span>
             </div>
             <div class="engine-option" onclick="selectEngine('bilibili', '哔哩哔哩')">
                 <div class="engine-icon bilibili-icon"></div>
@@ -55,9 +67,21 @@ function updateEngineDropdown() {
                 <div class="engine-icon douyin-icon"></div>
                 <span class="engine-name">抖音</span>
             </div>
+            <div class="engine-option" onclick="selectEngine('kuaishou', '快手')">
+                <div class="engine-icon kuaishou-icon"></div>
+                <span class="engine-name">快手</span>
+            </div>
             <div class="engine-option" onclick="selectEngine('taobao', '淘宝')">
                 <div class="engine-icon taobao-icon"></div>
                 <span class="engine-name">淘宝</span>
+            </div>
+            <div class="engine-option" onclick="selectEngine('amazon', 'Amazon')">
+                <div class="engine-icon amazon-icon"></div>
+                <span class="engine-name">Amazon</span>
+            </div>
+            <div class="engine-option" onclick="selectEngine('jingdong', '京东')">
+                <div class="engine-icon jingdong-icon"></div>
+                <span class="engine-name">京东</span>
             </div>
         `
 

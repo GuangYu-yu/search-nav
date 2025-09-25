@@ -15,17 +15,23 @@ const searchEngines = {
 const resourceEngines = {
   // 知识/问答
   zhihu: "https://www.zhihu.com/search?q=",
+  wikipedia: "https://zh.wikipedia.org/wiki/",
 
   // 社交
   weibo: "https://s.weibo.com/weibo?q=",
   xiaohongshu: "https://www.xiaohongshu.com/search_result?keyword=",
+  reddit: "https://www.reddit.com/search/?q=",
+  x: "https://x.com/search?q=",
 
   // 视频
   bilibili: "https://search.bilibili.com/all?keyword=",
   douyin: "https://www.douyin.com/search/",
+  kuaishou: "https://www.kuaishou.com/search/video?keyword=",
 
   // 电商
-  taobao: "https://s.taobao.com/search?q="
+  taobao: "https://s.taobao.com/search?q=",
+  amazon: "https://www.amazon.com/s?k=",
+  jingdong: "https://search.jd.com/Search?keyword="
 }
 
 const translateEngines = {
