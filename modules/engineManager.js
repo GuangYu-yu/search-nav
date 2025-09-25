@@ -124,6 +124,10 @@ function updateEngineDropdown() {
                 <div class="engine-icon qwant-icon"></div>
                 <span class="engine-name">Qwant</span>
             </div>
+            <div class="engine-option" onclick="selectEngine('aol', 'AOL')">
+                <div class="engine-icon aol-icon"></div>
+                <span class="engine-name">AOL</span>
+            </div>
         `
   }
 }

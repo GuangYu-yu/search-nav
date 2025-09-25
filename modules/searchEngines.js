@@ -8,7 +8,8 @@ const searchEngines = {
   ecosia: "https://www.ecosia.org/search?q=",
   yahoo: "https://search.yahoo.com/search?p=",
   brave: "https://search.brave.com/search?q=",
-  qwant: "https://www.qwant.com/?q="
+  qwant: "https://www.qwant.com/?q=",
+  aol: "https://search.aol.com/aol/search?q="
 }
 
 const resourceEngines = {
