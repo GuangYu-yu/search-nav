@@ -1,5 +1,4 @@
 // 数据管理模块
-import { renderLinks, renderResources, renderQuickLinks } from './uiManager.js'
 import { updateEngineDropdown } from './engineManager.js'
 
 let links = JSON.parse(localStorage.getItem("navLinks")) || []

@@ -1,5 +1,5 @@
 // UI管理模块
-import { links, resources, renderQuickLinks, initializeDataPreview } from './dataManager.js'
+import { links, resources, initializeDataPreview } from './dataManager.js'
 import { getCachedFaviconUrl, getFaviconUrl, formatUrl, clearDomainCache, showEditDialog, showEditResourceDialog, deleteLink, deleteResource } from './linkManager.js'
 
 // 计算书签网格布局

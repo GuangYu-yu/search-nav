@@ -387,5 +387,10 @@ export {
   saveEditedLink, 
   saveEditedResource, 
   getFaviconUrl, 
-  getCachedFaviconUrl 
+  getCachedFaviconUrl,
+  formatUrl,
+  extractDomain,
+  clearDomainCache,
+  validateFormData,
+  getDefaultFavicon
 }
