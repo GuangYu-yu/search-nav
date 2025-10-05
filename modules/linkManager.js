@@ -231,6 +231,38 @@ function closeEditResourceDialog() {
   currentEditIndex = -1
 }
 
+// 工具函数：格式化URL
+function formatUrl(url) {
+  return url.startsWith("http") ? url : "https://" + url
+}
+
+// 工具函数：提取域名
+function extractDomain(url) {
+  try {
+    return new URL(url).hostname
+  } catch {
+    return null
+  }
+}
+
+// 工具函数：清除域名缓存
+function clearDomainCache(url) {
+  const domain = extractDomain(url)
+  if (domain) {
+    const cacheKey = `favicon_cache_${domain}`
+    localStorage.removeItem(cacheKey)
+  }
+}
+
+// 工具函数：验证表单数据
+function validateFormData(name, url, errorMessage) {
+  if (!url) {
+    alert(errorMessage)
+    return false
+  }
+  return true
+}
+
 // 保存编辑的书签
 function saveEditedLink() {
   if (currentEditIndex >= 0 && currentEditIndex < links.length) {
@@ -238,34 +270,19 @@ function saveEditedLink() {
     const url = document.getElementById("editLinkUrl").value.trim()
     const imageUrl = document.getElementById("editLinkImageUrl").value.trim()
 
-    if (!url) {
-      alert("请填写网站地址")
+    if (!validateFormData(name, url, "请填写网站地址")) {
       return
     }
 
-    // 确保URL格式正确
-    const formattedUrl = url.startsWith("http") ? url : "https://" + url
-
-    // 清除旧域名的favicon缓存
-    try {
-      const oldDomain = new URL(links[currentEditIndex].url).hostname
-      const oldCacheKey = `favicon_cache_${oldDomain}`
-      localStorage.removeItem(oldCacheKey)
-    } catch (e) {
-      // URL解析失败时忽略
-    }
-
-    // 获取favicon URL，如果有自定义图片URL则使用自定义的
+    const formattedUrl = formatUrl(url)
+    clearDomainCache(links[currentEditIndex].url)
     const faviconUrl = imageUrl || getFaviconUrl(formattedUrl)
 
     links[currentEditIndex] = { name, url: formattedUrl, faviconUrl }
     localStorage.setItem("navLinks", JSON.stringify(links))
 
-    // 重新渲染
     renderLinks()
     renderQuickLinks()
-
-    // 更新数据预览
     initializeDataPreview()
   }
   closeEditDialog()
@@ -276,40 +293,22 @@ function saveEditedResource() {
   if (currentEditIndex >= 0 && currentEditIndex < resources.length) {
     const name = document.getElementById("editResourceName").value.trim()
     const url = document.getElementById("editResourceUrl").value.trim()
-    const imageUrl = document
-      .getElementById("editResourceImageUrl")
-      .value.trim()
+    const imageUrl = document.getElementById("editResourceImageUrl").value.trim()
 
-    if (!url) {
-      alert("请填写资源地址")
+    if (!validateFormData(name, url, "请填写资源地址")) {
       return
     }
 
-    // 确保URL格式正确
-    const formattedUrl = url.startsWith("http") ? url : "https://" + url
-
-    // 清除旧域名的favicon缓存
-    try {
-      const oldDomain = new URL(resources[currentEditIndex].url).hostname
-      const oldCacheKey = `favicon_cache_${oldDomain}`
-      localStorage.removeItem(oldCacheKey)
-    } catch (e) {
-      // URL解析失败时忽略
-    }
-
-    // 获取favicon URL，如果有自定义图片URL则使用自定义的
+    const formattedUrl = formatUrl(url)
+    clearDomainCache(resources[currentEditIndex].url)
     const faviconUrl = imageUrl || getFaviconUrl(formattedUrl)
 
     resources[currentEditIndex] = { name, url: formattedUrl, faviconUrl }
     localStorage.setItem("navResources", JSON.stringify(resources))
 
-    // 重新渲染
     renderResources()
-
-    // 更新数据预览
     initializeDataPreview()
 
-    // 更新引擎下拉菜单
     if (currentMode === "resource") {
       updateEngineDropdown()
     }
@@ -317,25 +316,29 @@ function saveEditedResource() {
   closeEditResourceDialog()
 }
 
-// 渲染设置中的书签列表
+// 获取默认的favicon图标
+function getDefaultFavicon() {
+  return 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23666"%3E%3Cpath d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.94-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/%3E%3C/svg%3E'
+}
+
 // 获取网站favicon
 function getFaviconUrl(url) {
   try {
-    // 确保URL格式正确
-    const fullUrl = url.startsWith("http") ? url : "https://" + url
-    const domain = new URL(fullUrl).hostname
+    const domain = extractDomain(url)
+    if (!domain) return getDefaultFavicon()
+    
     return `https://favicone.com/${domain}?s=256`
   } catch {
-    return 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23666"%3E%3Cpath d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.94-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/%3E%3C/svg%3E'
+    return getDefaultFavicon()
   }
 }
 
 // 获取带缓存的网站favicon（30分钟缓存）
 function getCachedFaviconUrl(url) {
   try {
-    // 确保URL格式正确
-    const fullUrl = url.startsWith("http") ? url : "https://" + url
-    const domain = new URL(fullUrl).hostname
+    const domain = extractDomain(url)
+    if (!domain) return getDefaultFavicon()
+    
     const cacheKey = `favicon_cache_${domain}`
 
     // 检查是否有缓存
@@ -362,8 +365,7 @@ function getCachedFaviconUrl(url) {
 
     return faviconeUrl
   } catch {
-    // 如果favicone.com服务失败，尝试使用默认图标
-    return 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23666"%3E%3Cpath d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.94-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/%3E%3C/svg%3E'
+    return getDefaultFavicon()
   }
 }
 

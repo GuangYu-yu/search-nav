@@ -1,6 +1,6 @@
 // UI管理模块
-import { links, resources } from './dataManager.js'
-import { getCachedFaviconUrl } from './linkManager.js'
+import { links, resources, renderQuickLinks, initializeDataPreview } from './dataManager.js'
+import { getCachedFaviconUrl, getFaviconUrl, formatUrl, clearDomainCache, showEditDialog, showEditResourceDialog, deleteLink, deleteResource } from './linkManager.js'
 
 // 计算书签网格布局
 function calculateGridLayout(totalItems) {
@@ -227,29 +227,15 @@ function saveLink(index, name, url, imageUrl = "") {
     return
   }
 
-  // 确保URL格式正确
-  const formattedUrl = url.startsWith("http") ? url : "https://" + url
-
-  // 清除旧域名的favicon缓存
-  try {
-    const oldDomain = new URL(links[index].url).hostname
-    const oldCacheKey = `favicon_cache_${oldDomain}`
-    localStorage.removeItem(oldCacheKey)
-  } catch (e) {
-    // URL解析失败时忽略
-  }
-
-  // 获取favicon URL，如果有自定义图片URL则使用自定义的
+  const formattedUrl = formatUrl(url)
+  clearDomainCache(links[index].url)
   const faviconUrl = imageUrl || getFaviconUrl(formattedUrl)
 
   links[index] = { name, url: formattedUrl, faviconUrl }
   localStorage.setItem("navLinks", JSON.stringify(links))
 
-  // 重新渲染
   renderLinks()
   renderQuickLinks()
-
-  // 更新数据预览
   initializeDataPreview()
 }
 

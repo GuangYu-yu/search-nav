@@ -38,7 +38,7 @@ function switchMode(mode) {
     // 更新引擎下拉菜单以显示资源搜索选项
     updateEngineDropdown()
   } else {
-    searchInput.placeholder = "输入搜索内容或网址..."
+    searchInput.placeholder = "输入搜索内容..."
     // 切换回搜索引擎
     selectEngine("google", "Google")
     // 更新引擎下拉菜单以显示所有搜索选项
