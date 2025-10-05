@@ -21,7 +21,7 @@ import {
   hideSuggestions, 
   handleSuggestionNavigation 
 } from './suggestionManager.js'
-import { handleSearch, isURL } from './searchHandler.js'
+import { handleSearch } from './searchHandler.js'
 import { 
   addLink, 
   addResource, 
