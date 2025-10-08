@@ -134,6 +134,7 @@
 
 .data-preview {
     background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 8px;
     padding: 16px;
     min-height: 100px;
@@ -142,8 +143,20 @@
     font-family: monospace;
     font-size: 12px;
     color: var(--text-color);
-    white-space: pre-wrap;
+    white-space: pre;
     margin-bottom: 20px;
+    resize: vertical;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.data-preview:focus {
+    outline: none;
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+.data-preview::placeholder {
+    color: var(--text-secondary);
 }
 
 .data-url-import {

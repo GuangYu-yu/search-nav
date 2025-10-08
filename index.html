@@ -13,20 +13,20 @@
     <div class="wallpaper-container" id="wallpaperContainer"></div>
     <!-- 全局控制栏 -->
     <div class="global-controls">
-        <div class="theme-toggle-btn" onclick="toggleThemeSwitcher()">
+        <div class="theme-toggle-btn" id="themeToggleBtn">
             <i class="fas fa-palette"></i>
         </div>
         <div class="theme-switcher" id="themeSwitcher">
-            <div class="theme-btn light active" onclick="setTheme('light')" title="亮色主题"></div>
-            <div class="theme-btn dark" onclick="setTheme('dark')" title="暗色主题"></div>
-            <div class="theme-btn red" onclick="setTheme('red')" title="姨妈红主题"></div>
-            <div class="theme-btn purple" onclick="setTheme('purple')" title="科技紫主题"></div>
-            <div class="theme-btn gold" onclick="setTheme('gold')" title="尊贵金主题"></div>
+            <div class="theme-btn light active" data-theme="light" title="亮色主题"></div>
+            <div class="theme-btn dark" data-theme="dark" title="暗色主题"></div>
+            <div class="theme-btn red" data-theme="red" title="姨妈红主题"></div>
+            <div class="theme-btn purple" data-theme="purple" title="科技紫主题"></div>
+            <div class="theme-btn gold" data-theme="gold" title="尊贵金主题"></div>
         </div>
     </div>
     
     <!-- 设置按钮 -->
-    <div class="settings-btn" onclick="openSettings()">
+    <div class="settings-btn" id="settingsBtn">
         <i class="fas fa-cog"></i>
     </div>
     
@@ -42,14 +42,14 @@
         
         <div class="search-container">
             <div class="search-box">
-                <div class="engine-selector" onclick="toggleEngineDropdown()">
+                <div class="engine-selector" id="engineSelector">
                     <div class="engine-icon google-icon"></div>
                 </div>
                 
                 <input type="text" class="search-input" id="searchQuery" autocomplete="off">
                 
                 <div class="search-buttons">
-                        <button class="search-btn" onclick="handleSearch()">
+                        <button class="search-btn" id="searchBtn">
                             <i class="fas fa-search"></i>
                         </button>
                     </div>
@@ -78,7 +78,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h2>设置</h2>
-                <button class="close-btn" onclick="closeSettings()">×</button>
+                <button class="close-btn" id="closeSettingsBtn">×</button>
             </div>
             
             <!-- 删除确认对话框 -->
@@ -91,8 +91,8 @@
                         <p>确定要删除这个书签吗？</p>
                     </div>
                     <div class="confirm-footer">
-                        <button class="confirm-btn cancel" onclick="closeConfirmDialog()">取消</button>
-                        <button class="confirm-btn confirm" onclick="confirmDeleteLink()">确定</button>
+                        <button class="confirm-btn cancel" id="closeConfirmDialogBtn">取消</button>
+                        <button class="confirm-btn confirm" id="confirmDeleteLinkBtn">确定</button>
                     </div>
                 </div>
             </div>
@@ -120,8 +120,8 @@
                     </div>
                 </div>
                 <div class="confirm-footer">
-                    <button class="confirm-btn cancel" onclick="closeEditDialog()">取消</button>
-                    <button class="confirm-btn confirm" onclick="saveEditedLink()">确定</button>
+                    <button class="confirm-btn cancel" id="closeEditDialogBtn">取消</button>
+                    <button class="confirm-btn confirm" id="saveEditedLinkBtn">确定</button>
                 </div>
             </div>
         </div>
@@ -149,8 +149,8 @@
                     </div>
                 </div>
                 <div class="confirm-footer">
-                    <button class="confirm-btn cancel" onclick="closeEditResourceDialog()">取消</button>
-                    <button class="confirm-btn confirm" onclick="saveEditedResource()">确定</button>
+                    <button class="confirm-btn cancel" id="closeEditResourceDialogBtn">取消</button>
+                    <button class="confirm-btn confirm" id="saveEditedResourceBtn">确定</button>
                 </div>
             </div>
         </div>
@@ -165,18 +165,18 @@
                     <p>确定要删除这个资源吗？</p>
                 </div>
                 <div class="confirm-footer">
-                    <button class="confirm-btn cancel" onclick="closeConfirmResourceDialog()">取消</button>
-                    <button class="confirm-btn confirm" onclick="confirmDeleteResource()">确定</button>
+                    <button class="confirm-btn cancel" id="closeConfirmResourceDialogBtn">取消</button>
+                    <button class="confirm-btn confirm" id="confirmDeleteResourceBtn">确定</button>
                 </div>
             </div>
         </div>
             
             <!-- 标签页导航 -->
             <div class="tab-nav">
-                <button class="tab-btn active" data-tab="bookmarks" onclick="switchTab('bookmarks')">📚 书签</button>
-                <button class="tab-btn" data-tab="resource" onclick="switchTab('resource')">📂 资源</button>
-                <button class="tab-btn" data-tab="wallpaper" onclick="switchTab('wallpaper')">🖼️ 壁纸</button>
-                <button class="tab-btn" data-tab="data" onclick="switchTab('data')">📊 数据</button>
+                <button class="tab-btn active" data-tab="bookmarks" id="bookmarksTabBtn">📚 书签</button>
+                <button class="tab-btn" data-tab="resource" id="resourceTabBtn">📂 资源</button>
+                <button class="tab-btn" data-tab="wallpaper" id="wallpaperTabBtn">🖼️ 壁纸</button>
+                <button class="tab-btn" data-tab="data" id="dataTabBtn">📊 数据</button>
             </div>
             
             <!-- 书签标签页 -->
@@ -185,7 +185,7 @@
                     <input type="text" class="add-link-input" id="linkName" placeholder="输入网站名称">
                     <input type="text" class="add-link-input" id="linkUrl" placeholder="输入网站地址">
                     <input type="text" class="add-link-input" id="linkImageUrl" placeholder="输入图标URL（可选）">
-                    <button class="add-btn" onclick="addLink()">添加书签</button>
+                    <button class="add-btn" id="addLinkBtn">添加书签</button>
                 </div>
                 
                 <div class="links-list" id="linksContainer">
@@ -199,7 +199,7 @@
                     <input type="text" class="add-link-input" id="resourceName" placeholder="输入资源名称">
                     <input type="text" class="add-link-input" id="resourceUrl" placeholder="输入带搜索参数的资源地址">
                     <input type="text" class="add-link-input" id="resourceImageUrl" placeholder="输入图标URL（可选）">
-                    <button class="add-btn" onclick="addResource()">添加资源</button>
+                    <button class="add-btn" id="addResourceBtn">添加资源</button>
                 </div>
                 
                 <div class="links-list" id="resourcesContainer">
@@ -212,27 +212,27 @@
                 <div class="wallpaper-section">
                     <h3>背景设置</h3>
                     <div class="wallpaper-options">
-                        <div class="wallpaper-option" onclick="setWallpaper('default')">
+                        <div class="wallpaper-option" id="defaultWallpaperOption">
                             <div class="wallpaper-preview default-bg"></div>
                             <span>默认</span>
                         </div>
-                        <div class="wallpaper-option" onclick="setWallpaper('gradient1')">
+                        <div class="wallpaper-option" id="gradient1WallpaperOption">
                             <div class="wallpaper-preview gradient1-bg"></div>
                             <span>渐变1</span>
                         </div>
-                        <div class="wallpaper-option" onclick="setWallpaper('gradient2')">
+                        <div class="wallpaper-option" id="gradient2WallpaperOption">
                             <div class="wallpaper-preview gradient2-bg"></div>
                             <span>渐变2</span>
                         </div>
-                        <div class="wallpaper-option" onclick="setWallpaper('gradient3')">
+                        <div class="wallpaper-option" id="gradient3WallpaperOption">
                             <div class="wallpaper-preview gradient3-bg"></div>
                             <span>渐变3</span>
                         </div>
-                        <div class="wallpaper-option" onclick="setWallpaper('gradient4')">
+                        <div class="wallpaper-option" id="gradient4WallpaperOption">
                             <div class="wallpaper-preview gradient4-bg"></div>
                             <span>渐变4</span>
                         </div>
-                        <div class="wallpaper-option" onclick="setWallpaper('gradient5')">
+                        <div class="wallpaper-option" id="gradient5WallpaperOption">
                             <div class="wallpaper-preview gradient5-bg"></div>
                             <span>渐变5</span>
                         </div>
@@ -270,10 +270,10 @@
                             <div class="gradient-action-container">
                                 <div class="gradient-preview" id="gradientPreview"></div>
                                 <div class="action-buttons">
-                                    <button class="icon-action-btn random-btn" onclick="randomColors()" title="随机混色">
+                                    <button class="icon-action-btn random-btn" id="randomColorsBtn" title="随机混色">
                                         <i class="fas fa-random"></i>
                                     </button>
-                                    <button class="icon-action-btn apply-btn" onclick="applyCustomGradient()" title="应用背景">
+                                    <button class="icon-action-btn apply-btn" id="applyCustomGradientBtn" title="应用背景">
                                         <i class="fas fa-check"></i>
                                     </button>
                                 </div>
@@ -285,7 +285,7 @@
                             <div class="wallpaper-input-group">
                                 <input type="text" class="wallpaper-url-input" id="customWallpaperUrl" placeholder="输入图片URL">
                                 <div class="wallpaper-buttons">
-                                    <button class="icon-btn" onclick="setCustomWallpaper()" title="应用壁纸">
+                                    <button class="icon-btn" id="setCustomWallpaperBtn" title="应用壁纸">
                                         <i class="fas fa-check"></i>
                                     </button>
                                 </div>
@@ -305,15 +305,15 @@
             <!-- 数据标签页 -->
             <div class="tab-content" id="data-tab">
                 <div class="data-section">
-                    <div class="data-preview" id="dataPreview">
+                    <textarea class="data-preview" id="dataPreview" placeholder="JSON数据将在这里显示，您可以编辑后保存..." rows="15">
                         <!-- 数据预览将在这里显示 -->
-                    </div>
+                    </textarea>
                     <div class="data-actions">
-                        <button class="data-btn" onclick="saveDataConfig()">💾 保存配置</button>
+                        <button class="data-btn" id="saveDataConfigBtn">💾 保存配置</button>
                     </div>
                     <div class="data-url-import">
                         <input type="text" class="data-url-input" id="dataUrlInput" placeholder="输入JSON数据URL">
-                        <button class="data-btn" onclick="applyDataFromURL()"><i class="fas fa-check"></i></button>
+                        <button class="data-btn" id="applyDataFromURLBtn"><i class="fas fa-check"></i></button>
                     </div>
 
                 </div>

@@ -122,6 +122,14 @@
     white-space: nowrap;
     font-weight: 400;
     pointer-events: none;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.quick-link:hover .quick-link-name {
+    opacity: 1;
+    transform: scale(1);
 }
 
 /* 添加针对搜索聚焦状态的特定样式 */
