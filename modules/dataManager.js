@@ -1,5 +1,6 @@
 // 数据管理模块
 import { updateEngineDropdown } from './engineManager.js'
+import { renderLinks, renderResources, renderQuickLinks } from './uiManager.js'
 
 let links = JSON.parse(localStorage.getItem("navLinks")) || []
 let resources = JSON.parse(localStorage.getItem("navResources")) || []
@@ -19,7 +20,7 @@ function saveDataConfig() {
   const previewElement = document.getElementById("dataPreview")
   if (previewElement) {
     try {
-      const data = JSON.parse(previewElement.textContent)
+      const data = JSON.parse(previewElement.value)
       if (data.links && data.resources) {
         links.length = 0;
         links.push(...data.links);
@@ -76,7 +77,7 @@ function applyDataFromURL() {
 function updateDataPreview(data) {
   const previewElement = document.getElementById("dataPreview")
   if (previewElement) {
-    previewElement.textContent = data
+    previewElement.value = data
   }
 }
 

@@ -110,32 +110,32 @@ function switchTab(tabName) {
   })
 }
 
-// 渲染设置中的书签列表
-function renderLinks() {
-  const container = document.getElementById("linksContainer")
+// 统一渲染列表项
+function renderListItems(containerId, items, type) {
+  const container = document.getElementById(containerId)
   container.innerHTML = ""
 
-  links.forEach((link, index) => {
-    const linkItem = document.createElement("div")
-    linkItem.className = "link-item"
-    linkItem.id = `link-${index}`
+  items.forEach((item, index) => {
+    const itemElement = document.createElement("div")
+    itemElement.className = "link-item"
+    itemElement.id = `${type}-${index}`
 
-    // 网站图标
+    // 图标
     const favicon = document.createElement("div")
     favicon.className = "link-favicon"
-    favicon.style.backgroundImage = `url('${getCachedFaviconUrl(link.url)}')`
+    favicon.style.backgroundImage = `url('${item.faviconUrl}')`
 
-    // 网站信息
+    // 信息
     const details = document.createElement("div")
     details.className = "link-details"
 
     const name = document.createElement("div")
     name.className = "link-name"
-    name.textContent = link.name
+    name.textContent = item.name
 
     const url = document.createElement("div")
     url.className = "link-url"
-    url.textContent = link.url
+    url.textContent = item.url
 
     details.appendChild(name)
     details.appendChild(url)
@@ -147,77 +147,38 @@ function renderLinks() {
     const editBtn = document.createElement("button")
     editBtn.className = "edit-btn"
     editBtn.textContent = "修改"
-    editBtn.onclick = () => showEditDialog(index)
-
+    
     const deleteBtn = document.createElement("button")
     deleteBtn.className = "delete-btn"
     deleteBtn.textContent = "删除"
-    deleteBtn.onclick = () => deleteLink(index)
+
+    // 根据类型设置不同的操作函数
+    if (type === "link") {
+      editBtn.onclick = () => showEditDialog(index)
+      deleteBtn.onclick = () => deleteLink(index)
+    } else if (type === "resource") {
+      editBtn.onclick = () => showEditResourceDialog(index)
+      deleteBtn.onclick = () => deleteResource(index)
+    }
 
     actions.appendChild(editBtn)
     actions.appendChild(deleteBtn)
 
-    linkItem.appendChild(favicon)
-    linkItem.appendChild(details)
-    linkItem.appendChild(actions)
-    container.appendChild(linkItem)
+    itemElement.appendChild(favicon)
+    itemElement.appendChild(details)
+    itemElement.appendChild(actions)
+    container.appendChild(itemElement)
   })
+}
+
+// 渲染设置中的书签列表
+function renderLinks() {
+  renderListItems("linksContainer", links, "link")
 }
 
 // 渲染设置中的资源列表
 function renderResources() {
-  const container = document.getElementById("resourcesContainer")
-  container.innerHTML = ""
-
-  resources.forEach((resource, index) => {
-    const resourceItem = document.createElement("div")
-    resourceItem.className = "link-item"
-    resourceItem.id = `resource-${index}`
-
-    // 资源图标
-    const favicon = document.createElement("div")
-    favicon.className = "link-favicon"
-    favicon.style.backgroundImage = `url('${getCachedFaviconUrl(
-      resource.url
-    )}')`
-
-    // 资源信息
-    const details = document.createElement("div")
-    details.className = "link-details"
-
-    const name = document.createElement("div")
-    name.className = "link-name"
-    name.textContent = resource.name
-
-    const url = document.createElement("div")
-    url.className = "link-url"
-    url.textContent = resource.url
-
-    details.appendChild(name)
-    details.appendChild(url)
-
-    // 操作按钮
-    const actions = document.createElement("div")
-    actions.className = "link-actions"
-
-    const editBtn = document.createElement("button")
-    editBtn.className = "edit-btn"
-    editBtn.textContent = "修改"
-    editBtn.onclick = () => showEditResourceDialog(index)
-
-    const deleteBtn = document.createElement("button")
-    deleteBtn.className = "delete-btn"
-    deleteBtn.textContent = "删除"
-    deleteBtn.onclick = () => deleteResource(index)
-
-    actions.appendChild(editBtn)
-    actions.appendChild(deleteBtn)
-
-    resourceItem.appendChild(favicon)
-    resourceItem.appendChild(details)
-    resourceItem.appendChild(actions)
-    container.appendChild(resourceItem)
-  })
+  renderListItems("resourcesContainer", resources, "resource")
 }
 
 // 保存编辑的书签

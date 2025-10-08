@@ -3,6 +3,7 @@ import { currentMode, switchMode } from './modeManager.js'
 import { initializeDataPreview, saveDataConfig, applyDataFromURL, updateDataPreview } from './dataManager.js'
 import { updateEngineDropdown, toggleEngineDropdown, selectEngine } from './engineManager.js'
 import { setTheme, toggleThemeSwitcher } from './themeManager.js'
+import { initializeEventHandlers } from './eventHandlers.js'
 import { 
   setWallpaper, 
   setCustomWallpaper, 
@@ -233,6 +234,9 @@ document.addEventListener("DOMContentLoaded", function () {
   
   // 初始化数据预览
   initializeDataPreview()
+  
+  // 初始化事件处理器
+  initializeEventHandlers()
 })
 
 // 导出所有需要在全局作用域使用的函数
