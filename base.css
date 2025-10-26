@@ -27,6 +27,18 @@ body {
     background: var(--background-color);
     transform-origin: center;
     transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), filter 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    will-change: transform, filter;
+}
+
+/* 搜索聚焦时的壁纸效果 */
+.search-focused .wallpaper-container {
+    transform: scale(1.1);
+    filter: blur(10px) brightness(0.8);
+}
+
+/* 设置模态框打开时的壁纸效果 */
+body.settings-modal-open .wallpaper-container {
+  filter: blur(8px) brightness(0.7);
 }
 
 .container {
