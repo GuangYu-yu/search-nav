@@ -4,7 +4,7 @@ import { currentMode, currentEngine } from './modeManager.js'
 
 // 处理搜索
 function handleSearch() {
-  const query = document.getElementById("searchQuery").value.trim()
+  const query = document.getElementById("searchQuery").value
   if (!query) {
     return
   }
@@ -12,7 +12,8 @@ function handleSearch() {
   let url
   if (currentMode === "translate") {
     // 翻译模式
-    url = translateEngines[currentEngine] + encodeURIComponent(query)
+    const encodedQuery = encodeURIComponent(query)
+    url = translateEngines[currentEngine] + encodedQuery
   } else if (currentMode === "resource") {
     // 资源模式
     url = resourceEngines[currentEngine] + encodeURIComponent(query)
