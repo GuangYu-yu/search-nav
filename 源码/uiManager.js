@@ -88,6 +88,7 @@ document.addEventListener("click", function (event) {
 function openSettings() {
   const modal = document.getElementById("settingsModal")
   modal.classList.add("show")
+  document.body.classList.add("settings-modal-open")
   renderLinks()
 }
 
@@ -95,6 +96,7 @@ function openSettings() {
 function closeSettings() {
   const modal = document.getElementById("settingsModal")
   modal.classList.remove("show")
+  document.body.classList.remove("settings-modal-open")
 }
 
 // 标签页切换

@@ -103,10 +103,6 @@ document.addEventListener("DOMContentLoaded", function () {
     quickLinks.classList.add("collapsed")
     // 统一 transform 和 transition 逻辑，避免重绘问题
     applyFocusTransition(true)
-    // 壁纸缩放虚化效果
-    const wallpaperContainer = document.getElementById("wallpaperContainer")
-    wallpaperContainer.style.transform = "scale(1.1)"
-    wallpaperContainer.style.filter = "blur(10px) brightness(0.8)"
 
     // 如果有内容，只在搜索模式下重新显示建议
     if (searchInput.value.trim() && currentMode === "search") {
@@ -127,10 +123,6 @@ document.addEventListener("DOMContentLoaded", function () {
     quickLinks.classList.remove("collapsed")
     // 统一恢复逻辑
     applyFocusTransition(false)
-    // 恢复壁纸效果
-    const wallpaperContainer = document.getElementById("wallpaperContainer")
-    wallpaperContainer.style.transform = "scale(1)"
-    wallpaperContainer.style.filter = "none"
   })
 
   // 搜索按钮mousedown事件 - 阻止默认行为，避免触发搜索框blur
