@@ -174,11 +174,38 @@
     flex: 1;
     border: none;
     outline: none;
-    padding: 12px 16px;
+    padding: 12px 16px 12px 16px;
     font-size: 16px;
     background: transparent;
     color: var(--text-color);
     user-select: none;
+    resize: none;
+    height: 48px;
+    overflow-y: auto;
+    line-height: 24px;
+    font-family: inherit;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+    padding-right: 8px;
+    margin-right: 8px;
+}
+
+/* Webkit浏览器滚动条样式 */
+.search-input::-webkit-scrollbar {
+    width: 6px;
+}
+
+.search-input::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.search-input::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+}
+
+.search-input::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.5);
 }
 
 .search-buttons { 
