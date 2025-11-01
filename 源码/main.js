@@ -1,7 +1,7 @@
 // 主入口文件，整合所有模块
 import { currentMode, switchMode } from './modeManager.js'
 import { initializeDataPreview, saveDataConfig, applyDataFromURL, updateDataPreview } from './dataManager.js'
-import { updateEngineDropdown, toggleEngineDropdown, selectEngine } from './engineManager.js'
+import { updateEngineDropdown, selectEngine } from "./engineManager.js"
 import { setTheme, toggleThemeSwitcher } from './themeManager.js'
 import { initializeEventHandlers } from './eventHandlers.js'
 import { 
@@ -79,14 +79,10 @@ document.addEventListener("DOMContentLoaded", function () {
   searchInput.addEventListener("keydown", handleSuggestionNavigation)
 
   // 回车搜索
-  searchInput.addEventListener("keypress", (e) => {
-    if (
-      e.key === "Enter" &&
-      !document
-        .getElementById("suggestionsContainer")
-        .classList.contains("show")
-    ) {
-      handleSearch()
+  searchInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSearch();
     }
   })
 
@@ -158,19 +154,8 @@ document.addEventListener("DOMContentLoaded", function () {
     slider.style.transform = "translateX(100px)" // 与按钮宽度保持一致
   }
 
-  const defaultSearchEngine =
-    localStorage.getItem("defaultSearchEngine") || "google"
-  const displayName =
-    defaultSearchEngine === "google"
-      ? "Google"
-      : defaultSearchEngine === "bing"
-      ? "Bing"
-      : defaultSearchEngine === "baidu"
-      ? "百度"
-      : defaultSearchEngine === "yahoo"
-      ? "Yahoo!"
-      : "DuckDuckGo"
-  selectEngine(defaultSearchEngine, displayName)
+  // 初始化默认搜索引擎
+  selectEngine("google", "Google")
 
   // 渲染快速链接
   renderQuickLinks()

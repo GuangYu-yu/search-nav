@@ -312,7 +312,12 @@ function handleSuggestionNavigation(event) {
       }
       break
     case "Enter":
-      // 阻止默认行为
+      // 如果按下了Shift键，允许换行（不阻止默认行为）
+      if (event.shiftKey) {
+        return
+      }
+      
+      // 没有按下Shift键，阻止默认行为
       event.preventDefault()
       // 如果有激活的建议项，使用它进行搜索
       if (

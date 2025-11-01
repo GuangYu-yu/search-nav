@@ -1,4 +1,6 @@
 // 模式管理模块
+import { selectEngine, updateEngineDropdown } from "./engineManager.js"
+
 let currentMode = "search"
 let currentEngine = "google"
 
