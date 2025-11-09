@@ -1,6 +1,6 @@
 // 书签管理模块
 import { links, resources, initializeDataPreview } from './dataManager.js'
-import { renderQuickLinks } from './uiManager.js'
+import { renderQuickLinks, renderLinks, renderResources } from './uiManager.js'
 import { currentMode } from './modeManager.js'
 import { updateEngineDropdown } from './engineManager.js'
 
