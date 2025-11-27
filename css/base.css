@@ -14,6 +14,8 @@ body {
     overflow: hidden;
     position: relative;
     -webkit-tap-highlight-color: transparent; /* 禁用移动端点击高亮 */
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
 }
 
 /* 壁纸容器 */
@@ -28,6 +30,9 @@ body {
     transform-origin: center;
     transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), filter 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     will-change: transform, filter;
+    backface-visibility: hidden;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
 }
 
 /* 搜索聚焦时的壁纸效果 */
