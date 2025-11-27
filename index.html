@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>搜索导航</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/theme.css">
+</head>
+<body>
+    <!-- 壁纸容器 -->
+    <div class="wallpaper-container" id="wallpaperContainer"></div>
+    <!-- 全局控制栏 -->
+    <div class="global-controls">
+        <div class="theme-toggle-btn" id="themeToggleBtn">
+            <i class="fas fa-palette"></i>
+        </div>
+        <div class="theme-switcher" id="themeSwitcher">
+            <div class="theme-btn light active" data-theme="light" title="亮色主题"></div>
+            <div class="theme-btn dark" data-theme="dark" title="暗色主题"></div>
+            <div class="theme-btn red" data-theme="red" title="姨妈红主题"></div>
+            <div class="theme-btn purple" data-theme="purple" title="科技紫主题"></div>
+            <div class="theme-btn gold" data-theme="gold" title="尊贵金主题"></div>
+        </div>
+    </div>
+    
+    <!-- 设置按钮 -->
+    <div class="settings-btn" id="settingsBtn">
+        <i class="fas fa-cog"></i>
+    </div>
+    
+    <div class="container">
+        <div class="mode-switcher">
+            <div class="mode-switcher-container">
+                <button class="mode-btn active" data-mode="search">🔍 搜索</button>
+                <button class="mode-btn" data-mode="translate">🌐 翻译</button>
+                <button class="mode-btn" data-mode="resource">📂 资源</button>
+                <div class="mode-slider"></div>
+            </div>
+        </div>
+        
+        <div class="search-container">
+            <div class="search-box">
+                <div class="engine-selector" id="engineSelector">
+                    <div class="engine-icon google-icon"></div>
+                </div>
+                
+                <textarea class="search-input" id="searchQuery" autocomplete="off" rows="2"></textarea>
+                
+                <div class="search-buttons">
+                        <button class="search-btn" id="searchBtn">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+            </div>
+            
+            <div class="engine-dropdown" id="engineDropdown">
+                <!-- 引擎下拉菜单项将通过JavaScript动态生成 -->
+            </div>
+            
+            <!-- 搜索建议列表 -->
+            <div class="suggestions-container" id="suggestionsContainer">
+                <!-- 搜索建议项将通过JavaScript动态生成 -->
+            </div>
+        </div>
+        
+        <!-- 快速链接区域 -->
+        <div class="quick-links">
+            <div class="quick-links-grid" id="quickLinksContainer">
+                <!-- 快速链接将在这里动态显示 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 设置模态框 -->
+    <div class="settings-modal" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>设置</h2>
+                <button class="close-btn" id="closeSettingsBtn">×</button>
+            </div>
+            
+            <!-- 删除确认对话框 -->
+            <div class="confirm-dialog" id="confirmDialog">
+                <div class="confirm-content">
+                    <div class="confirm-header">
+                        <h3>确认删除</h3>
+                    </div>
+                    <div class="confirm-body">
+                        <p>确定要删除这个书签吗？</p>
+                    </div>
+                    <div class="confirm-footer">
+                        <button class="confirm-btn cancel" id="closeConfirmDialogBtn">取消</button>
+                        <button class="confirm-btn confirm" id="confirmDeleteLinkBtn">确定</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 编辑对话框 -->
+        <div class="confirm-dialog" id="editDialog">
+            <div class="confirm-content">
+                <div class="confirm-header">
+                    <h3>编辑书签</h3>
+                </div>
+                <div class="confirm-body">
+                    <div class="edit-form">
+                        <div class="form-group">
+                            <label for="editLinkName">名称:</label>
+                            <input type="text" id="editLinkName" class="edit-input">
+                        </div>
+                        <div class="form-group">
+                            <label for="editLinkUrl">地址:</label>
+                            <input type="text" id="editLinkUrl" class="edit-input">
+                        </div>
+                        <div class="form-group">
+                            <label for="editLinkImageUrl">图片URL:</label>
+                            <input type="text" id="editLinkImageUrl" class="edit-input">
+                        </div>
+                    </div>
+                </div>
+                <div class="confirm-footer">
+                    <button class="confirm-btn cancel" id="closeEditDialogBtn">取消</button>
+                    <button class="confirm-btn confirm" id="saveEditedLinkBtn">确定</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 编辑资源对话框 -->
+        <div class="confirm-dialog" id="editResourceDialog">
+            <div class="confirm-content">
+                <div class="confirm-header">
+                    <h3>编辑资源</h3>
+                </div>
+                <div class="confirm-body">
+                    <div class="edit-form">
+                        <div class="form-group">
+                            <label for="editResourceName">名称:</label>
+                            <input type="text" id="editResourceName" class="edit-input">
+                        </div>
+                        <div class="form-group">
+                            <label for="editResourceUrl">地址:</label>
+                            <input type="text" id="editResourceUrl" class="edit-input">
+                        </div>
+                        <div class="form-group">
+                            <label for="editResourceImageUrl">图片URL:</label>
+                            <input type="text" id="editResourceImageUrl" class="edit-input">
+                        </div>
+                    </div>
+                </div>
+                <div class="confirm-footer">
+                    <button class="confirm-btn cancel" id="closeEditResourceDialogBtn">取消</button>
+                    <button class="confirm-btn confirm" id="saveEditedResourceBtn">确定</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 资源删除确认对话框 -->
+        <div class="confirm-dialog" id="confirmResourceDialog">
+            <div class="confirm-content">
+                <div class="confirm-header">
+                    <h3>确认删除</h3>
+                </div>
+                <div class="confirm-body">
+                    <p>确定要删除这个资源吗？</p>
+                </div>
+                <div class="confirm-footer">
+                    <button class="confirm-btn cancel" id="closeConfirmResourceDialogBtn">取消</button>
+                    <button class="confirm-btn confirm" id="confirmDeleteResourceBtn">确定</button>
+                </div>
+            </div>
+        </div>
+            
+            <!-- 标签页导航 -->
+            <div class="tab-nav">
+                <button class="tab-btn active" data-tab="bookmarks" id="bookmarksTabBtn">📚 书签</button>
+                <button class="tab-btn" data-tab="resource" id="resourceTabBtn">📂 资源</button>
+                <button class="tab-btn" data-tab="wallpaper" id="wallpaperTabBtn">🖼️ 壁纸</button>
+                <button class="tab-btn" data-tab="data" id="dataTabBtn">📊 数据</button>
+            </div>
+            
+            <!-- 书签标签页 -->
+            <div class="tab-content active" id="bookmarks-tab">
+                <div class="add-link-form">
+                    <input type="text" class="add-link-input" id="linkName" placeholder="输入网站名称">
+                    <input type="text" class="add-link-input" id="linkUrl" placeholder="输入网站地址">
+                    <input type="text" class="add-link-input" id="linkImageUrl" placeholder="输入图标URL（可选）">
+                    <button class="add-btn" id="addLinkBtn">添加书签</button>
+                </div>
+                
+                <div class="links-list" id="linksContainer">
+                    <!-- 书签将在这里动态显示 -->
+                </div>
+            </div>
+            
+            <!-- 资源标签页 -->
+            <div class="tab-content" id="resource-tab">
+                <div class="add-link-form">
+                    <input type="text" class="add-link-input" id="resourceName" placeholder="输入资源名称">
+                    <input type="text" class="add-link-input" id="resourceUrl" placeholder="输入带搜索参数的资源地址">
+                    <input type="text" class="add-link-input" id="resourceImageUrl" placeholder="输入图标URL（可选）">
+                    <button class="add-btn" id="addResourceBtn">添加资源</button>
+                </div>
+                
+                <div class="links-list" id="resourcesContainer">
+                    <!-- 资源将在这里动态显示 -->
+                </div>
+            </div>
+            
+            <!-- 壁纸标签页 -->
+            <div class="tab-content" id="wallpaper-tab">
+                <div class="wallpaper-section">
+                    <h3>背景设置</h3>
+                    <div class="wallpaper-options">
+                        <div class="wallpaper-option" id="defaultWallpaperOption">
+                            <div class="wallpaper-preview default-bg"></div>
+                            <span>默认</span>
+                        </div>
+                        <div class="wallpaper-option" id="gradient1WallpaperOption">
+                            <div class="wallpaper-preview gradient1-bg"></div>
+                            <span>渐变1</span>
+                        </div>
+                        <div class="wallpaper-option" id="gradient2WallpaperOption">
+                            <div class="wallpaper-preview gradient2-bg"></div>
+                            <span>渐变2</span>
+                        </div>
+                        <div class="wallpaper-option" id="gradient3WallpaperOption">
+                            <div class="wallpaper-preview gradient3-bg"></div>
+                            <span>渐变3</span>
+                        </div>
+                        <div class="wallpaper-option" id="gradient4WallpaperOption">
+                            <div class="wallpaper-preview gradient4-bg"></div>
+                            <span>渐变4</span>
+                        </div>
+                        <div class="wallpaper-option" id="gradient5WallpaperOption">
+                            <div class="wallpaper-preview gradient5-bg"></div>
+                            <span>渐变5</span>
+                        </div>
+                    </div>
+                    
+                    <div class="custom-wallpaper">
+                        <h4>自定义颜色混色</h4>
+                        <div class="color-mixer">
+                            <div class="color-controls-vertical">
+                                <div class="color-input-group">
+                                    <input type="color" class="color-input" id="color1" value="#667eea">
+                                    <span class="color-label">颜色1</span>
+                                </div>
+                                
+                                <div class="color-input-group">
+                                    <input type="color" class="color-input" id="color2" value="#764ba2">
+                                    <span class="color-label">颜色2</span>
+                                </div>
+                                
+                                <div class="gradient-direction">
+                                    <div class="direction-grid">
+                                        <button class="direction-btn" data-direction="315deg">↖</button>
+                                        <button class="direction-btn" data-direction="270deg">↑</button>
+                                        <button class="direction-btn" data-direction="225deg">↗</button>
+                                        <button class="direction-btn" data-direction="0deg">←</button>
+                                        <div class="direction-center"></div>
+                                        <button class="direction-btn" data-direction="180deg">→</button>
+                                        <button class="direction-btn" data-direction="45deg">↙</button>
+                                        <button class="direction-btn" data-direction="90deg">↓</button>
+                                        <button class="direction-btn active" data-direction="135deg">↘</button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="gradient-action-container">
+                                <div class="gradient-preview" id="gradientPreview"></div>
+                                <div class="action-buttons">
+                                    <button class="icon-action-btn random-btn" id="randomColorsBtn" title="随机混色">
+                                        <i class="fas fa-random"></i>
+                                    </button>
+                                    <button class="icon-action-btn apply-btn" id="applyCustomGradientBtn" title="应用背景">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <h4 style="margin-top: 24px;">图片壁纸</h4>
+                        <div class="custom-wallpaper-controls">
+                            <div class="wallpaper-input-group">
+                                <input type="text" class="wallpaper-url-input" id="customWallpaperUrl" placeholder="输入图片URL">
+                                <div class="wallpaper-buttons">
+                                    <button class="icon-btn" id="setCustomWallpaperBtn" title="应用壁纸">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <h4 style="margin-top: 24px;">SVG壁纸</h4>
+                        <div class="custom-wallpaper-controls">
+                            <div class="svg-input-group">
+                                <textarea class="svg-code-input" id="svgCode" placeholder="输入SVG代码（实时生效，空白表示不使用SVG壁纸）..." rows="8"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 数据标签页 -->
+            <div class="tab-content" id="data-tab">
+                <div class="data-section">
+                    <textarea class="data-preview" id="dataPreview" placeholder="JSON数据将在这里显示，您可以编辑后保存..." rows="15">
+                        <!-- 数据预览将在这里显示 -->
+                    </textarea>
+                    <div class="data-actions">
+                        <button class="data-btn" id="saveDataConfigBtn">💾 保存配置</button>
+                    </div>
+                    <div class="data-url-import">
+                        <input type="text" class="data-url-input" id="dataUrlInput" placeholder="输入JSON数据URL">
+                        <button class="data-btn" id="applyDataFromURLBtn"><i class="fas fa-check"></i></button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        </div>
+    </div>
+    <script type="module" src="modules/main.js"></script>
+</body>
+</html>

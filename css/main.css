@@ -1,0 +1,94 @@
+/* 主样式文件 - 导入所有模块 */
+@import url('base.css');
+@import url('theme-controls.css');
+@import url('search-components.css');
+@import url('modal-components.css');
+@import url('quick-links.css');
+@import url('tab-components.css');
+@import url('wallpaper-components.css');
+@import url('color-mixer.css');
+
+/* 响应式布局补充样式 */
+/* 搜索框响应式宽度 */
+.search-container {
+    width: 100%;
+    max-width: 600px;
+    min-width: 300px;
+}
+
+/* 书签容器与搜索框间距 */
+.quick-links {
+    margin-top: 0px;
+}
+
+/* 模式切换按钮与顶部间距 */
+.mode-switcher {
+    margin-top: 80px;
+}
+
+/* 搜索框与模式切换按钮间距 */
+.search-container {
+    margin-top: 20px;
+}
+
+/* 响应式断点 */
+@media (max-width: 768px) {
+    .container {
+        padding: 0 15px;
+    }
+    
+    .header h1 {
+        font-size: 2.2em;
+    }
+    
+    .search-container {
+        width: 100%;
+    }
+    
+    .quick-links-grid {
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+        gap: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 20px 10px;
+    }
+    
+    .container {
+        padding: 0 10px;
+    }
+    
+    .header h1 {
+        font-size: 1.8em;
+    }
+    
+    .search-box {
+        flex-direction: column;
+        padding: 12px;
+    }
+    
+    .engine-selector {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 8px;
+        margin-bottom: 8px;
+    }
+    
+    .search-input {
+        width: 100%;
+    }
+    
+    .search-buttons {
+        width: 100%;
+        justify-content: center;
+        margin-top: 8px;
+    }
+    
+    .quick-links-grid {
+        grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+        gap: 10px;
+    }
+}

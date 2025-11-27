@@ -1,0 +1,116 @@
+/* 基础样式模块 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    height: 100vh;
+    padding: 20px;
+    overflow: hidden;
+    position: relative;
+    -webkit-tap-highlight-color: transparent; /* 禁用移动端点击高亮 */
+}
+
+/* 壁纸容器 */
+.wallpaper-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    background: var(--background-color);
+    transform-origin: center;
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), filter 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    will-change: transform, filter;
+}
+
+/* 搜索聚焦时的壁纸效果 */
+.search-focused .wallpaper-container {
+    transform: scale(1.1);
+    filter: blur(10px) brightness(0.8);
+}
+
+/* 设置模态框打开时的壁纸效果 */
+body.settings-modal-open .wallpaper-container {
+  filter: blur(8px) brightness(0.7);
+}
+
+.container {
+    max-width: 800px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    height: calc(100vh - 40px);
+    padding-top: 40px;
+    overflow-y: auto;
+}
+
+/* 全局控制栏 */
+.global-controls {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    z-index: 1000;
+}
+
+/* 设置按钮 */
+.settings-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: var(--text-color);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    z-index: 1000;
+    -webkit-tap-highlight-color: transparent; /* 禁用移动端点击高亮 */
+}
+
+.settings-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.header h1 {
+    color: var(--text-color);
+    font-size: 2.8em;
+    font-weight: 300;
+    margin-bottom: 10px;
+    letter-spacing: -0.5px;
+}
+
+.header p {
+    color: var(--text-secondary);
+    font-size: 16px;
+    margin-bottom: 20px;
+    font-weight: 300;
+}
