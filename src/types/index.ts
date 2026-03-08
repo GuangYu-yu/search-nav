@@ -35,3 +35,18 @@ export interface SuggestionAPI {
   url: string
   params: Record<string, string>
 }
+
+export interface ThemeType {
+  name: string
+  label: string
+}
+
+export const THEMES: ThemeType[] = [
+  { name: 'light', label: '亮色' },
+  { name: 'dark', label: '暗色' },
+  { name: 'red', label: '姨妈红' },
+  { name: 'purple', label: '科技紫' },
+  { name: 'gold', label: '尊贵金' }
+]
+
+export const SEARCH_MODES: Mode[] = ['search', 'translate', 'resource']
