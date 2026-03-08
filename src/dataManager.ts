@@ -1,12 +1,11 @@
-// 数据管理模块
-import { updateEngineDropdown } from './engineManager.js'
-import { renderLinks, renderResources, renderQuickLinks } from './uiManager.js'
+import { LinkItem, ResourceItem } from './types'
+import { updateEngineDropdown } from './engineManager'
+import { renderLinks, renderResources, renderQuickLinks } from './uiManager'
 
-let links = JSON.parse(localStorage.getItem("navLinks")) || []
-let resources = JSON.parse(localStorage.getItem("navResources")) || []
+let links: LinkItem[] = JSON.parse(localStorage.getItem("navLinks") || "[]") || []
+let resources: ResourceItem[] = JSON.parse(localStorage.getItem("navResources") || "[]") || []
 
-// 初始化数据预览
-function initializeDataPreview() {
+function initializeDataPreview(): void {
   const data = {
     links: links,
     resources: resources
@@ -15,20 +14,18 @@ function initializeDataPreview() {
   updateDataPreview(dataStr)
 }
 
-// 数据管理功能
-function saveDataConfig() {
-  const previewElement = document.getElementById("dataPreview")
+function saveDataConfig(): void {
+  const previewElement = document.getElementById("dataPreview") as HTMLTextAreaElement | null
   if (previewElement) {
     try {
       const data = JSON.parse(previewElement.value)
       if (data.links && data.resources) {
-        links.length = 0;
-        links.push(...data.links);
-        resources.length = 0;
-        resources.push(...data.resources);
+        links.length = 0
+        links.push(...data.links)
+        resources.length = 0
+        resources.push(...data.resources)
         localStorage.setItem("navLinks", JSON.stringify(links))
         localStorage.setItem("navResources", JSON.stringify(resources))
-        // 需要从其他模块导入这些函数
         renderLinks()
         renderResources()
         renderQuickLinks()
@@ -44,9 +41,9 @@ function saveDataConfig() {
   }
 }
 
-function applyDataFromURL() {
-  const urlInput = document.getElementById("dataUrlInput")
-  const url = urlInput.value.trim()
+function applyDataFromURL(): void {
+  const urlInput = document.getElementById("dataUrlInput") as HTMLInputElement | null
+  const url = urlInput?.value.trim()
   if (!url) {
     alert("请输入URL")
     return
@@ -74,8 +71,8 @@ function applyDataFromURL() {
     })
 }
 
-function updateDataPreview(data) {
-  const previewElement = document.getElementById("dataPreview")
+function updateDataPreview(data: string): void {
+  const previewElement = document.getElementById("dataPreview") as HTMLTextAreaElement | null
   if (previewElement) {
     previewElement.value = data
   }

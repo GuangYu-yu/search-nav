@@ -1,9 +1,8 @@
-// UI管理模块
-import { links, resources, initializeDataPreview } from './dataManager.js'
-import { getCachedFaviconUrl, getFaviconUrl, formatUrl, clearDomainCache, showEditDialog, showEditResourceDialog, deleteLink, deleteResource } from './linkManager.js'
+import { LinkItem, ResourceItem, GridLayout } from './types'
+import { links, resources, initializeDataPreview } from './dataManager'
+import { getCachedFaviconUrl, getFaviconUrl, formatUrl, clearDomainCache, showEditDialog, showEditResourceDialog, deleteLink, deleteResource } from './linkManager'
 
-// 计算书签网格布局
-function calculateGridLayout(totalItems) {
+function calculateGridLayout(totalItems: number): GridLayout {
   const maxColumns = 5
 
   if (totalItems <= maxColumns) {
@@ -19,15 +18,15 @@ function calculateGridLayout(totalItems) {
   }
 }
 
-// 渲染快速链接
-function renderQuickLinks() {
-  const container = document.getElementById("quickLinksContainer")
+function renderQuickLinks(): void {
+  const container = document.getElementById("quickLinksContainer") as HTMLElement | null
+  if (!container) return
+  
   container.innerHTML = ""
   if (!links.length) return
 
   const layout = calculateGridLayout(links.length)
 
-  // 设置网格样式
   container.style.gridTemplateColumns = `repeat(${layout.columns}, 80px)`
   container.style.gridTemplateRows = `repeat(${layout.rows}, 1fr)`
 
@@ -40,7 +39,6 @@ function renderQuickLinks() {
 
     const icon = document.createElement("div")
     icon.className = "quick-link-icon"
-    // 使用自定义图片URL或缓存的favicon
     icon.style.backgroundImage = `url('${
       link.faviconUrl || getCachedFaviconUrl(link.url)
     }')`
@@ -54,67 +52,63 @@ function renderQuickLinks() {
   })
 
   container.appendChild(fragment)
-
-  // 超过三行显示滚动条
   container.classList.toggle("overflowing", layout.rows > 3)
 }
 
-// 点击外部关闭主题切换器和引擎下拉菜单
-document.addEventListener("click", function (event) {
+document.addEventListener("click", function (event: Event): void {
   const themeSwitcher = document.getElementById("themeSwitcher")
   const themeToggleBtn = document.querySelector(".theme-toggle-btn")
   const engineDropdown = document.getElementById("engineDropdown")
   const engineSelector = document.querySelector(".engine-selector")
 
   if (
-    !themeSwitcher.contains(event.target) &&
-    !themeToggleBtn.contains(event.target)
+    themeSwitcher &&
+    themeToggleBtn &&
+    !themeSwitcher.contains(event.target as Node) &&
+    !themeToggleBtn.contains(event.target as Node)
   ) {
     themeSwitcher.classList.remove("show")
   }
 
   if (
-    !engineDropdown.contains(event.target) &&
-    !engineSelector.contains(event.target)
+    engineDropdown &&
+    engineSelector &&
+    !engineDropdown.contains(event.target as Node) &&
+    !engineSelector.contains(event.target as Node)
   ) {
     engineDropdown.classList.remove("show")
-    // 恢复搜索建议透明度
     const suggestionsContainer = document.getElementById("suggestionsContainer")
-    suggestionsContainer.style.opacity = ""
+    if (suggestionsContainer) suggestionsContainer.style.opacity = ""
   }
 })
 
-// 打开设置
-function openSettings() {
+function openSettings(): void {
   const modal = document.getElementById("settingsModal")
-  modal.classList.add("show")
+  modal?.classList.add("show")
   document.body.classList.add("settings-modal-open")
   renderLinks()
 }
 
-// 关闭设置
-function closeSettings() {
+function closeSettings(): void {
   const modal = document.getElementById("settingsModal")
-  modal.classList.remove("show")
+  modal?.classList.remove("show")
   document.body.classList.remove("settings-modal-open")
 }
 
-// 标签页切换
-function switchTab(tabName) {
-  // 更新标签按钮状态
+function switchTab(tabName: string): void {
   document.querySelectorAll(".tab-btn").forEach((btn) => {
-    btn.classList.toggle("active", btn.dataset.tab === tabName)
+    btn.classList.toggle("active", (btn as HTMLElement).dataset.tab === tabName)
   })
 
-  // 更新标签内容显示
   document.querySelectorAll(".tab-content").forEach((content) => {
     content.classList.toggle("active", content.id === tabName + "-tab")
   })
 }
 
-// 统一渲染列表项
-function renderListItems(containerId, items, type) {
+function renderListItems(containerId: string, items: (LinkItem | ResourceItem)[], type: 'link' | 'resource'): void {
   const container = document.getElementById(containerId)
+  if (!container) return
+  
   container.innerHTML = ""
 
   items.forEach((item, index) => {
@@ -122,12 +116,10 @@ function renderListItems(containerId, items, type) {
     itemElement.className = "link-item"
     itemElement.id = `${type}-${index}`
 
-    // 图标
     const favicon = document.createElement("div")
     favicon.className = "link-favicon"
     favicon.style.backgroundImage = `url('${item.faviconUrl}')`
 
-    // 信息
     const details = document.createElement("div")
     details.className = "link-details"
 
@@ -142,7 +134,6 @@ function renderListItems(containerId, items, type) {
     details.appendChild(name)
     details.appendChild(url)
 
-    // 操作按钮
     const actions = document.createElement("div")
     actions.className = "link-actions"
 
@@ -154,11 +145,10 @@ function renderListItems(containerId, items, type) {
     deleteBtn.className = "delete-btn"
     deleteBtn.textContent = "删除"
 
-    // 根据类型设置不同的操作函数
     if (type === "link") {
       editBtn.onclick = () => showEditDialog(index)
       deleteBtn.onclick = () => deleteLink(index)
-    } else if (type === "resource") {
+    } else {
       editBtn.onclick = () => showEditResourceDialog(index)
       deleteBtn.onclick = () => deleteResource(index)
     }
@@ -173,18 +163,15 @@ function renderListItems(containerId, items, type) {
   })
 }
 
-// 渲染设置中的书签列表
-function renderLinks() {
+function renderLinks(): void {
   renderListItems("linksContainer", links, "link")
 }
 
-// 渲染设置中的资源列表
-function renderResources() {
+function renderResources(): void {
   renderListItems("resourcesContainer", resources, "resource")
 }
 
-// 保存编辑的书签
-function saveLink(index, name, url, imageUrl = "") {
+function saveLink(index: number, name: string, url: string, imageUrl: string = ""): void {
   if (!url) {
     alert("请填写网站地址")
     return
@@ -202,13 +189,10 @@ function saveLink(index, name, url, imageUrl = "") {
   initializeDataPreview()
 }
 
-// 统一处理焦点状态的 transform 和 transition
-function applyFocusTransition(isFocused) {
+function applyFocusTransition(isFocused: boolean): void {
   if (isFocused) {
-    // 应用焦点状态
     document.body.classList.add("search-focused")
   } else {
-    // 恢复默认状态
     document.body.classList.remove("search-focused")
   }
 }
