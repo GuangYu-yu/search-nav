@@ -10,17 +10,13 @@ declare global {
 let suggestionCache: Map<string, SuggestionItem[]> = new Map()
 let currentSuggestions: SuggestionItem[] = []
 let activeSuggestionIndex: number = -1
+let debounceTimer: NodeJS.Timeout | null = null
 
 const engineLastRequestTime: Record<string, number> = {
-  duckduckgo: 0,
   so360: 0
 }
 
 const SUGGESTION_APIS: Record<string, SuggestionAPI> = {
-  duckduckgo: {
-    url: "https://duckduckgo.com/ac/",
-    params: { q: "" }
-  },
   so360: {
     url: "https://sug.so.360.cn/suggest",
     params: {
@@ -33,24 +29,6 @@ const SUGGESTION_APIS: Record<string, SuggestionAPI> = {
 }
 
 function performRequest(engine: string, api: SuggestionAPI, query: string): Promise<SuggestionItem[]> {
-  if (engine === "duckduckgo") {
-    return fetch(
-      `${api.url}?${new URLSearchParams({ ...api.params, q: query })}`
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        const suggestions = data.map((item: any) => item.phrase)
-        return suggestions.map((item: string) => ({
-          text: item,
-          source: engine
-        }))
-      })
-      .catch((error) => {
-        console.error("DuckDuckGo请求错误:", error)
-        return []
-      })
-  }
-
   return new Promise((resolve, reject) => {
     const callbackName =
       "jsonp_callback_" + Date.now() + "_" + Math.round(Math.random() * 100000)
@@ -123,48 +101,57 @@ function performRequest(engine: string, api: SuggestionAPI, query: string): Prom
 }
 
 async function fetchSuggestions(query: string): Promise<SuggestionItem[]> {
-  if (suggestionCache.has(query)) {
-    return suggestionCache.get(query) || []
+  if (debounceTimer) {
+    clearTimeout(debounceTimer)
   }
 
-  if (!query.trim()) {
-    return []
-  }
-
-  const enginesToQuery = ["duckduckgo", "so360"]
-
-  try {
-    const requests = enginesToQuery.map((engine) => {
-      const api = SUGGESTION_APIS[engine]
-      if (!api) {
-        return Promise.resolve([])
+  return new Promise((resolve) => {
+    debounceTimer = setTimeout(async () => {
+      if (suggestionCache.has(query)) {
+        resolve(suggestionCache.get(query) || [])
+        return
       }
 
-      const now = Date.now()
-      const timeSinceLastRequest = now - engineLastRequestTime[engine]
+      if (!query.trim()) {
+        resolve([])
+        return
+      }
 
-      return new Promise<SuggestionItem[]>((resolve) => {
-        if (timeSinceLastRequest < 200) {
-          const delay = 200 - timeSinceLastRequest
-          setTimeout(() => {
-            engineLastRequestTime[engine] = Date.now()
-            resolve(performRequest(engine, api, query))
-          }, delay)
-        } else {
-          engineLastRequestTime[engine] = now
-          resolve(performRequest(engine, api, query))
-        }
-      })
-    })
+      const enginesToQuery = ["so360"]
 
-    const result = await Promise.race(requests)
-    suggestionCache.set(query, result)
+      try {
+        const requests = enginesToQuery.map((engine) => {
+          const api = SUGGESTION_APIS[engine]
+          if (!api) {
+            return Promise.resolve([])
+          }
 
-    return result
-  } catch (error) {
-    console.error("获取搜索建议时出错:", error)
-    return []
-  }
+          const now = Date.now()
+          const timeSinceLastRequest = now - engineLastRequestTime[engine]
+
+          return new Promise<SuggestionItem[]>((resolve) => {
+            if (timeSinceLastRequest < 200) {
+              const delay = 200 - timeSinceLastRequest
+              setTimeout(() => {
+                engineLastRequestTime[engine] = Date.now()
+                resolve(performRequest(engine, api, query))
+              }, delay)
+            } else {
+              engineLastRequestTime[engine] = now
+              resolve(performRequest(engine, api, query))
+            }
+          })
+        })
+
+        const result = await Promise.race(requests)
+        suggestionCache.set(query, result)
+        resolve(result)
+      } catch (error) {
+        console.error("获取搜索建议时出错:", error)
+        resolve([])
+      }
+    }, 300)
+  })
 }
 
 function showSuggestions(suggestions: SuggestionItem[], query: string): void {
@@ -229,6 +216,10 @@ function hideSuggestions(): void {
   suggestionsContainer?.classList.remove("show")
   currentSuggestions = []
   activeSuggestionIndex = -1
+  if (debounceTimer) {
+    clearTimeout(debounceTimer)
+    debounceTimer = null
+  }
 }
 
 function handleSuggestionNavigation(event: KeyboardEvent): void {
