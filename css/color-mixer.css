@@ -35,7 +35,9 @@
     border-radius: 8px;
     cursor: pointer;
     border: 2px solid var(--border-color);
-    transition: all 0.2s ease;
+    transition: transform 0.15s ease, border-color 0.15s ease;
+    transform: translateZ(0);
+    will-change: transform;
 }
 
 .color-input:hover {
@@ -87,11 +89,12 @@
     border-radius: 3px;
     cursor: pointer;
     font-size: 12px;
-    transition: all 0.2s ease;
+    transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 0;
+    will-change: background, transform;
 }
 
 .direction-btn.active {
@@ -102,6 +105,7 @@
 
 .direction-btn:hover {
     background: rgba(var(--primary-color-rgb), 0.2);
+    transform: scale(1.05);
 }
 
 .direction-center {
@@ -124,9 +128,10 @@
     border-radius: 8px;
     cursor: pointer;
     font-size: 12px;
-    transition: all 0.2s ease;
+    transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
+    will-change: background, transform;
 }
 
 .preview-btn {
@@ -146,6 +151,7 @@
 
 .action-btn:hover {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: scale(1.05);
 }
 
 .gradient-preview {
@@ -154,16 +160,19 @@
     border-radius: 8px;
     border: 2px solid var(--border-color);
     margin: 12px 0;
-    transition: all 0.3s ease;
+    transition: background 0.15s ease;
+    transform: translateZ(0);
+    will-change: background;
 }
 
-/* 缩短渐变预览样式 */
 .gradient-preview {
     width: 100%;
-    height: 40px; /* 从60px缩短到40px */
+    height: 40px;
     border-radius: 8px;
     border: 2px solid var(--border-color);
-    transition: all 0.3s ease;
+    transition: background 0.15s ease;
+    transform: translateZ(0);
+    will-change: background;
 }
 
 /* 修改操作按钮为图标样式 */
@@ -214,12 +223,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s ease;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
     position: relative;
     overflow: hidden;
     font-size: 16px;
     -webkit-tap-highlight-color: transparent; /* 禁用移动端点击高亮 */
+    transform: translateZ(0);
+    will-change: transform;
 }
 
 .icon-action-btn::before {

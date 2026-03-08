@@ -3,10 +3,11 @@
     margin: 16px 0;  /* 控制上下间距，左右间距 */
     width: 100%;
     max-width: 800px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     transform: translateZ(0);
     backface-visibility: hidden;
     perspective: 1000px;
+    will-change: transform, opacity;
 }
 
 .quick-links h3 {
@@ -46,7 +47,7 @@
     opacity: 0;
     transform: scale(0.9) translateY(-20px);
     pointer-events: none;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* 快速链接项样式 */
@@ -59,9 +60,10 @@
     border-radius: 12px;
     min-width: 80px;
     flex-shrink: 0;
-    transition: all 0.2s ease;
+    transition: background 0.2s ease, transform 0.2s ease;
     /* 确保每个链接都有正确的渲染上下文 */
     transform: translateZ(0);
+    will-change: transform, background;
 }
 
 .quick-link:hover {
@@ -90,7 +92,7 @@
     cursor: pointer;
     position: relative;
     overflow: hidden;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s ease;
     transform: translateZ(0);
     will-change: transform;
 }
@@ -124,7 +126,7 @@
     pointer-events: none;
     opacity: 0;
     transform: scale(0.8);
-    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .quick-link:hover .quick-link-name {
@@ -134,5 +136,5 @@
 
 /* 添加针对搜索聚焦状态的特定样式 */
 .search-focused .quick-link-icon {
-    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.4s ease;
 }

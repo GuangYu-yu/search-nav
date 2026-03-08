@@ -13,7 +13,8 @@
     backdrop-filter: blur(4px);
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.3s ease, visibility 0.3s ease;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+    will-change: opacity;
 }
 
 .settings-modal.show {
@@ -36,9 +37,10 @@
     box-shadow: 0 16px 60px rgba(0, 0, 0, 0.3), 
                 0 8px 32px rgba(255, 255, 255, 0.3) inset;
     transform: scale(0.9) translateY(20px);
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     flex-direction: column;
+    will-change: transform;
 }
 
 .settings-modal.show .modal-content {
@@ -94,8 +96,9 @@
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    transition: background-color 0.2s ease;
+    transition: background-color 0.15s ease;
     -webkit-tap-highlight-color: transparent; /* 禁用移动端点击高亮 */
+    will-change: background-color;
 }
 
 .close-btn:hover { 
@@ -119,7 +122,8 @@
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     color: var(--text-color);
-    transition: all 0.2s ease;
+    transition: border-color 0.15s ease, background 0.15s ease;
+    will-change: background, border-color;
 }
 
 .add-link-input:focus { 
@@ -148,8 +152,9 @@
     border-radius: 12px;
     cursor: pointer;
     font-weight: 500;
-    transition: all 0.2s ease;
+    transition: background 0.15s ease, transform 0.15s ease;
     -webkit-tap-highlight-color: transparent; /* 禁用移动端点击高亮 */
+    will-change: background, transform;
 }
 
 .add-btn:hover { 
@@ -204,7 +209,8 @@
     gap: 12px;
     margin-bottom: 8px;
     border: 1px solid rgba(255, 255, 255, 0.3);
-    transition: all 0.2s ease;
+    transition: background 0.2s ease;
+    will-change: background;
 }
 
 .link-item:hover {
@@ -299,8 +305,9 @@
     font-size: 12px;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    transition: all 0.2s ease;
+    transition: background 0.15s ease, transform 0.15s ease;
     -webkit-tap-highlight-color: transparent; /* 禁用移动端点击高亮 */
+    will-change: background, transform;
 }
 
 .edit-btn {
@@ -334,8 +341,9 @@
     font-size: 12px;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    transition: all 0.2s ease;
+    transition: background 0.15s ease, transform 0.15s ease;
     -webkit-tap-highlight-color: transparent; /* 禁用移动端点击高亮 */
+    will-change: background, transform;
 }
 
 .save-btn {
@@ -371,11 +379,12 @@
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     color: var(--text-secondary);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
     border: 1px solid rgba(255, 255, 255, 0.2);
     position: relative;
     overflow: hidden;
     -webkit-tap-highlight-color: transparent; /* 禁用移动端点击高亮 */
+    will-change: background, transform;
 }
 
 .tab-btn::before {
@@ -439,11 +448,12 @@
     cursor: pointer;
     padding: 12px;
     border-radius: 12px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
     position: relative;
     overflow: hidden;
+    will-change: background, transform;
 }
 
 .wallpaper-option::before {
@@ -473,9 +483,10 @@
     border-radius: 8px;
     margin: 0 auto 8px;
     border: 2px solid rgba(255, 255, 255, 0.3);
-    transition: all 0.3s ease;
+    transition: transform 0.2s ease, border-color 0.2s ease;
     position: relative;
     overflow: hidden;
+    transform: translateZ(0);
 }
 
 .wallpaper-option:hover .wallpaper-preview {
@@ -493,7 +504,7 @@
     border-radius: 6px;
     cursor: pointer;
     font-size: 14px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -501,6 +512,7 @@
     position: relative;
     overflow: hidden;
     -webkit-tap-highlight-color: transparent; /* 禁用移动端点击高亮 */
+    will-change: background, transform;
 }
 
 .direction-btn::before {
@@ -553,7 +565,8 @@
     backdrop-filter: blur(4px);
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.3s ease, visibility 0.3s ease;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+    will-change: opacity;
 }
 
 .confirm-dialog.show {
@@ -573,7 +586,8 @@
     box-shadow: 0 16px 60px rgba(0, 0, 0, 0.3), 
                 0 8px 32px rgba(255, 255, 255, 0.3) inset;
     transform: scale(0.9) translateY(20px);
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
 }
 
 [data-theme="dark"] .confirm-content {
@@ -617,10 +631,11 @@
     cursor: pointer;
     font-size: 14px;
     font-weight: 500;
-    transition: all 0.2s ease;
+    transition: background 0.15s ease, transform 0.15s ease;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     -webkit-tap-highlight-color: transparent; /* 禁用移动端点击高亮 */
+    will-change: background, transform;
 }
 
 .confirm-btn.cancel {
@@ -671,7 +686,8 @@
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     color: var(--text-color);
-    transition: all 0.2s ease;
+    transition: border-color 0.15s ease, background 0.15s ease;
+    will-change: background, border-color;
 }
 
 .edit-input:focus {

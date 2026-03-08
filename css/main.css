@@ -8,6 +8,32 @@
 @import url('wallpaper-components.css');
 @import url('color-mixer.css');
 
+/* 启用硬件加速 */
+* {
+    transform: translateZ(0);
+    will-change: auto;
+}
+
+/* 壁纸容器性能优化 */
+.wallpaper-container {
+    will-change: transform, filter;
+}
+
+/* 模态框性能优化 */
+.settings-modal .modal-content {
+    will-change: transform, opacity;
+}
+
+/* 快速链接性能优化 */
+.quick-links {
+    will-change: transform, opacity;
+}
+
+/* 模式切换性能优化 */
+.mode-switcher-container {
+    will-change: transform, opacity;
+}
+
 /* 响应式布局补充样式 */
 /* 搜索框响应式宽度 */
 .search-container {

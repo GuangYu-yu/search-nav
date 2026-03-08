@@ -17,11 +17,13 @@
     cursor: pointer;
     padding: 8px;
     border-radius: 8px;
-    transition: background-color 0.2s ease;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    will-change: transform, background-color;
 }
 
 .wallpaper-option:hover {
     background: var(--hover-color);
+    transform: scale(1.02);
 }
 
 .wallpaper-preview {
@@ -30,11 +32,13 @@
     border-radius: 6px;
     margin: 0 auto 8px;
     border: 2px solid var(--border-color);
-    transition: border-color 0.2s ease;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+    transform: translateZ(0);
 }
 
 .wallpaper-option:hover .wallpaper-preview {
     border-color: var(--primary-color);
+    transform: scale(1.05);
 }
 
 .default-bg {
@@ -107,10 +111,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s ease;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
     font-size: 16px;
     -webkit-tap-highlight-color: transparent; /* 禁用移动端点击高亮 */
+    transform: translateZ(0);
+    will-change: transform;
 }
 
 .icon-btn:hover {

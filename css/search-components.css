@@ -15,7 +15,8 @@
     border-radius: 20px;
     padding: 4px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.3s ease;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, visibility 0.3s ease;
+    will-change: transform, opacity;
 }
 
 .mode-btn {
@@ -26,7 +27,7 @@
     cursor: pointer;
     border-radius: 16px;
     font-size: 14px;
-    transition: all 0.3s ease;
+    transition: color 0.2s ease, background 0.2s ease;
     position: relative;
     z-index: 2;
     min-width: 100px;
@@ -34,6 +35,7 @@
     box-sizing: border-box;
     -webkit-tap-highlight-color: transparent; /* 禁用移动端点击高亮 */
     user-select: none;
+    will-change: color, background;
 }
 
 .mode-btn:hover {
@@ -51,17 +53,19 @@
     width: 100px;
     background: var(--primary-color);
     border-radius: 16px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     top: 4px;
     left: 4px;
     z-index: 1;
+    will-change: transform;
 }
 
 .search-container {
     position: relative;
     margin: 25px 0;
-    transition: all 0.3s ease;
+    transition: transform 0.3s ease;
     z-index: 10;
+    will-change: transform;
 }
 
 .search-container.focused {
@@ -84,8 +88,9 @@
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 30px;
     padding: 8px 16px;
-    transition: all 0.3s ease;
+    transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    will-change: background, transform;
 }
 
 .search-box:hover {
@@ -112,12 +117,12 @@
     padding: 6px 0;
     cursor: pointer;
     min-width: 20px;
-    transition: all 0.3s ease;
+    transition: transform 0.15s ease;
+    will-change: transform;
 }
 
 .engine-selector:hover {
     transform: scale(1.03);
-    will-change: transform;
 }
 
 .engine-icon {
@@ -130,7 +135,9 @@
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
-    transition: transform 0.3s ease;
+    transition: transform 0.2s ease;
+    transform: translateZ(0);
+    will-change: transform;
 }
 
 .engine-icon:hover {
@@ -225,14 +232,15 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.1);
     -webkit-tap-highlight-color: transparent; /* 禁用移动端点击高亮 */
+    transform: translateZ(0);
+    will-change: transform;
 }
 
 .search-btn:hover {
     transform: scale(1.03);
-    will-change: transform;
 }
 
 .header-controls {
@@ -258,12 +266,13 @@
     opacity: 0;
     visibility: hidden;
     transform: translateY(-10px);
-    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 4px;
     max-height: 250px; /* 限制最大高度 */
     overflow-y: auto; /* 超出时显示垂直滚动条 */
+    will-change: opacity, transform;
 }
 
 /* 隐藏滚动条 */
@@ -309,9 +318,10 @@
     z-index: 1000;
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.3s ease, visibility 0.3s ease;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
     max-height: calc(400px);
     overflow-y: hidden;
+    will-change: opacity;
 }
 
 .suggestions-container.show {
@@ -329,7 +339,8 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    transition: background 0.3s ease, color 0.3s ease;
+    transition: background 0.2s ease, color 0.2s ease;
+    will-change: background, color;
 }
 
 .suggestion-item:hover {
