@@ -67,7 +67,7 @@
         
         <!-- 快速链接区域 -->
         <div class="quick-links">
-            <div class="quick-links-grid" id="quickLinksContainer">
+            <div class="quick-links-grid custom-scrollbar" id="quickLinksContainer">
                 <!-- 快速链接将在这里动态显示 -->
             </div>
         </div>
@@ -180,12 +180,12 @@
             </div>
             
             <!-- 书签标签页 -->
-            <div class="tab-content active" id="bookmarks-tab">
+            <div class="tab-content custom-scrollbar active" id="bookmarks-tab">
                 <div class="add-link-form">
                     <input type="text" class="add-link-input" id="linkName" placeholder="输入网站名称">
                     <input type="text" class="add-link-input" id="linkUrl" placeholder="输入网站地址">
                     <input type="text" class="add-link-input" id="linkImageUrl" placeholder="输入图标URL（可选）">
-                    <button class="add-btn" id="addLinkBtn">添加书签</button>
+                    <button class="primary-btn" id="addLinkBtn">添加书签</button>
                 </div>
                 
                 <div class="links-list" id="linksContainer">
@@ -194,12 +194,12 @@
             </div>
             
             <!-- 资源标签页 -->
-            <div class="tab-content" id="resource-tab">
+            <div class="tab-content custom-scrollbar" id="resource-tab">
                 <div class="add-link-form">
                     <input type="text" class="add-link-input" id="resourceName" placeholder="输入资源名称">
                     <input type="text" class="add-link-input" id="resourceUrl" placeholder="输入带搜索参数的资源地址">
                     <input type="text" class="add-link-input" id="resourceImageUrl" placeholder="输入图标URL（可选）">
-                    <button class="add-btn" id="addResourceBtn">添加资源</button>
+                    <button class="primary-btn" id="addResourceBtn">添加资源</button>
                 </div>
                 
                 <div class="links-list" id="resourcesContainer">
@@ -208,7 +208,7 @@
             </div>
             
             <!-- 壁纸标签页 -->
-            <div class="tab-content" id="wallpaper-tab">
+            <div class="tab-content custom-scrollbar" id="wallpaper-tab">
                 <div class="wallpaper-section">
                     <h3>背景设置</h3>
                     <div class="wallpaper-options">
@@ -295,7 +295,7 @@
                         <h4 style="margin-top: 24px;">SVG壁纸</h4>
                         <div class="custom-wallpaper-controls">
                             <div class="svg-input-group">
-                                <textarea class="svg-code-input" id="svgCode" placeholder="输入SVG代码（实时生效，空白表示不使用SVG壁纸）..." rows="8"></textarea>
+                                <textarea class="svg-code-input custom-scrollbar" id="svgCode" placeholder="输入SVG代码（实时生效，空白表示不使用SVG壁纸）..." rows="8"></textarea>
                             </div>
                         </div>
                     </div>
@@ -303,15 +303,15 @@
             </div>
             
             <!-- 数据标签页 -->
-            <div class="tab-content" id="data-tab">
+            <div class="tab-content custom-scrollbar" id="data-tab">
                 <div class="data-section">
-                    <textarea class="data-preview" id="dataPreview" placeholder="JSON数据将在这里显示，您可以编辑后保存..." rows="15"></textarea>
+                    <textarea class="data-preview custom-scrollbar" id="dataPreview" placeholder="JSON数据将在这里显示，您可以编辑后保存..." rows="15"></textarea>
                     <div class="data-actions">
-                        <button class="data-btn" id="saveDataConfigBtn">💾 保存配置</button>
+                        <button class="primary-btn" id="saveDataConfigBtn">💾 保存配置</button>
                     </div>
                     <div class="data-url-import">
                         <input type="text" class="data-url-input" id="dataUrlInput" placeholder="输入JSON数据URL">
-                        <button class="data-btn" id="applyDataFromURLBtn"><i class="fas fa-check"></i></button>
+                        <button class="primary-btn" id="applyDataFromURLBtn"><i class="fas fa-check"></i></button>
                     </div>
 
                 </div>

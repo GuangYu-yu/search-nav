@@ -57,38 +57,6 @@
     display: block;
 }
 
-/* 标签页内容滚动条样式 */
-.tab-content::-webkit-scrollbar {
-    width: 6px;
-}
-
-.tab-content::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 3px;
-}
-
-.tab-content::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.3);
-    border-radius: 3px;
-}
-
-.tab-content::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.5);
-}
-
-/* 暗色主题下的标签页滚动条 */
-[data-theme="dark"] .tab-content::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.05);
-}
-
-[data-theme="dark"] .tab-content::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.2);
-}
-
-[data-theme="dark"] .tab-content::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.3);
-}
-
 /* 数据标签页样式 */
 .data-section {
     padding: 20px;
@@ -108,33 +76,6 @@
     margin-bottom: 20px;
 }
 
-.data-btn {
-    padding: 12px 16px;
-    border: none;
-    border-radius: 12px;
-    background: rgba(var(--primary-color-rgb), 0.9);
-    color: white;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s ease;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-    font-size: 16px;
-    -webkit-tap-highlight-color: transparent; /* 禁用移动端点击高亮 */
-    transform: translateZ(0);
-    will-change: transform;
-}
-
-.data-btn:hover {
-    transform: scale(1.05);
-}
-
-.data-btn:active {
-    transform: translateY(0) scale(0.98);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-}
-
 .data-preview {
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -143,6 +84,7 @@
     min-height: 100px;
     max-height: 200px;
     overflow-y: auto;
+    overflow-x: auto;
     font-family: monospace;
     font-size: 12px;
     color: var(--text-color);
@@ -187,36 +129,4 @@
 
 .data-url-input::placeholder {
     color: var(--text-secondary);
-}
-
-/* 数据预览滚动条样式 */
-.data-preview::-webkit-scrollbar {
-    width: 6px;
-}
-
-.data-preview::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 3px;
-}
-
-.data-preview::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.3);
-    border-radius: 3px;
-}
-
-.data-preview::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.5);
-}
-
-/* 暗色主题下的数据预览滚动条 */
-[data-theme="dark"] .data-preview::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.05);
-}
-
-[data-theme="dark"] .data-preview::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.2);
-}
-
-[data-theme="dark"] .data-preview::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.3);
 }

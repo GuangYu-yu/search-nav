@@ -26,6 +26,7 @@
     margin: 0 auto;
     max-width: calc(6 * (80px + 12px) + 24px);
     overflow-y: hidden;
+    overflow-x: auto;
     border-radius: 12px;
     isolation: isolate;
 }

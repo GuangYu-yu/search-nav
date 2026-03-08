@@ -30,6 +30,7 @@ function setCustomWallpaper(): void {
   }
 
   const img = new Image()
+  img.decoding = "async"
   img.onload = function () {
     const backgroundStyle = `url('${url}') center/cover no-repeat`
     const wallpaperContainer = document.getElementById("wallpaperContainer") as HTMLElement | null

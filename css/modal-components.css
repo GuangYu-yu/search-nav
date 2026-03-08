@@ -142,60 +142,16 @@
     background: rgba(255, 255, 255, 0.15);
 }
 
-.add-btn {
-    padding: 12px 20px;
-    background: rgba(var(--primary-color-rgb), 0.9);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    color: white;
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
-    font-weight: 500;
-    transition: background 0.15s ease, transform 0.15s ease;
-    -webkit-tap-highlight-color: transparent; /* 禁用移动端点击高亮 */
-    will-change: background, transform;
-}
-
-.add-btn:hover { 
-    background: rgba(var(--primary-color-rgb), 1);
-}
-
 .links-list {
     margin-top: 20px;
     max-height: 240px;
     overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
 }
 
 .links-list::-webkit-scrollbar {
-    width: 0;
-}
-
-.links-list::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 3px;
-}
-
-.links-list::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.3);
-    border-radius: 3px;
-}
-
-.links-list::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.5);
-}
-
-/* 暗色主题下的滚动条 */
-[data-theme="dark"] .links-list::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.05);
-}
-
-[data-theme="dark"] .links-list::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.2);
-}
-
-[data-theme="dark"] .links-list::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.3);
+    display: none;
 }
 
 .link-item {
