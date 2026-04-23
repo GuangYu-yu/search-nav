@@ -4,7 +4,7 @@
 
 ## 预览
 
-<img width="2145" height="1196" alt="演示" src="https://gitee.com/zhxdcyy/search-nav/raw/master/演示.png" />
+<img width="2145" height="1196" alt="演示" src="https://github.com/GuangYu-yu/search-nav/blob/main/演示.png?raw=true" />
 
 ## 功能特性
 
