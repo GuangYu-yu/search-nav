@@ -1,8 +1,10 @@
-import { LinkItem, ResourceItem, FaviconCache } from './types'
+import { LinkItem, ResourceItem, FaviconCache, Mode } from './types'
 import { links, resources, initializeDataPreview } from './dataManager'
 import { renderQuickLinks, renderLinks, renderResources } from './uiManager'
 import { currentMode } from './modeManager'
 import { updateEngineDropdown } from './engineManager'
+import { addCustomEngine } from './builtInEngines'
+import { showToast } from './toast'
 
 let pendingDeleteIndex: number = -1
 let currentEditIndex: number = -1
@@ -10,57 +12,118 @@ let pendingDeleteResourceIndex: number = -1
 
 type ItemType = 'link' | 'resource'
 
-function addItem(type: ItemType): void {
-  let nameInputId: string, urlInputId: string, imageInputId: string, items: (LinkItem | ResourceItem)[], storageKey: string, renderFunc: () => void
-  
+interface ItemTypeConfig {
+  items: (LinkItem | ResourceItem)[]
+  storageKey: string
+  label: string
+  nameInputId: string
+  urlInputId: string
+  imageInputId: string
+  editNameInputId: string
+  editUrlInputId: string
+  editImageInputId: string
+  dialogId: string
+  closeDialogFunc: () => void
+  renderFunc: () => void
+  editCloseDialogFunc: () => void
+  editRenderFunc: () => void
+  confirmDialogFunc: () => void
+  closeConfirmFunc: () => void
+}
+
+function getItemConfig(type: ItemType): ItemTypeConfig {
   if (type === "link") {
-    nameInputId = "linkName"
-    urlInputId = "linkUrl"
-    imageInputId = "linkImageUrl"
-    items = links
-    storageKey = "navLinks"
-    renderFunc = () => {
-      renderLinks()
-      renderQuickLinks()
+    return {
+      items: links,
+      storageKey: "navLinks",
+      label: "网站",
+      nameInputId: "linkName",
+      urlInputId: "linkUrl",
+      imageInputId: "linkImageUrl",
+      editNameInputId: "editLinkName",
+      editUrlInputId: "editLinkUrl",
+      editImageInputId: "editLinkImageUrl",
+      dialogId: "editDialog",
+      closeDialogFunc: closeConfirmDialog,
+      renderFunc: () => {
+        renderLinks()
+        renderQuickLinks()
+      },
+      editCloseDialogFunc: closeEditDialog,
+      editRenderFunc: () => {
+        renderLinks()
+        renderQuickLinks()
+        initializeDataPreview()
+      },
+      confirmDialogFunc: showConfirmDialog,
+      closeConfirmFunc: closeConfirmDialog,
     }
-  } else {
-    nameInputId = "resourceName"
-    urlInputId = "resourceUrl"
-    imageInputId = "resourceImageUrl"
-    items = resources
-    storageKey = "navResources"
-    renderFunc = () => {
+  }
+  return {
+    items: resources,
+    storageKey: "navResources",
+    label: "资源",
+    nameInputId: "resourceName",
+    urlInputId: "resourceUrl",
+    imageInputId: "resourceImageUrl",
+    editNameInputId: "editResourceName",
+    editUrlInputId: "editResourceUrl",
+    editImageInputId: "editResourceImageUrl",
+    dialogId: "editResourceDialog",
+    closeDialogFunc: closeConfirmResourceDialog,
+    renderFunc: () => {
       renderResources()
       if (currentMode === "resource") {
         updateEngineDropdown()
       }
-    }
+    },
+    editCloseDialogFunc: closeEditResourceDialog,
+    editRenderFunc: () => {
+      renderResources()
+      initializeDataPreview()
+      if (currentMode === "resource") {
+        updateEngineDropdown()
+      }
+    },
+    confirmDialogFunc: () => {
+      const dialog = document.getElementById("confirmResourceDialog")
+      dialog?.classList.add("show")
+    },
+    closeConfirmFunc: () => {
+      const dialog = document.getElementById("confirmResourceDialog")
+      dialog?.classList.remove("show")
+      pendingDeleteResourceIndex = -1
+    },
   }
+}
 
-  const name = (document.getElementById(nameInputId) as HTMLInputElement | null)?.value.trim() || ""
-  const url = (document.getElementById(urlInputId) as HTMLInputElement | null)?.value.trim() || ""
-  const imageUrl = (document.getElementById(imageInputId) as HTMLInputElement | null)?.value.trim() || ""
+function addItem(type: ItemType): void {
+  const cfg = getItemConfig(type)
+
+  const name = (document.getElementById(cfg.nameInputId) as HTMLInputElement | null)?.value.trim() || ""
+  const url = (document.getElementById(cfg.urlInputId) as HTMLInputElement | null)?.value.trim() || ""
+  const imageUrl = (document.getElementById(cfg.imageInputId) as HTMLInputElement | null)?.value.trim() || ""
 
   if (!url) {
-    alert(`请填写${type === 'link' ? '网站' : '资源'}地址`)
+    showToast(`请填写${cfg.label}地址`, 'error')
     return
   }
 
   const formattedUrl = url.startsWith("http") ? url : "https://" + url
   const faviconUrl = imageUrl || getCachedFaviconUrl(formattedUrl)
 
-  items.push({ name, url: formattedUrl, faviconUrl })
-  localStorage.setItem(storageKey, JSON.stringify(items))
+  cfg.items.push({ name, url: formattedUrl, faviconUrl })
+  localStorage.setItem(cfg.storageKey, JSON.stringify(cfg.items))
 
-  const nameInput = document.getElementById(nameInputId) as HTMLInputElement | null
-  const urlInput = document.getElementById(urlInputId) as HTMLInputElement | null
-  const imageInput = document.getElementById(imageInputId) as HTMLInputElement | null
+  const nameInput = document.getElementById(cfg.nameInputId) as HTMLInputElement | null
+  const urlInput = document.getElementById(cfg.urlInputId) as HTMLInputElement | null
+  const imageInput = document.getElementById(cfg.imageInputId) as HTMLInputElement | null
   
   if (nameInput) nameInput.value = ""
   if (urlInput) urlInput.value = ""
   if (imageInput) imageInput.value = ""
 
-  renderFunc()
+  cfg.renderFunc()
   initializeDataPreview()
 }
 
@@ -69,7 +132,36 @@ function addLink(): void {
 }
 
 function addResource(): void {
-  addItem("resource")
+  const name = (document.getElementById("resourceName") as HTMLInputElement | null)?.value.trim() || ""
+  const url = (document.getElementById("resourceUrl") as HTMLInputElement | null)?.value.trim() || ""
+  const imageUrl = (document.getElementById("resourceImageUrl") as HTMLInputElement | null)?.value.trim() || ""
+  const category = (document.getElementById("resourceCategory") as HTMLSelectElement | null)?.value as Mode || "resource"
+
+  if (!name) {
+    showToast("请填写引擎名称", 'error')
+    return
+  }
+  if (!url) {
+    showToast("请填写搜索地址", 'error')
+    return
+  }
+
+  const formattedUrl = url.startsWith("http") ? url : "https://" + url
+  const faviconUrl = imageUrl || getCachedFaviconUrl(formattedUrl)
+
+  console.log("[addResource] calling addCustomEngine:", name, formattedUrl, faviconUrl, category)
+  addCustomEngine(name, formattedUrl, faviconUrl, category)
+
+  const nameInput = document.getElementById("resourceName") as HTMLInputElement | null
+  const urlInput = document.getElementById("resourceUrl") as HTMLInputElement | null
+  const imageInput = document.getElementById("resourceImageUrl") as HTMLInputElement | null
+  
+  if (nameInput) nameInput.value = ""
+  if (urlInput) urlInput.value = ""
+  if (imageInput) imageInput.value = ""
+
+  updateEngineDropdown()
+  initializeDataPreview()
 }
 
 function deleteLink(index: number): void {
@@ -94,45 +186,24 @@ function closeConfirmResourceDialog(): void {
 }
 
 function confirmDeleteItem(type: ItemType): void {
-  let pendingIndex: number, items: (LinkItem | ResourceItem)[], storageKey: string, renderFunc: () => void, closeDialogFunc: () => void
-  
-  if (type === "link") {
-    pendingIndex = pendingDeleteIndex
-    items = links
-    storageKey = "navLinks"
-    renderFunc = () => {
-      renderLinks()
-      renderQuickLinks()
-    }
-    closeDialogFunc = closeConfirmDialog
-  } else {
-    pendingIndex = pendingDeleteResourceIndex
-    items = resources
-    storageKey = "navResources"
-    renderFunc = () => {
-      renderResources()
-      if (currentMode === "resource") {
-        updateEngineDropdown()
-      }
-    }
-    closeDialogFunc = closeConfirmResourceDialog
-  }
+  const cfg = getItemConfig(type)
+  const pendingIndex = type === "link" ? pendingDeleteIndex : pendingDeleteResourceIndex
 
-  if (pendingIndex >= 0 && pendingIndex < items.length) {
+  if (pendingIndex >= 0 && pendingIndex < cfg.items.length) {
     try {
-      const domain = new URL(items[pendingIndex].url).hostname
+      const domain = new URL(cfg.items[pendingIndex].url).hostname
       const cacheKey = `favicon_cache_${domain}`
       localStorage.removeItem(cacheKey)
     } catch (e) {
       // URL解析失败时忽略
     }
 
-    items.splice(pendingIndex, 1)
-    localStorage.setItem(storageKey, JSON.stringify(items))
-    renderFunc()
+    cfg.items.splice(pendingIndex, 1)
+    localStorage.setItem(cfg.storageKey, JSON.stringify(cfg.items))
+    cfg.renderFunc()
     initializeDataPreview()
   }
-  closeDialogFunc()
+  cfg.closeDialogFunc()
 }
 
 function confirmDeleteResource(): void {
@@ -156,26 +227,12 @@ function confirmDeleteLink(): void {
 
 function showEditDialogByType(index: number, type: ItemType): void {
   currentEditIndex = index
-  
-  let item: LinkItem | ResourceItem, nameInputId: string, urlInputId: string, imageInputId: string, dialogId: string
-  
-  if (type === "link") {
-    item = links[index]
-    nameInputId = "editLinkName"
-    urlInputId = "editLinkUrl"
-    imageInputId = "editLinkImageUrl"
-    dialogId = "editDialog"
-  } else {
-    item = resources[index]
-    nameInputId = "editResourceName"
-    urlInputId = "editResourceUrl"
-    imageInputId = "editResourceImageUrl"
-    dialogId = "editResourceDialog"
-  }
+  const cfg = getItemConfig(type)
+  const item = cfg.items[index]
 
-  const nameInput = document.getElementById(nameInputId) as HTMLInputElement | null
-  const urlInput = document.getElementById(urlInputId) as HTMLInputElement | null
-  const imageInput = document.getElementById(imageInputId) as HTMLInputElement | null
+  const nameInput = document.getElementById(cfg.editNameInputId) as HTMLInputElement | null
+  const urlInput = document.getElementById(cfg.editUrlInputId) as HTMLInputElement | null
+  const imageInput = document.getElementById(cfg.editImageInputId) as HTMLInputElement | null
   
   if (nameInput) nameInput.value = item.name
   if (urlInput) urlInput.value = item.url
@@ -187,7 +244,7 @@ function showEditDialogByType(index: number, type: ItemType): void {
   
   if (imageInput) imageInput.value = isCustomImage ? item.faviconUrl : ""
 
-  const dialog = document.getElementById(dialogId)
+  const dialog = document.getElementById(cfg.dialogId)
   dialog?.classList.add("show")
 }
 
@@ -233,62 +290,34 @@ function clearDomainCache(url: string): void {
 
 function validateFormData(url: string, errorMessage: string): boolean {
   if (!url) {
-    alert(errorMessage)
+    showToast(errorMessage, 'error')
     return false
   }
   return true
 }
 
 function saveEditedItem(type: ItemType): void {
-  let items: (LinkItem | ResourceItem)[], storageKey: string, renderFunc: () => void, closeDialogFunc: () => void, nameInputId: string, urlInputId: string, imageInputId: string
-  
-  if (type === "link") {
-    items = links
-    storageKey = "navLinks"
-    renderFunc = () => {
-      renderLinks()
-      renderQuickLinks()
-      initializeDataPreview()
-    }
-    closeDialogFunc = closeEditDialog
-    nameInputId = "editLinkName"
-    urlInputId = "editLinkUrl"
-    imageInputId = "editLinkImageUrl"
-  } else {
-    items = resources
-    storageKey = "navResources"
-    renderFunc = () => {
-      renderResources()
-      initializeDataPreview()
-      if (currentMode === "resource") {
-        updateEngineDropdown()
-      }
-    }
-    closeDialogFunc = closeEditResourceDialog
-    nameInputId = "editResourceName"
-    urlInputId = "editResourceUrl"
-    imageInputId = "editResourceImageUrl"
-  }
+  const cfg = getItemConfig(type)
 
-  if (currentEditIndex >= 0 && currentEditIndex < items.length) {
-    const name = (document.getElementById(nameInputId) as HTMLInputElement | null)?.value.trim() || ""
-    const url = (document.getElementById(urlInputId) as HTMLInputElement | null)?.value.trim() || ""
-    const imageUrl = (document.getElementById(imageInputId) as HTMLInputElement | null)?.value.trim() || ""
+  if (currentEditIndex >= 0 && currentEditIndex < cfg.items.length) {
+    const name = (document.getElementById(cfg.editNameInputId) as HTMLInputElement | null)?.value.trim() || ""
+    const url = (document.getElementById(cfg.editUrlInputId) as HTMLInputElement | null)?.value.trim() || ""
+    const imageUrl = (document.getElementById(cfg.editImageInputId) as HTMLInputElement | null)?.value.trim() || ""
 
-    if (!validateFormData(url, `请填写${type === 'link' ? '网站' : '资源'}地址`)) {
+    if (!validateFormData(url, `请填写${cfg.label}地址`)) {
       return
     }
 
     const formattedUrl = formatUrl(url)
-    clearDomainCache(items[currentEditIndex].url)
+    clearDomainCache(cfg.items[currentEditIndex].url)
     const faviconUrl = imageUrl.trim() ? imageUrl : getFaviconUrl(formattedUrl)
 
-    items[currentEditIndex] = { name, url: formattedUrl, faviconUrl }
-    localStorage.setItem(storageKey, JSON.stringify(items))
+    cfg.items[currentEditIndex] = { name, url: formattedUrl, faviconUrl }
+    localStorage.setItem(cfg.storageKey, JSON.stringify(cfg.items))
 
-    renderFunc()
+    cfg.editRenderFunc()
   }
-  closeDialogFunc()
+  cfg.editCloseDialogFunc()
 }
 
 function saveEditedLink(): void {

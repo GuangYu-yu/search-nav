@@ -1,21 +1,16 @@
-import { searchEngines, resourceEngines, translateEngines } from './searchEngines'
+import { resolveEngineUrl } from './builtInEngines'
 import { currentMode, currentEngine } from './modeManager'
 
 function handleSearch(): void {
   const query = (document.getElementById("searchQuery") as HTMLInputElement | null)?.value
-  if (!query) {
-    return
-  }
+  if (!query) return
 
-  let url: string
-  if (currentMode === "translate") {
-    const encodedQuery = encodeURIComponent(query)
-    url = translateEngines[currentEngine] + encodedQuery
-  } else if (currentMode === "resource") {
-    url = resourceEngines[currentEngine] + encodeURIComponent(query)
-  } else {
-    url = searchEngines[currentEngine] + encodeURIComponent(query)
-  }
+  const baseUrl = resolveEngineUrl(currentEngine, currentMode)
+  if (!baseUrl) return
+
+  const url = baseUrl + encodeURIComponent(query)
+  // 安全校验：仅允许 http/https 协议跳转
+  if (!/^https?:\/\//.test(url)) return
 
   window.location.href = url
 }

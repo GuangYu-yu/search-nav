@@ -4,10 +4,7 @@
     width: 100%;
     max-width: 800px;
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    transform: translateZ(0);
     backface-visibility: hidden;
-    perspective: 1000px;
-    will-change: transform, opacity;
 }
 
 .quick-links h3 {
@@ -62,9 +59,6 @@
     min-width: 80px;
     flex-shrink: 0;
     transition: background 0.2s ease, transform 0.2s ease;
-    /* 确保每个链接都有正确的渲染上下文 */
-    transform: translateZ(0);
-    will-change: transform, background;
 }
 
 .quick-link:hover {
@@ -76,34 +70,45 @@
     width: 56px;
     height: 56px;
     border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    /* 高对比度背景 */
-    background: rgba(255, 255, 255, 0.9);
-    /* 双层边框确保对比度 */
-    border: 2px solid #ffffff;
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.06);
     box-shadow: 
-        0 0 0 2px #000000, /* 外层深色边框 */
-        0 4px 20px rgba(0, 0, 0, 0.4), 
-        0 0 20px rgba(255, 255, 255, 0.6); /* 光晕效果增强可见性 */
-    background-size: 85%;
+        0 0 0 1px rgba(0, 0, 0, 0.05),
+        0 4px 16px rgba(0, 0, 0, 0.12);
+    background-size: 75%;
     background-repeat: no-repeat;
     background-position: center;
     cursor: pointer;
     position: relative;
     overflow: hidden;
     transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s ease;
-    transform: translateZ(0);
-    will-change: transform;
+}
+
+/* Favicon 加载中的首字母占位 */
+.quick-link-icon::after {
+    content: attr(data-initial);
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    font-weight: 600;
+    color: #333;
+    text-shadow: none;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+}
+
+.quick-link-icon.loaded::after {
+    opacity: 0;
 }
 
 .quick-link-icon:hover {
     transform: scale(1.1);
     box-shadow: 
-        0 0 0 2px #000000,
-        0 6px 25px rgba(0, 0, 0, 0.5), 
-        0 0 25px rgba(255, 255, 255, 0.8);
+        0 0 0 1px rgba(0, 0, 0, 0.08),
+        0 8px 24px rgba(0, 0, 0, 0.18);
 }
 
 .quick-link-icon:active {
@@ -135,7 +140,6 @@
     transform: scale(1);
 }
 
-/* 添加针对搜索聚焦状态的特定样式 */
 .search-focused .quick-link-icon {
     transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.4s ease;
 }

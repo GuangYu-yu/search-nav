@@ -1,18 +1,11 @@
 import { currentMode, switchMode } from './modeManager'
-import { initializeDataPreview, saveDataConfig, applyDataFromURL, updateDataPreview } from './dataManager'
+import { initializeDataPreview } from './dataManager'
 import { updateEngineDropdown, selectEngine } from "./engineManager"
-import { setTheme, toggleThemeSwitcher } from './themeManager'
+import { setTheme } from './themeManager'
 import { initializeEventHandlers } from './eventHandlers'
+import { initBuiltInEngines } from './builtInEngines'
 import { 
-  setWallpaper, 
-  setCustomWallpaper, 
-  getCurrentDirection, 
-  updateGradientPreview, 
-  getAllColors, 
-  getGradientPairs, 
-  randomColors, 
   updateSVGWallpaper, 
-  applyCustomGradient, 
   initColorMixer 
 } from './wallpaperManager'
 import { 
@@ -23,39 +16,14 @@ import {
 } from './suggestionManager'
 import { handleSearch } from './searchHandler'
 import { 
-  addLink, 
-  addResource, 
-  deleteLink, 
-  deleteResource, 
-  showConfirmResourceDialog, 
-  closeConfirmResourceDialog, 
-  confirmDeleteResource, 
-  showConfirmDialog, 
-  closeConfirmDialog, 
-  confirmDeleteLink, 
-  showEditDialog, 
-  showEditResourceDialog, 
-  closeEditDialog, 
-  closeEditResourceDialog, 
-  saveEditedLink, 
-  saveEditedResource
-} from './linkManager'
-import { 
   renderQuickLinks, 
-  openSettings, 
-  closeSettings, 
   switchTab, 
-  renderLinks, 
   renderResources, 
   applyFocusTransition 
 } from './uiManager'
 
 document.addEventListener("DOMContentLoaded", function () {
   updateEngineDropdown()
-
-  document.querySelectorAll(".mode-btn").forEach((btn) => {
-    btn.addEventListener("click", () => switchMode((btn as HTMLElement).dataset.mode as 'search' | 'translate' | 'resource'))
-  })
 
   const searchInput = document.getElementById("searchQuery") as HTMLInputElement | null
   if (searchInput) {
@@ -80,12 +48,10 @@ document.addEventListener("DOMContentLoaded", function () {
     })
 
     const searchContainer = document.querySelector(".search-container") as HTMLElement | null
-    const modeSwitcher = document.querySelector(".mode-switcher") as HTMLElement | null
     const quickLinks = document.querySelector(".quick-links") as HTMLElement | null
 
     searchInput.addEventListener("focus", () => {
       searchContainer?.classList.add("focused")
-      modeSwitcher?.classList.add("collapsed")
       quickLinks?.classList.add("collapsed")
       applyFocusTransition(true)
 
@@ -101,7 +67,6 @@ document.addEventListener("DOMContentLoaded", function () {
       hideSuggestions()
 
       searchContainer?.classList.remove("focused")
-      modeSwitcher?.classList.remove("collapsed")
       quickLinks?.classList.remove("collapsed")
       applyFocusTransition(false)
     })
@@ -134,15 +99,11 @@ document.addEventListener("DOMContentLoaded", function () {
   const defaultMode = (localStorage.getItem("defaultMode") || "search") as 'search' | 'translate' | 'resource'
   switchMode(defaultMode)
 
-  const slider = document.querySelector(".mode-slider") as HTMLElement | null
-  if (slider && defaultMode === "translate") {
-    slider.style.transform = "translateX(100px)"
-  }
-
   selectEngine("google", "Google")
 
   renderQuickLinks()
   renderResources()
+  initBuiltInEngines()
 
   document.querySelectorAll(".tab-btn").forEach((btn) => {
     btn.addEventListener("click", () => switchTab((btn as HTMLElement).dataset.tab || ""))
@@ -197,89 +158,3 @@ document.addEventListener("DOMContentLoaded", function () {
   initializeDataPreview()
   initializeEventHandlers()
 })
-
-declare global {
-  interface Window {
-    switchMode: typeof switchMode
-    updateEngineDropdown: typeof updateEngineDropdown
-    selectEngine: typeof selectEngine
-    handleSearch: typeof handleSearch
-    setTheme: typeof setTheme
-    toggleThemeSwitcher: typeof toggleThemeSwitcher
-    setWallpaper: typeof setWallpaper
-    setCustomWallpaper: typeof setCustomWallpaper
-    updateGradientPreview: typeof updateGradientPreview
-    randomColors: typeof randomColors
-    applyCustomGradient: typeof applyCustomGradient
-    updateSVGWallpaper: typeof updateSVGWallpaper
-    openSettings: typeof openSettings
-    closeSettings: typeof closeSettings
-    switchTab: typeof switchTab
-    addLink: typeof addLink
-    addResource: typeof addResource
-    deleteLink: typeof deleteLink
-    deleteResource: typeof deleteResource
-    showConfirmResourceDialog: typeof showConfirmResourceDialog
-    closeConfirmResourceDialog: typeof closeConfirmResourceDialog
-    confirmDeleteResource: typeof confirmDeleteResource
-    showConfirmDialog: typeof showConfirmDialog
-    closeConfirmDialog: typeof closeConfirmDialog
-    confirmDeleteLink: typeof confirmDeleteLink
-    showEditDialog: typeof showEditDialog
-    showEditResourceDialog: typeof showEditResourceDialog
-    closeEditDialog: typeof closeEditDialog
-    closeEditResourceDialog: typeof closeEditResourceDialog
-    saveEditedLink: typeof saveEditedLink
-    saveEditedResource: typeof saveEditedResource
-    renderLinks: typeof renderLinks
-    renderResources: typeof renderResources
-    saveDataConfig: typeof saveDataConfig
-    applyDataFromURL: typeof applyDataFromURL
-    initColorMixer: typeof initColorMixer
-    getCurrentDirection: typeof getCurrentDirection
-    getAllColors: typeof getAllColors
-    getGradientPairs: typeof getGradientPairs
-    updateDataPreview: typeof updateDataPreview
-  }
-}
-
-window.switchMode = switchMode
-window.updateEngineDropdown = updateEngineDropdown
-window.selectEngine = selectEngine
-window.handleSearch = handleSearch
-window.setTheme = setTheme
-window.toggleThemeSwitcher = toggleThemeSwitcher
-window.setWallpaper = setWallpaper
-window.setCustomWallpaper = setCustomWallpaper
-window.updateGradientPreview = updateGradientPreview
-window.randomColors = randomColors
-window.applyCustomGradient = applyCustomGradient
-window.updateSVGWallpaper = updateSVGWallpaper
-window.openSettings = openSettings
-window.closeSettings = closeSettings
-window.switchTab = switchTab
-window.addLink = addLink
-window.addResource = addResource
-window.deleteLink = deleteLink
-window.deleteResource = deleteResource
-window.showConfirmResourceDialog = showConfirmResourceDialog
-window.closeConfirmResourceDialog = closeConfirmResourceDialog
-window.confirmDeleteResource = confirmDeleteResource
-window.showConfirmDialog = showConfirmDialog
-window.closeConfirmDialog = closeConfirmDialog
-window.confirmDeleteLink = confirmDeleteLink
-window.showEditDialog = showEditDialog
-window.showEditResourceDialog = showEditResourceDialog
-window.closeEditDialog = closeEditDialog
-window.closeEditResourceDialog = closeEditResourceDialog
-window.saveEditedLink = saveEditedLink
-window.saveEditedResource = saveEditedResource
-window.renderLinks = renderLinks
-window.renderResources = renderResources
-window.saveDataConfig = saveDataConfig
-window.applyDataFromURL = applyDataFromURL
-window.initColorMixer = initColorMixer
-window.getCurrentDirection = getCurrentDirection
-window.getAllColors = getAllColors
-window.getGradientPairs = getGradientPairs
-window.updateDataPreview = updateDataPreview

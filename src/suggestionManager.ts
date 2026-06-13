@@ -1,12 +1,12 @@
 import { SuggestionItem, SuggestionAPI } from './types'
 import { handleSearch } from './searchHandler'
 
-declare global {
-  interface Window {
-    [key: string]: any
-  }
+// JSONP 响应内部结构（360搜索建议API）
+interface So360SuggestionResult {
+  result?: { word: string }[]
 }
 
+let jsonpCounter = 0
 let suggestionCache: Map<string, SuggestionItem[]> = new Map()
 let currentSuggestions: SuggestionItem[] = []
 let activeSuggestionIndex: number = -1
@@ -30,38 +30,28 @@ const SUGGESTION_APIS: Record<string, SuggestionAPI> = {
 
 function performRequest(engine: string, api: SuggestionAPI, query: string): Promise<SuggestionItem[]> {
   return new Promise((resolve, reject) => {
-    const callbackName =
-      "jsonp_callback_" + Date.now() + "_" + Math.round(Math.random() * 100000)
+    const callbackName = `jsonp_callback_${Date.now()}_${++jsonpCounter}`
+    const win = (window as unknown) as Record<string, unknown>
 
     const script = document.createElement("script")
 
-    window[callbackName] = function (data: any) {
+    win[callbackName] = function (data: unknown) {
       document.head.removeChild(script)
-      delete window[callbackName]
+      delete win[callbackName]
 
       try {
-        let suggestions: (string | { text?: string; label?: string; word?: string })[] = []
+        let suggestions: string[] = []
         if (engine === "so360") {
-          suggestions = data.result
-            ? data.result.map((item: any) => item.word || item)
+          const soData = data as So360SuggestionResult
+          suggestions = soData.result
+            ? soData.result.map((item) => item.word)
             : []
         }
 
-        const result: SuggestionItem[] = suggestions.map((item) => {
-          let text = ""
-          if (typeof item === "string") {
-            text = item
-          } else if (typeof item === "object" && item !== null) {
-            text = item.text || item.label || item.word || JSON.stringify(item)
-          } else {
-            text = String(item)
-          }
-
-          return {
-            text: text,
-            source: engine
-          }
-        })
+        const result: SuggestionItem[] = suggestions.map((text) => ({
+          text,
+          source: engine
+        }))
 
         resolve(result)
       } catch (error) {
@@ -84,16 +74,16 @@ function performRequest(engine: string, api: SuggestionAPI, query: string): Prom
     script.src = url
     script.onerror = function () {
       document.head.removeChild(script)
-      delete window[callbackName]
+      delete win[callbackName]
       reject(new Error("Script load error for " + url))
     }
 
     document.head.appendChild(script)
 
     setTimeout(() => {
-      if (window[callbackName]) {
+      if (win[callbackName]) {
         document.head.removeChild(script)
-        delete window[callbackName]
+        delete win[callbackName]
         reject(new Error("Request timeout for " + engine))
       }
     }, 5000)

@@ -10,11 +10,11 @@
     align-items: center;
     justify-content: center;
     z-index: 2000;
-    backdrop-filter: blur(4px);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.2s ease, visibility 0.2s ease;
-    will-change: opacity;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
 .settings-modal.show {
@@ -23,58 +23,28 @@
 }
 
 .modal-content {
-    background: rgba(255, 255, 255, 0.25);
-    backdrop-filter: blur(25px) saturate(1.8);
-    -webkit-backdrop-filter: blur(25px) saturate(1.8);
-    border-radius: 30px;
-    padding: 32px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(40px) saturate(1.8);
+    -webkit-backdrop-filter: blur(40px) saturate(1.8);
+    border-radius: var(--radius-xl);
+    padding: 28px;
     max-width: 500px;
     width: 90%;
-    height: 500px; /* 固定高度防止尺寸变化 */
-    overflow-y: auto; /* 保持垂直滚动 */
-    overflow-x: hidden; /* 隐藏水平滚动 */
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    box-shadow: 0 16px 60px rgba(0, 0, 0, 0.3), 
-                0 8px 32px rgba(255, 255, 255, 0.3) inset;
-    transform: scale(0.9) translateY(20px);
-    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    height: 70vh;
+    overflow: hidden;
+    border: 1px solid var(--glass-border);
+    box-shadow:
+        0 24px 80px var(--glass-shadow),
+        0 8px 32px var(--glass-shadow),
+        inset 0 1px 0 var(--glass-highlight);
+    transform: scale(0.92) translateY(20px);
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
     display: flex;
     flex-direction: column;
-    will-change: transform;
 }
 
 .settings-modal.show .modal-content {
     transform: scale(1) translateY(0);
-}
-
-/* 暗色主题下的模态框 */
-[data-theme="dark"] .modal-content {
-    background: rgba(30, 30, 30, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 16px 60px rgba(0, 0, 0, 0.5), 
-                0 8px 32px rgba(255, 255, 255, 0.1) inset;
-}
-
-/* 其他主题下的模态框毛玻璃效果 */
-[data-theme="red"] .modal-content {
-    background: rgba(255, 245, 245, 0.25);
-    border: 1px solid rgba(229, 62, 62, 0.4);
-    box-shadow: 0 16px 60px rgba(229, 62, 62, 0.15), 
-                0 8px 32px rgba(255, 255, 255, 0.3) inset;
-}
-
-[data-theme="purple"] .modal-content {
-    background: rgba(250, 245, 255, 0.25);
-    border: 1px solid rgba(159, 122, 234, 0.4);
-    box-shadow: 0 16px 60px rgba(159, 122, 234, 0.15), 
-                0 8px 32px rgba(255, 255, 255, 0.3) inset;
-}
-
-[data-theme="gold"] .modal-content {
-    background: rgba(255, 250, 240, 0.25);
-    border: 1px solid rgba(214, 158, 46, 0.4);
-    box-shadow: 0 16px 60px rgba(214, 158, 46, 0.15), 
-                0 8px 32px rgba(255, 255, 255, 0.3) inset;
 }
 
 .modal-header {
@@ -84,67 +54,87 @@
     margin-bottom: 20px;
 }
 
+.modal-header h2 {
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    text-shadow: var(--glass-text-shadow);
+}
+
 .close-btn {
-    background: none;
+    background: transparent;
     border: none;
-    font-size: 24px;
+    font-size: 22px;
     cursor: pointer;
     color: var(--text-secondary);
-    width: 32px;
-    height: 32px;
+    width: auto;
+    height: auto;
+    padding: 4px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50%;
-    transition: background-color 0.15s ease;
-    -webkit-tap-highlight-color: transparent; /* 禁用移动端点击高亮 */
-    will-change: background-color;
+    transition: color 0.2s ease, transform 0.15s ease;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .close-btn:hover { 
-    background: var(--hover-color); 
+    color: #e53e3e;
+    transform: scale(1.1);
+}
+
+.close-btn:active {
+    transform: scale(0.9);
 }
 
 .add-link-form {
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    margin-bottom: 24px;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius-md);
 }
 
 .add-link-input {
     flex: 1;
-    padding: 12px 16px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 12px;
-    font-size: 14px;
-    background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    padding: 10px 14px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    background: rgba(255, 255, 255, 0.06);
     color: var(--text-color);
-    transition: border-color 0.15s ease, background 0.15s ease;
-    will-change: background, border-color;
+    transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
 }
 
 .add-link-input:focus { 
     outline: none; 
-    border-color: var(--primary-color);
-    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(var(--primary-color-rgb), 0.5);
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.1);
+}
+
+.add-link-input::placeholder {
+    color: var(--text-secondary);
+    opacity: 0.7;
 }
 
 /* 暗色主题下的输入框 */
 [data-theme="dark"] .add-link-input {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 [data-theme="dark"] .add-link-input:focus {
-    background: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.15);
 }
 
 .links-list {
-    margin-top: 20px;
-    max-height: 240px;
+    margin-top: 12px;
+    flex: 1;
+    min-height: 0;
     overflow-y: auto;
     scrollbar-width: none;
     -ms-overflow-style: none;
@@ -155,44 +145,42 @@
 }
 
 .link-item {
-    background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    padding: 12px 16px;
-    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.06);
+    padding: 12px 14px;
+    border-radius: var(--radius-sm);
     display: flex;
     align-items: center;
     gap: 12px;
-    margin-bottom: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    transition: background 0.2s ease;
-    will-change: background;
+    margin-bottom: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
 }
 
 .link-item:hover {
     background: rgba(255, 255, 255, 0.1);
-    transform: none;
+    border-color: rgba(255, 255, 255, 0.15);
 }
 
 /* 暗色主题下的链接项 */
 [data-theme="dark"] .link-item {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 [data-theme="dark"] .link-item:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.12);
 }
 
 .link-favicon {
-    width: 20px;
-    height: 20px;
-    border-radius: 4px;
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
     flex-shrink: 0;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
     position: relative;
     overflow: hidden;
 }
@@ -218,8 +206,8 @@
     left: 0;
     right: 0;
     bottom: 0;
-    border-radius: 4px;
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.3);
+    border-radius: 6px;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
     pointer-events: none;
     z-index: 1;
 }
@@ -230,186 +218,151 @@
 }
 
 .link-name {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 500;
     color: var(--text-color);
     margin-bottom: 2px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    text-shadow: var(--glass-text-shadow);
 }
 
 .link-url {
-    font-size: 12px;
+    font-size: 11px;
     color: var(--text-secondary);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    opacity: 0.7;
 }
 
 .link-actions {
     display: flex;
-    gap: 8px;
+    gap: 6px;
     flex-shrink: 0;
 }
 
 .edit-btn, .delete-btn {
     border: none;
-    padding: 6px 12px;
-    border-radius: 6px;
+    padding: 5px 10px;
+    border-radius: var(--radius-xs);
     cursor: pointer;
-    font-size: 12px;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    transition: background 0.15s ease, transform 0.15s ease;
-    -webkit-tap-highlight-color: transparent; /* 禁用移动端点击高亮 */
-    will-change: background, transform;
+    font-size: 11px;
+    font-weight: 500;
+    transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .edit-btn {
-    background: rgba(var(--primary-color-rgb), 0.9);
-    color: white;
-    border: 1px solid rgba(var(--primary-color-rgb), 0.3);
+    background: rgba(var(--primary-color-rgb), 0.15);
+    color: var(--primary-color);
+    border: 1px solid rgba(var(--primary-color-rgb), 0.2);
 }
 
 .edit-btn:hover {
-    background: rgba(var(--primary-color-rgb), 1);
+    background: rgba(var(--primary-color-rgb), 0.25);
     transform: scale(1.05);
 }
 
 .delete-btn {
-    background: rgba(229, 62, 62, 0.9);
-    color: white;
-    border: 1px solid rgba(229, 62, 62, 0.3);
+    background: rgba(229, 62, 62, 0.12);
+    color: #e53e3e;
+    border: 1px solid rgba(229, 62, 62, 0.2);
 }
 
 .delete-btn:hover { 
-    background: rgba(197, 48, 48, 1);
+    background: rgba(229, 62, 62, 0.22);
     transform: scale(1.05);
 }
 
 /* 保存和取消按钮样式 */
 .save-btn, .cancel-btn {
     border: none;
-    padding: 6px 12px;
-    border-radius: 6px;
+    padding: 5px 10px;
+    border-radius: var(--radius-xs);
     cursor: pointer;
-    font-size: 12px;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    font-size: 11px;
+    font-weight: 500;
     transition: background 0.15s ease, transform 0.15s ease;
-    -webkit-tap-highlight-color: transparent; /* 禁用移动端点击高亮 */
-    will-change: background, transform;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .save-btn {
-    background: rgba(56, 161, 105, 0.9);
-    color: white;
-    border: 1px solid rgba(56, 161, 105, 0.3);
+    background: rgba(56, 161, 105, 0.15);
+    color: #38a169;
+    border: 1px solid rgba(56, 161, 105, 0.2);
 }
 
 .save-btn:hover {
-    background: rgba(47, 133, 90, 1);
+    background: rgba(56, 161, 105, 0.25);
     transform: scale(1.05);
 }
 
 .cancel-btn {
-    background: rgba(160, 160, 160, 0.9);
-    color: white;
-    border: 1px solid rgba(160, 160, 160, 0.3);
+    background: rgba(160, 160, 160, 0.12);
+    color: var(--text-secondary);
+    border: 1px solid rgba(160, 160, 160, 0.2);
 }
 
 .cancel-btn:hover {
-    background: rgba(120, 120, 120, 1);
+    background: rgba(160, 160, 160, 0.22);
     transform: scale(1.05);
+}
+
+.tab-nav {
+    display: flex;
+    gap: 0;
+    margin-bottom: 20px;
+    position: relative;
+    padding: 3px;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: var(--radius-full);
+    border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .tab-btn {
     border: none;
-    padding: 12px 20px;
-    border-radius: 12px;
+    padding: 7px 12px;
+    border-radius: var(--radius-full);
     cursor: pointer;
-    font-size: 14px;
-    font-weight: 500;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    font-size: 12px;
+    font-weight: 400;
+    background: transparent;
     color: var(--text-secondary);
-    transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: color 0.25s ease, background 0.25s ease, transform 0.15s ease;
     position: relative;
-    overflow: hidden;
-    -webkit-tap-highlight-color: transparent; /* 禁用移动端点击高亮 */
-    will-change: background, transform;
-}
-
-.tab-btn::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, rgba(var(--primary-color-rgb), 0.1), rgba(var(--primary-color-rgb), 0.05));
-    opacity: 0;
-    transition: opacity 0.3s ease;
+    z-index: 2;
+    flex: 1;
+    text-align: center;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    letter-spacing: 0.01em;
+    text-shadow: var(--glass-text-shadow);
 }
 
 .tab-btn:hover {
-    background: rgba(255, 255, 255, 0.15);
     color: var(--text-color);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-}
-
-.tab-btn:hover::before {
-    opacity: 1;
 }
 
 .tab-btn.active {
-    background: rgba(var(--primary-color-rgb), 0.95);
+    background: var(--primary-color);
     color: white;
-    border-color: rgba(var(--primary-color-rgb), 0.4);
-    box-shadow: 0 6px 20px rgba(var(--primary-color-rgb), 0.4),
-                0 2px 8px rgba(0, 0, 0, 0.1) inset;
-    transform: scale(1.02);
+    font-weight: 500;
+    box-shadow: 0 2px 10px rgba(var(--primary-color-rgb), 0.35);
 }
 
-.tab-btn.active::before {
-    opacity: 1;
-    background: linear-gradient(135deg, rgba(var(--primary-color-rgb), 0.3), rgba(var(--primary-color-rgb), 0.15));
-}
-
-.tab-btn:active {
-    transform: translateY(0) scale(0.98);
-    box-shadow: 0 2px 8px rgba(var(--primary-color-rgb), 0.3),
-                0 1px 4px rgba(0, 0, 0, 0.2) inset;
-    transition: all 0.1s ease;
-}
-
-/* 标签页导航容器 */
-.tab-nav {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 24px;
-    position: relative;
-    padding: 4px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 14px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-/* 壁纸选项按钮现代化样式 */
+/* 壁纸选项按钮精致样式 */
 .wallpaper-option {
     text-align: center;
     cursor: pointer;
-    padding: 12px;
-    border-radius: 12px;
+    padding: 10px;
+    border-radius: var(--radius-sm);
     transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
     position: relative;
     overflow: hidden;
-    will-change: background, transform;
 }
 
 .wallpaper-option::before {
@@ -419,94 +372,90 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
     opacity: 0;
     transition: opacity 0.3s ease;
 }
 
 .wallpaper-option:hover {
-    background: rgba(255, 255, 255, 0.1);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    transform: translateY(-1px);
 }
 
 .wallpaper-option:hover::before {
     opacity: 1;
 }
 
+.wallpaper-option:active {
+    transform: translateY(0) scale(0.98);
+}
+
 .wallpaper-preview {
-    width: 80px;
-    height: 50px;
-    border-radius: 8px;
-    margin: 0 auto 8px;
-    border: 2px solid rgba(255, 255, 255, 0.3);
+    width: 72px;
+    height: 45px;
+    border-radius: var(--radius-xs);
+    margin: 0 auto 6px;
+    border: 2px solid rgba(255, 255, 255, 0.15);
     transition: transform 0.2s ease, border-color 0.2s ease;
     position: relative;
     overflow: hidden;
-    transform: translateZ(0);
 }
 
 .wallpaper-option:hover .wallpaper-preview {
-    border-color: var(--primary-color);
+    border-color: rgba(var(--primary-color-rgb), 0.5);
     transform: scale(1.05);
 }
 
-/* 方向按钮现代化样式 */
-.direction-btn {
-    width: 28px;
-    height: 28px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    background: rgba(255, 255, 255, 0.1);
+.wallpaper-option span {
+    font-size: 11px;
+    color: var(--text-secondary);
+    transition: color 0.2s ease;
+}
+
+.wallpaper-option:hover span {
     color: var(--text-color);
-    border-radius: 6px;
+}
+
+/* 方向按钮精致样式 */
+.direction-btn {
+    width: 26px;
+    height: 26px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--text-secondary);
+    border-radius: var(--radius-xs);
     cursor: pointer;
-    font-size: 14px;
-    transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    font-size: 12px;
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease, color 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 0;
     position: relative;
     overflow: hidden;
-    -webkit-tap-highlight-color: transparent; /* 禁用移动端点击高亮 */
-    will-change: background, transform;
-}
-
-.direction-btn::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, rgba(var(--primary-color-rgb), 0.1), rgba(var(--primary-color-rgb), 0.05));
-    opacity: 0;
-    transition: opacity 0.3s ease;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .direction-btn:hover {
-    background: rgba(255, 255, 255, 0.15);
-    border-color: var(--primary-color);
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(var(--primary-color-rgb), 0.4);
     transform: scale(1.1);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    color: var(--text-color);
 }
 
-.direction-btn:hover::before {
-    opacity: 1;
+.direction-btn:active {
+    transform: scale(0.95);
 }
 
 .direction-btn.active {
     background: var(--primary-color);
     color: white;
     border-color: var(--primary-color);
-    box-shadow: 0 4px 12px rgba(var(--primary-color-rgb), 0.3);
+    box-shadow: 0 2px 8px rgba(var(--primary-color-rgb), 0.35);
 }
 
-.direction-btn.active::before {
-    opacity: 1;
-    background: linear-gradient(135deg, rgba(var(--primary-color-rgb), 0.2), rgba(var(--primary-color-rgb), 0.1));
-}
-
-/* 确认对话框样式 */
+/* 确认对话框样式 - 独立于 modal-content，避免毛玻璃套叠 */
 .confirm-dialog {
     position: fixed;
     top: 0;
@@ -517,12 +466,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 2100;
-    backdrop-filter: blur(4px);
+    z-index: 3000;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.2s ease, visibility 0.2s ease;
-    will-change: opacity;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
 .confirm-dialog.show {
@@ -531,133 +480,189 @@
 }
 
 .confirm-content {
-    background: rgba(255, 255, 255, 0.25);
-    backdrop-filter: blur(25px) saturate(1.8);
-    -webkit-backdrop-filter: blur(25px) saturate(1.8);
-    border-radius: 20px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(40px) saturate(1.8);
+    -webkit-backdrop-filter: blur(40px) saturate(1.8);
+    border-radius: var(--radius-lg);
     padding: 24px;
-    max-width: 400px;
+    max-width: 380px;
     width: 90%;
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    box-shadow: 0 16px 60px rgba(0, 0, 0, 0.3), 
-                0 8px 32px rgba(255, 255, 255, 0.3) inset;
-    transform: scale(0.9) translateY(20px);
-    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    will-change: transform;
+    border: 1px solid var(--glass-border);
+    box-shadow:
+        0 24px 80px var(--glass-shadow),
+        0 8px 32px var(--glass-shadow),
+        inset 0 1px 0 var(--glass-highlight);
+    transform: scale(0.92) translateY(20px);
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-[data-theme="dark"] .confirm-content {
-    background: rgba(30, 30, 30, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 16px 60px rgba(0, 0, 0, 0.5), 
-                0 8px 32px rgba(255, 255, 255, 0.1) inset;
+.confirm-dialog.show .confirm-content {
+    transform: scale(1) translateY(0);
 }
 
 .confirm-header {
-    margin-bottom: 16px;
+    margin-bottom: 12px;
 }
 
 .confirm-header h3 {
     margin: 0;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 600;
     color: var(--text-color);
+    letter-spacing: -0.01em;
+    text-shadow: var(--glass-text-shadow);
 }
 
 .confirm-body {
-    margin-bottom: 24px;
+    margin-bottom: 20px;
 }
 
 .confirm-body p {
     margin: 0;
-    font-size: 14px;
+    font-size: 13px;
     color: var(--text-secondary);
+    line-height: 1.5;
+    text-shadow: var(--glass-text-shadow);
 }
 
 .confirm-footer {
     display: flex;
     justify-content: flex-end;
-    gap: 12px;
+    gap: 8px;
 }
 
 .confirm-btn {
-    padding: 8px 16px;
+    padding: 7px 16px;
     border: none;
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     cursor: pointer;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 500;
     transition: background 0.15s ease, transform 0.15s ease;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    -webkit-tap-highlight-color: transparent; /* 禁用移动端点击高亮 */
-    will-change: background, transform;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .confirm-btn.cancel {
-    background: rgba(255, 255, 255, 0.2);
-    color: var(--text-color);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-secondary);
+    border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .confirm-btn.cancel:hover {
-    background: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.14);
+    color: var(--text-color);
 }
 
 .confirm-btn.confirm {
-    background: rgba(229, 62, 62, 0.9);
+    background: rgba(229, 62, 62, 0.85);
     color: white;
     border: 1px solid rgba(229, 62, 62, 0.3);
 }
 
 .confirm-btn.confirm:hover {
-    background: rgba(197, 48, 48, 1);
+    background: rgba(229, 62, 62, 1);
+    transform: scale(1.02);
+}
+
+.confirm-btn:active {
+    transform: scale(0.97);
 }
 
 /* 编辑对话框表单样式 */
 .edit-form {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 14px;
 }
 
 .form-group {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 5px;
 }
 
 .form-group label {
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 500;
-    color: var(--text-color);
+    color: var(--text-secondary);
+    letter-spacing: 0.01em;
 }
 
 .edit-input {
-    padding: 10px 12px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 8px;
-    font-size: 14px;
-    background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    padding: 9px 12px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    background: rgba(255, 255, 255, 0.06);
     color: var(--text-color);
-    transition: border-color 0.15s ease, background 0.15s ease;
-    will-change: background, border-color;
+    transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
 }
 
 .edit-input:focus {
     outline: none;
-    border-color: var(--primary-color);
-    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(var(--primary-color-rgb), 0.5);
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.1);
 }
 
 /* 暗色主题下的编辑输入框 */
 [data-theme="dark"] .edit-input {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 [data-theme="dark"] .edit-input:focus {
-    background: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.15);
+}
+
+/* Toast 通知 */
+.toast-container {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    pointer-events: none;
+}
+
+.toast {
+    padding: 10px 20px;
+    border-radius: var(--radius-full);
+    background: var(--glass-bg);
+    backdrop-filter: blur(40px) saturate(1.8);
+    -webkit-backdrop-filter: blur(40px) saturate(1.8);
+    color: var(--text-color);
+    font-size: 13px;
+    font-weight: 500;
+    box-shadow:
+        0 8px 32px var(--glass-shadow),
+        0 2px 8px var(--glass-shadow),
+        inset 0 1px 0 var(--glass-highlight);
+    border: 1px solid var(--glass-border);
+    opacity: 0;
+    transform: translateY(-12px) scale(0.95);
+    transition: opacity 0.3s var(--ease-out), transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    pointer-events: auto;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+.toast.toast-success {
+    border-left: 3px solid #38a169;
+}
+
+.toast.toast-error {
+    border-left: 3px solid #e53e3e;
+}
+
+.toast.toast-info {
+    border-left: 3px solid var(--primary-color);
 }

@@ -8,31 +8,7 @@
 @import url('wallpaper-components.css');
 @import url('color-mixer.css');
 
-/* 启用硬件加速 */
-* {
-    transform: translateZ(0);
-    will-change: auto;
-}
-
-/* 壁纸容器性能优化 */
-.wallpaper-container {
-    will-change: transform, filter;
-}
-
-/* 模态框性能优化 */
-.settings-modal .modal-content {
-    will-change: transform, opacity;
-}
-
-/* 快速链接性能优化 */
-.quick-links {
-    will-change: transform, opacity;
-}
-
-/* 模式切换性能优化 */
-.mode-switcher-container {
-    will-change: transform, opacity;
-}
+/* 仅对需要动画的元素启用合成层优化 */
 
 /* 响应式布局补充样式 */
 /* 搜索框响应式宽度 */
@@ -47,14 +23,9 @@
     margin-top: 0px;
 }
 
-/* 模式切换按钮与顶部间距 */
-.mode-switcher {
-    margin-top: 80px;
-}
-
-/* 搜索框与模式切换按钮间距 */
+/* 搜索框与顶部间距 */
 .search-container {
-    margin-top: 20px;
+    margin-top: 160px;
 }
 
 /* 响应式断点 */

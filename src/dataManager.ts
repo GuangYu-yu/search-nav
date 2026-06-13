@@ -1,6 +1,7 @@
 import { LinkItem, ResourceItem } from './types'
 import { updateEngineDropdown } from './engineManager'
 import { renderLinks, renderResources, renderQuickLinks } from './uiManager'
+import { showToast } from './toast'
 
 type DataConfig = {
   links: LinkItem[]
@@ -9,6 +10,9 @@ type DataConfig = {
 
 let links: LinkItem[] = JSON.parse(localStorage.getItem("navLinks") || "[]") || []
 let resources: ResourceItem[] = JSON.parse(localStorage.getItem("navResources") || "[]") || []
+
+function getLinks(): ReadonlyArray<LinkItem> { return links }
+function getResources(): ReadonlyArray<ResourceItem> { return resources }
 
 function initializeDataPreview(): void {
   const data: DataConfig = {
@@ -35,13 +39,13 @@ function saveDataConfig(): void {
         renderResources()
         renderQuickLinks()
         updateEngineDropdown()
-        alert("配置已保存")
+        showToast("配置已保存", 'success')
       } else {
-        alert("数据格式不正确")
+        showToast("数据格式不正确", 'error')
       }
     } catch (err) {
       console.error("保存失败:", err)
-      alert("保存失败，数据不是有效的JSON格式")
+      showToast("保存失败，数据不是有效的JSON格式", 'error')
     }
   }
 }
@@ -50,14 +54,22 @@ function applyDataFromURL(): void {
   const urlInput = document.getElementById("dataUrlInput") as HTMLInputElement | null
   const url: string | undefined = urlInput?.value.trim()
   if (!url) {
-    alert("请输入URL")
+    showToast("请输入URL", 'error')
     return
   }
 
-  fetch(url)
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), 10000)
+
+  fetch(url, { signal: controller.signal })
     .then((response: Response): Promise<DataConfig> => {
+      clearTimeout(timeoutId)
       if (!response.ok) {
         throw new Error("网络响应不正常")
+      }
+      const contentType = response.headers.get("content-type") || ""
+      if (!contentType.includes("application/json")) {
+        throw new Error("响应不是有效的JSON格式")
       }
       return response.json()
     })
@@ -65,14 +77,18 @@ function applyDataFromURL(): void {
       if (data.links && data.resources) {
         const dataStr = JSON.stringify(data, null, 2)
         updateDataPreview(dataStr)
-        alert("数据已从URL获取，请点击保存配置应用更改")
+        showToast("数据已从URL获取，请点击保存配置应用更改", 'success')
       } else {
-        alert("URL中的数据格式不正确")
+        showToast("URL中的数据格式不正确", 'error')
       }
     })
     .catch((err: Error) => {
+      if (err.name === "AbortError") {
+        showToast("请求超时，请检查URL是否正确", 'error')
+        return
+      }
       console.error("从URL获取数据失败:", err)
-      alert("从URL获取数据失败，请检查URL是否正确")
+      showToast("从URL获取数据失败，请检查URL是否正确", 'error')
     })
 }
 
@@ -83,4 +99,4 @@ function updateDataPreview(data: string): void {
   }
 }
 
-export { links, resources, initializeDataPreview, saveDataConfig, applyDataFromURL, updateDataPreview }
+export { links, resources, getLinks, getResources, initializeDataPreview, saveDataConfig, applyDataFromURL, updateDataPreview }

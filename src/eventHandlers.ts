@@ -1,8 +1,9 @@
 import { setTheme, toggleThemeSwitcher } from './themeManager'
 import { openSettings, closeSettings } from './uiManager'
 import { toggleEngineDropdown, selectEngine } from './engineManager'
-import { switchMode } from './modeManager'
+import { cycleMode, setModeSwitchAnimating, isModeSwitchAnimating } from './modeManager'
 import { handleSearch } from './searchHandler'
+
 import { 
   closeConfirmDialog, 
   confirmDeleteLink, 
@@ -18,11 +19,21 @@ import {
 import { setWallpaper, randomColors, applyCustomGradient, setCustomWallpaper } from './wallpaperManager'
 import { saveDataConfig, applyDataFromURL } from './dataManager'
 
+function isAnyDialogOpen(): boolean {
+  const dialogs = ['confirmDialog', 'editDialog', 'editResourceDialog', 'confirmResourceDialog']
+  return dialogs.some(id => {
+    const el = document.getElementById(id)
+    return el?.classList.contains('show')
+  })
+}
+
+function onClick(id: string, handler: () => void): void {
+  const el = document.getElementById(id)
+  if (el) el.addEventListener('click', handler)
+}
+
 export function initializeEventHandlers(): void {
-  const themeToggleBtn = document.getElementById('themeToggleBtn')
-  if (themeToggleBtn) {
-    themeToggleBtn.addEventListener('click', toggleThemeSwitcher)
-  }
+  onClick('themeToggleBtn', toggleThemeSwitcher)
 
   const themeButtons = document.querySelectorAll('.theme-btn')
   themeButtons.forEach(btn => {
@@ -32,133 +43,70 @@ export function initializeEventHandlers(): void {
     })
   })
 
-  const settingsBtn = document.getElementById('settingsBtn')
-  if (settingsBtn) {
-    settingsBtn.addEventListener('click', openSettings)
-  }
+  onClick('settingsBtn', openSettings)
 
   const engineSelector = document.getElementById('engineSelector')
   if (engineSelector) {
-    engineSelector.addEventListener('click', toggleEngineDropdown)
+    let clickCount = 0
+    let clickTimer: ReturnType<typeof setTimeout> | null = null
+
+    engineSelector.addEventListener('click', () => {
+      if (isModeSwitchAnimating()) return
+
+      clickCount++
+      if (clickCount === 1) {
+        clickTimer = setTimeout(() => {
+          clickCount = 0
+          toggleEngineDropdown()
+        }, 250)
+      } else if (clickCount >= 2) {
+        if (clickTimer) {
+          clearTimeout(clickTimer)
+          clickTimer = null
+        }
+        clickCount = 0
+        const dropdown = document.getElementById('engineDropdown')
+        if (dropdown) dropdown.classList.remove('show')
+        const suggestionsContainer = document.getElementById('suggestionsContainer')
+        if (suggestionsContainer) suggestionsContainer.style.opacity = ""
+        setModeSwitchAnimating(true)
+        cycleMode()
+      }
+    })
   }
 
-  const modeButtons = document.querySelectorAll('.mode-btn')
-  modeButtons.forEach(btn => {
-    btn.addEventListener('click', function(this: HTMLElement) {
-      const mode = this.getAttribute('data-mode')
-      if (mode) switchMode(mode as 'search' | 'translate' | 'resource')
-    })
+  onClick('closeSettingsBtn', closeSettings)
+  onClick('searchBtn', handleSearch)
+  onClick('closeConfirmDialogBtn', closeConfirmDialog)
+  onClick('confirmDeleteLinkBtn', confirmDeleteLink)
+  onClick('closeEditDialogBtn', closeEditDialog)
+  onClick('saveEditedLinkBtn', saveEditedLink)
+  onClick('closeEditResourceDialogBtn', closeEditResourceDialog)
+  onClick('saveEditedResourceBtn', saveEditedResource)
+  onClick('closeConfirmResourceDialogBtn', closeConfirmResourceDialog)
+  onClick('confirmDeleteResourceBtn', confirmDeleteResource)
+  onClick('addLinkBtn', addLink)
+  onClick('addResourceBtn', addResource)
+
+  // 壁纸选项：通过 ID 前缀规则绑定
+  const wallpaperMappings: [string, string][] = [
+    ['defaultWallpaperOption', 'default'],
+    ['gradient1WallpaperOption', 'gradient1'],
+    ['gradient2WallpaperOption', 'gradient2'],
+    ['gradient3WallpaperOption', 'gradient3'],
+    ['gradient4WallpaperOption', 'gradient4'],
+    ['gradient5WallpaperOption', 'gradient5'],
+  ]
+  wallpaperMappings.forEach(([id, type]) => {
+    const el = document.getElementById(id)
+    if (el) el.addEventListener('click', () => setWallpaper(type))
   })
 
-  const closeSettingsBtn = document.getElementById('closeSettingsBtn')
-  if (closeSettingsBtn) {
-    closeSettingsBtn.addEventListener('click', closeSettings)
-  }
-
-  const searchBtn = document.getElementById('searchBtn')
-  if (searchBtn) {
-    searchBtn.addEventListener('click', handleSearch)
-  }
-
-  const closeConfirmDialogBtn = document.getElementById('closeConfirmDialogBtn')
-  if (closeConfirmDialogBtn) {
-    closeConfirmDialogBtn.addEventListener('click', closeConfirmDialog)
-  }
-
-  const confirmDeleteLinkBtn = document.getElementById('confirmDeleteLinkBtn')
-  if (confirmDeleteLinkBtn) {
-    confirmDeleteLinkBtn.addEventListener('click', confirmDeleteLink)
-  }
-
-  const closeEditDialogBtn = document.getElementById('closeEditDialogBtn')
-  if (closeEditDialogBtn) {
-    closeEditDialogBtn.addEventListener('click', closeEditDialog)
-  }
-
-  const saveEditedLinkBtn = document.getElementById('saveEditedLinkBtn')
-  if (saveEditedLinkBtn) {
-    saveEditedLinkBtn.addEventListener('click', saveEditedLink)
-  }
-
-  const closeEditResourceDialogBtn = document.getElementById('closeEditResourceDialogBtn')
-  if (closeEditResourceDialogBtn) {
-    closeEditResourceDialogBtn.addEventListener('click', closeEditResourceDialog)
-  }
-
-  const saveEditedResourceBtn = document.getElementById('saveEditedResourceBtn')
-  if (saveEditedResourceBtn) {
-    saveEditedResourceBtn.addEventListener('click', saveEditedResource)
-  }
-
-  const closeConfirmResourceDialogBtn = document.getElementById('closeConfirmResourceDialogBtn')
-  if (closeConfirmResourceDialogBtn) {
-    closeConfirmResourceDialogBtn.addEventListener('click', closeConfirmResourceDialog)
-  }
-
-  const confirmDeleteResourceBtn = document.getElementById('confirmDeleteResourceBtn')
-  if (confirmDeleteResourceBtn) {
-    confirmDeleteResourceBtn.addEventListener('click', confirmDeleteResource)
-  }
-
-  const addLinkBtn = document.getElementById('addLinkBtn')
-  if (addLinkBtn) {
-    addLinkBtn.addEventListener('click', addLink)
-  }
-
-  const addResourceBtn = document.getElementById('addResourceBtn')
-  if (addResourceBtn) {
-    addResourceBtn.addEventListener('click', addResource)
-  }
-
-  const defaultWallpaperOption = document.getElementById('defaultWallpaperOption')
-  if (defaultWallpaperOption) {
-    defaultWallpaperOption.addEventListener('click', () => setWallpaper('default'))
-  }
-  const gradient1WallpaperOption = document.getElementById('gradient1WallpaperOption')
-  if (gradient1WallpaperOption) {
-    gradient1WallpaperOption.addEventListener('click', () => setWallpaper('gradient1'))
-  }
-  const gradient2WallpaperOption = document.getElementById('gradient2WallpaperOption')
-  if (gradient2WallpaperOption) {
-    gradient2WallpaperOption.addEventListener('click', () => setWallpaper('gradient2'))
-  }
-  const gradient3WallpaperOption = document.getElementById('gradient3WallpaperOption')
-  if (gradient3WallpaperOption) {
-    gradient3WallpaperOption.addEventListener('click', () => setWallpaper('gradient3'))
-  }
-  const gradient4WallpaperOption = document.getElementById('gradient4WallpaperOption')
-  if (gradient4WallpaperOption) {
-    gradient4WallpaperOption.addEventListener('click', () => setWallpaper('gradient4'))
-  }
-  const gradient5WallpaperOption = document.getElementById('gradient5WallpaperOption')
-  if (gradient5WallpaperOption) {
-    gradient5WallpaperOption.addEventListener('click', () => setWallpaper('gradient5'))
-  }
-
-  const randomColorsBtn = document.getElementById('randomColorsBtn')
-  if (randomColorsBtn) {
-    randomColorsBtn.addEventListener('click', randomColors)
-  }
-
-  const applyCustomGradientBtn = document.getElementById('applyCustomGradientBtn')
-  if (applyCustomGradientBtn) {
-    applyCustomGradientBtn.addEventListener('click', applyCustomGradient)
-  }
-
-  const setCustomWallpaperBtn = document.getElementById('setCustomWallpaperBtn')
-  if (setCustomWallpaperBtn) {
-    setCustomWallpaperBtn.addEventListener('click', setCustomWallpaper)
-  }
-
-  const saveDataConfigBtn = document.getElementById('saveDataConfigBtn')
-  if (saveDataConfigBtn) {
-    saveDataConfigBtn.addEventListener('click', saveDataConfig)
-  }
-
-  const applyDataFromURLBtn = document.getElementById('applyDataFromURLBtn')
-  if (applyDataFromURLBtn) {
-    applyDataFromURLBtn.addEventListener('click', applyDataFromURL)
-  }
+  onClick('randomColorsBtn', randomColors)
+  onClick('applyCustomGradientBtn', applyCustomGradient)
+  onClick('setCustomWallpaperBtn', setCustomWallpaper)
+  onClick('saveDataConfigBtn', saveDataConfig)
+  onClick('applyDataFromURLBtn', applyDataFromURL)
 
   const engineDropdown = document.getElementById('engineDropdown')
   if (engineDropdown) {
@@ -174,4 +122,50 @@ export function initializeEventHandlers(): void {
       }
     })
   }
+
+  // ESC 关闭设置面板和对话框
+  document.addEventListener('keydown', (e: KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      if (isAnyDialogOpen()) {
+        closeConfirmDialog()
+        closeEditDialog()
+        closeEditResourceDialog()
+        closeConfirmResourceDialog()
+      } else {
+        const modal = document.getElementById('settingsModal')
+        if (modal?.classList.contains('show')) {
+          closeSettings()
+        }
+      }
+    }
+  })
+
+  // 遮罩点击关闭设置面板
+  const settingsModal = document.getElementById('settingsModal')
+  if (settingsModal) {
+    settingsModal.addEventListener('click', (e: Event) => {
+      if (e.target === settingsModal) {
+        closeSettings()
+      }
+    })
+  }
+
+  // 遮罩点击关闭对话框
+  const dialogIds = ['confirmDialog', 'editDialog', 'editResourceDialog', 'confirmResourceDialog']
+  const closeFuncs: Record<string, () => void> = {
+    confirmDialog: closeConfirmDialog,
+    editDialog: closeEditDialog,
+    editResourceDialog: closeEditResourceDialog,
+    confirmResourceDialog: closeConfirmResourceDialog
+  }
+  dialogIds.forEach(id => {
+    const dialog = document.getElementById(id)
+    if (dialog) {
+      dialog.addEventListener('click', (e: Event) => {
+        if (e.target === dialog) {
+          closeFuncs[id]()
+        }
+      })
+    }
+  })
 }

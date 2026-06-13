@@ -1,3 +1,5 @@
+import { showToast } from './toast'
+
 function setWallpaper(type: string): void {
   let backgroundStyle = ""
 
@@ -25,7 +27,7 @@ function setWallpaper(type: string): void {
 function setCustomWallpaper(): void {
   const url = (document.getElementById("customWallpaperUrl") as HTMLInputElement | null)?.value.trim()
   if (!url) {
-    alert("请输入图片URL")
+    showToast("请输入图片URL", 'error')
     return
   }
 

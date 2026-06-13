@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark">
     <title>搜索导航</title>
+    <link rel="preconnect" href="https://favicone.com">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/theme.css">
@@ -31,26 +33,20 @@
     </div>
     
     <div class="container">
-        <div class="mode-switcher">
-            <div class="mode-switcher-container">
-                <button class="mode-btn active" data-mode="search">🔍 搜索</button>
-                <button class="mode-btn" data-mode="translate">🌐 翻译</button>
-                <button class="mode-btn" data-mode="resource">📂 资源</button>
-                <div class="mode-slider"></div>
-            </div>
-        </div>
-        
         <div class="search-container">
             <div class="search-box">
                 <div class="engine-selector" id="engineSelector">
                     <div class="engine-icon google-icon"></div>
+                    <div class="mode-indicator" id="modeIndicator">
+                        <i class="fas fa-search"></i>
+                    </div>
                 </div>
                 
                 <textarea class="search-input" id="searchQuery" autocomplete="off" rows="2"></textarea>
                 
                 <div class="search-buttons">
                         <button class="search-btn" id="searchBtn">
-                            <i class="fas fa-search"></i>
+                            <i class="fas fa-arrow-right"></i>
                         </button>
                     </div>
             </div>
@@ -81,102 +77,12 @@
                 <button class="close-btn" id="closeSettingsBtn">×</button>
             </div>
             
-            <!-- 删除确认对话框 -->
-            <div class="confirm-dialog" id="confirmDialog">
-                <div class="confirm-content">
-                    <div class="confirm-header">
-                        <h3>确认删除</h3>
-                    </div>
-                    <div class="confirm-body">
-                        <p>确定要删除这个书签吗？</p>
-                    </div>
-                    <div class="confirm-footer">
-                        <button class="confirm-btn cancel" id="closeConfirmDialogBtn">取消</button>
-                        <button class="confirm-btn confirm" id="confirmDeleteLinkBtn">确定</button>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- 编辑对话框 -->
-        <div class="confirm-dialog" id="editDialog">
-            <div class="confirm-content">
-                <div class="confirm-header">
-                    <h3>编辑书签</h3>
-                </div>
-                <div class="confirm-body">
-                    <div class="edit-form">
-                        <div class="form-group">
-                            <label for="editLinkName">名称:</label>
-                            <input type="text" id="editLinkName" class="edit-input">
-                        </div>
-                        <div class="form-group">
-                            <label for="editLinkUrl">地址:</label>
-                            <input type="text" id="editLinkUrl" class="edit-input">
-                        </div>
-                        <div class="form-group">
-                            <label for="editLinkImageUrl">图片URL:</label>
-                            <input type="text" id="editLinkImageUrl" class="edit-input">
-                        </div>
-                    </div>
-                </div>
-                <div class="confirm-footer">
-                    <button class="confirm-btn cancel" id="closeEditDialogBtn">取消</button>
-                    <button class="confirm-btn confirm" id="saveEditedLinkBtn">确定</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- 编辑资源对话框 -->
-        <div class="confirm-dialog" id="editResourceDialog">
-            <div class="confirm-content">
-                <div class="confirm-header">
-                    <h3>编辑资源</h3>
-                </div>
-                <div class="confirm-body">
-                    <div class="edit-form">
-                        <div class="form-group">
-                            <label for="editResourceName">名称:</label>
-                            <input type="text" id="editResourceName" class="edit-input">
-                        </div>
-                        <div class="form-group">
-                            <label for="editResourceUrl">地址:</label>
-                            <input type="text" id="editResourceUrl" class="edit-input">
-                        </div>
-                        <div class="form-group">
-                            <label for="editResourceImageUrl">图片URL:</label>
-                            <input type="text" id="editResourceImageUrl" class="edit-input">
-                        </div>
-                    </div>
-                </div>
-                <div class="confirm-footer">
-                    <button class="confirm-btn cancel" id="closeEditResourceDialogBtn">取消</button>
-                    <button class="confirm-btn confirm" id="saveEditedResourceBtn">确定</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- 资源删除确认对话框 -->
-        <div class="confirm-dialog" id="confirmResourceDialog">
-            <div class="confirm-content">
-                <div class="confirm-header">
-                    <h3>确认删除</h3>
-                </div>
-                <div class="confirm-body">
-                    <p>确定要删除这个资源吗？</p>
-                </div>
-                <div class="confirm-footer">
-                    <button class="confirm-btn cancel" id="closeConfirmResourceDialogBtn">取消</button>
-                    <button class="confirm-btn confirm" id="confirmDeleteResourceBtn">确定</button>
-                </div>
-            </div>
-        </div>
-            
             <!-- 标签页导航 -->
             <div class="tab-nav">
-                <button class="tab-btn active" data-tab="bookmarks" id="bookmarksTabBtn">📚 书签</button>
-                <button class="tab-btn" data-tab="resource" id="resourceTabBtn">📂 资源</button>
-                <button class="tab-btn" data-tab="wallpaper" id="wallpaperTabBtn">🖼️ 壁纸</button>
-                <button class="tab-btn" data-tab="data" id="dataTabBtn">📊 数据</button>
+                <button class="tab-btn active" data-tab="bookmarks" id="bookmarksTabBtn">书签</button>
+                <button class="tab-btn" data-tab="resource" id="resourceTabBtn">资源</button>
+                <button class="tab-btn" data-tab="wallpaper" id="wallpaperTabBtn">壁纸</button>
+                <button class="tab-btn" data-tab="data" id="dataTabBtn">数据</button>
             </div>
             
             <!-- 书签标签页 -->
@@ -195,15 +101,63 @@
             
             <!-- 资源标签页 -->
             <div class="tab-content custom-scrollbar" id="resource-tab">
-                <div class="add-link-form">
-                    <input type="text" class="add-link-input" id="resourceName" placeholder="输入资源名称">
-                    <input type="text" class="add-link-input" id="resourceUrl" placeholder="输入带搜索参数的资源地址">
-                    <input type="text" class="add-link-input" id="resourceImageUrl" placeholder="输入图标URL（可选）">
-                    <button class="primary-btn" id="addResourceBtn">添加资源</button>
+                <!-- 添加引擎表单 - 置顶 -->
+                <div class="add-engine-form">
+                    <div class="add-engine-header">
+                        <i class="fas fa-plus-circle"></i>
+                        <span>添加引擎</span>
+                    </div>
+                    <div class="add-engine-fields">
+                        <input type="text" class="add-link-input" id="resourceName" placeholder="引擎名称">
+                        <input type="text" class="add-link-input" id="resourceUrl" placeholder="搜索地址（含搜索参数）">
+                        <input type="text" class="add-link-input" id="resourceImageUrl" placeholder="图标URL（可选）">
+                        <select class="add-engine-category" id="resourceCategory">
+                            <option value="search">搜索引擎</option>
+                            <option value="translate">翻译引擎</option>
+                            <option value="resource" selected>资源引擎</option>
+                        </select>
+                    </div>
+                    <button class="primary-btn" id="addResourceBtn">添加引擎</button>
+                </div>
+
+                <div class="resource-divider"></div>
+
+                <!-- 内置引擎区域 -->
+                <div class="built-in-engines">
+                    <div class="engine-section">
+                        <div class="engine-section-header" id="searchEngineHeader">
+                            <span class="engine-section-title"><i class="fas fa-search"></i> 搜索引擎</span>
+                            <span class="engine-section-default" id="searchEngineDefault">Google</span>
+                            <i class="fas fa-chevron-down engine-section-arrow"></i>
+                        </div>
+                        <div class="engine-section-content" id="searchEngineList">
+                            <!-- 动态生成 -->
+                        </div>
+                    </div>
+                    <div class="engine-section">
+                        <div class="engine-section-header" id="translateEngineHeader">
+                            <span class="engine-section-title"><i class="fas fa-language"></i> 翻译引擎</span>
+                            <span class="engine-section-default" id="translateEngineDefault">Google翻译</span>
+                            <i class="fas fa-chevron-down engine-section-arrow"></i>
+                        </div>
+                        <div class="engine-section-content" id="translateEngineList">
+                            <!-- 动态生成 -->
+                        </div>
+                    </div>
+                    <div class="engine-section">
+                        <div class="engine-section-header" id="resourceEngineHeader">
+                            <span class="engine-section-title"><i class="fas fa-compass"></i> 资源引擎</span>
+                            <span class="engine-section-default" id="resourceEngineDefault">哔哩哔哩</span>
+                            <i class="fas fa-chevron-down engine-section-arrow"></i>
+                        </div>
+                        <div class="engine-section-content" id="resourceEngineList">
+                            <!-- 动态生成 -->
+                        </div>
+                    </div>
                 </div>
                 
                 <div class="links-list" id="resourcesContainer">
-                    <!-- 资源将在这里动态显示 -->
+                    <!-- 自定义资源将在这里动态显示 -->
                 </div>
             </div>
             
@@ -307,7 +261,7 @@
                 <div class="data-section">
                     <textarea class="data-preview custom-scrollbar" id="dataPreview" placeholder="JSON数据将在这里显示，您可以编辑后保存..." rows="15"></textarea>
                     <div class="data-actions">
-                        <button class="primary-btn" id="saveDataConfigBtn">💾 保存配置</button>
+                        <button class="primary-btn" id="saveDataConfigBtn">保存配置</button>
                     </div>
                     <div class="data-url-import">
                         <input type="text" class="data-url-input" id="dataUrlInput" placeholder="输入JSON数据URL">
@@ -317,8 +271,138 @@
                 </div>
             </div>
         </div>
+    </div>
+    <!-- 独立对话框层级 - 移出 modal-content 避免毛玻璃套叠 -->
+    <!-- 删除书签确认对话框 -->
+    <div class="confirm-dialog" id="confirmDialog">
+        <div class="confirm-content">
+            <div class="confirm-header">
+                <h3>确认删除</h3>
+            </div>
+            <div class="confirm-body">
+                <p>确定要删除这个书签吗？</p>
+            </div>
+            <div class="confirm-footer">
+                <button class="confirm-btn cancel" id="closeConfirmDialogBtn">取消</button>
+                <button class="confirm-btn confirm" id="confirmDeleteLinkBtn">确定</button>
+            </div>
         </div>
     </div>
+
+    <!-- 编辑书签对话框 -->
+    <div class="confirm-dialog" id="editDialog">
+        <div class="confirm-content">
+            <div class="confirm-header">
+                <h3>编辑书签</h3>
+            </div>
+            <div class="confirm-body">
+                <div class="edit-form">
+                    <div class="form-group">
+                        <label for="editLinkName">名称</label>
+                        <input type="text" id="editLinkName" class="edit-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="editLinkUrl">地址</label>
+                        <input type="text" id="editLinkUrl" class="edit-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="editLinkImageUrl">图标URL</label>
+                        <input type="text" id="editLinkImageUrl" class="edit-input">
+                    </div>
+                </div>
+            </div>
+            <div class="confirm-footer">
+                <button class="confirm-btn cancel" id="closeEditDialogBtn">取消</button>
+                <button class="confirm-btn confirm" id="saveEditedLinkBtn">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 编辑资源对话框 -->
+    <div class="confirm-dialog" id="editResourceDialog">
+        <div class="confirm-content">
+            <div class="confirm-header">
+                <h3>编辑资源</h3>
+            </div>
+            <div class="confirm-body">
+                <div class="edit-form">
+                    <div class="form-group">
+                        <label for="editResourceName">名称</label>
+                        <input type="text" id="editResourceName" class="edit-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="editResourceUrl">地址</label>
+                        <input type="text" id="editResourceUrl" class="edit-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="editResourceImageUrl">图标URL</label>
+                        <input type="text" id="editResourceImageUrl" class="edit-input">
+                    </div>
+                </div>
+            </div>
+            <div class="confirm-footer">
+                <button class="confirm-btn cancel" id="closeEditResourceDialogBtn">取消</button>
+                <button class="confirm-btn confirm" id="saveEditedResourceBtn">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 删除资源确认对话框 -->
+    <div class="confirm-dialog" id="confirmResourceDialog">
+        <div class="confirm-content">
+            <div class="confirm-header">
+                <h3>确认删除</h3>
+            </div>
+            <div class="confirm-body">
+                <p>确定要删除这个资源吗？</p>
+            </div>
+            <div class="confirm-footer">
+                <button class="confirm-btn cancel" id="closeConfirmResourceDialogBtn">取消</button>
+                <button class="confirm-btn confirm" id="confirmDeleteResourceBtn">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 编辑引擎图标弹窗 -->
+    <div class="confirm-dialog" id="editFaviconDialog">
+        <div class="confirm-content">
+            <div class="confirm-header">
+                <h3>编辑图标</h3>
+            </div>
+            <div class="confirm-body">
+                <div class="edit-form">
+                    <div class="form-group">
+                        <label for="editFaviconUrl">图标URL（留空恢复默认）</label>
+                        <input type="text" id="editFaviconUrl" class="edit-input" placeholder="https://example.com/icon.png">
+                    </div>
+                </div>
+            </div>
+            <div class="confirm-footer">
+                <button class="confirm-btn cancel" id="closeEditFaviconBtn">取消</button>
+                <button class="confirm-btn confirm" id="saveEditFaviconBtn" style="background: rgba(var(--primary-color-rgb), 0.85); border-color: rgba(var(--primary-color-rgb), 0.3);">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 确认删除引擎弹窗 -->
+    <div class="confirm-dialog" id="confirmDeleteEngineDialog">
+        <div class="confirm-content">
+            <div class="confirm-header">
+                <h3>确认删除</h3>
+            </div>
+            <div class="confirm-body">
+                <p>确定要删除此引擎吗？</p>
+            </div>
+            <div class="confirm-footer">
+                <button class="confirm-btn cancel" id="closeDeleteEngineBtn">取消</button>
+                <button class="confirm-btn confirm" id="confirmDeleteEngineBtn">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast 通知容器 -->
+    <div class="toast-container" id="toastContainer"></div>
+
     <script type="module" src="/src/main.ts"></script>
 </body>
 </html>

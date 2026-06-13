@@ -1,116 +1,87 @@
 /* 搜索组件模块 */
-.mode-switcher {
-    display: flex;
-    margin: 20px 0;
-    justify-content: center;
-}
 
-.mode-switcher-container {
-    position: relative;
-    display: flex;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 20px;
-    padding: 4px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, visibility 0.3s ease;
-    will-change: transform, opacity;
-}
-
-.mode-btn {
-    padding: 8px 20px;
-    border: none;
-    background: transparent;
-    color: var(--text-secondary);
-    cursor: pointer;
-    border-radius: 16px;
-    font-size: 14px;
-    transition: color 0.2s ease, background 0.2s ease;
-    position: relative;
-    z-index: 2;
-    min-width: 100px;
-    text-align: center;
-    box-sizing: border-box;
-    -webkit-tap-highlight-color: transparent; /* 禁用移动端点击高亮 */
-    user-select: none;
-    will-change: color, background;
-}
-
-.mode-btn:hover {
-    color: var(--text-color);
-}
-
-.mode-btn.active {
-    color: white;
-    font-weight: 500;
-}
-
-.mode-slider {
-    position: absolute;
-    height: calc(100% - 8px);
-    width: 100px;
-    background: var(--primary-color);
-    border-radius: 16px;
-    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    top: 4px;
-    left: 4px;
-    z-index: 1;
-    will-change: transform;
-}
-
+/* 搜索容器 */
 .search-container {
     position: relative;
-    margin: 25px 0;
+    margin: 30px 0;
     transition: transform 0.3s ease;
     z-index: 10;
-    will-change: transform;
 }
 
 .search-container.focused {
     transform: translateY(-30px);
 }
 
-.mode-switcher.collapsed .mode-switcher-container {
-    opacity: 0;
-    visibility: hidden;
-    transform: scale(0.9) translateY(-20px);
-    pointer-events: none;
-}
-
+/* 搜索框 */
 .search-box {
     display: flex;
     align-items: center;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 30px;
-    padding: 8px 16px;
-    transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    will-change: background, transform;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(20px) saturate(1.8);
+    -webkit-backdrop-filter: blur(20px) saturate(1.8);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: var(--radius-full);
+    padding: 6px 14px 6px 16px;
+    transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow:
+        0 4px 16px rgba(0, 0, 0, 0.06),
+        0 1px 3px rgba(0, 0, 0, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.03);
+    position: relative;
+    overflow: hidden;
+}
+
+/* 流光 */
+@property --flow-x { syntax: '<percentage>'; initial-value: 0%; inherits: false; }
+
+.search-box::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(90deg,
+        #667eea00 0%,  #667eea22 4%,  #6b7cea25 8%,  #7080ea28 12%,
+        #7588ea2a 16%, #8494ec2a 20%, #93a0ee28 24%, #a2acee25 28%,
+        #b1b8f022 32%, #c0c4f220 36%, #cfd0f420 40%, #dee0f622 44%,
+        #edf0f825 48%, #f0e8e828 52%, #f0d8d42a 56%, #eec8c428 60%,
+        #eab8b825 64%, #e6a8b022 68%, #e098a820 72%, #d888a020 76%,
+        #ce78a022 80%, #c4689825 84%, #b8588e28 88%, #a848842a 92%,
+        #96387a28 96%, #667eea00 100%
+    );
+    background-size: 600% 100%;
+    background-position-x: var(--flow-x);
+    mix-blend-mode: plus-lighter;
+    animation: flow 32s linear infinite;
+}
+
+@keyframes flow {
+    0% { --flow-x: 600%; }
+    100% { --flow-x: -600%; }
 }
 
 .search-box:hover {
-    background: rgba(255, 255, 255, 0.2);
-    border-color: rgba(255, 255, 255, 0.4);
-    box-shadow: 
-        0 0 0 1px rgba(255, 255, 255, 0.3),
-        0 4px 20px rgba(var(--primary-color-rgb), 0.3),
-        0 0 30px rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.22);
+    border-color: rgba(255, 255, 255, 0.25);
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.1),
+        0 2px 6px rgba(0, 0, 0, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.12),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.03);
 }
 
 .search-box:focus-within {
-    background: rgba(255, 255, 255, 0.2);
-    box-shadow: 
-        0 0 0 1px rgba(255, 255, 255, 0.3),
-        0 4px 20px rgba(var(--primary-color-rgb), 0.3),
-        0 0 30px rgba(255, 255, 255, 0.2);
-    transform: translateY(-10px);
+    background: rgba(255, 255, 255, 0.22);
+    border-color: rgba(var(--primary-color-rgb), 0.4);
+    box-shadow:
+        0 0 0 3px rgba(var(--primary-color-rgb), 0.08),
+        0 8px 32px rgba(var(--primary-color-rgb), 0.12),
+        0 0 40px rgba(255, 255, 255, 0.05),
+        inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    transform: translateY(-8px);
 }
 
+/* 引擎选择器 */
 .engine-selector {
     display: flex;
     align-items: center;
@@ -118,11 +89,11 @@
     cursor: pointer;
     min-width: 20px;
     transition: transform 0.15s ease;
-    will-change: transform;
+    position: relative;
 }
 
 .engine-selector:hover {
-    transform: scale(1.03);
+    transform: scale(1.05);
 }
 
 .engine-icon {
@@ -135,13 +106,49 @@
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
-    transition: transform 0.2s ease;
-    transform: translateZ(0);
-    will-change: transform;
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s ease;
 }
 
 .engine-icon:hover {
     transform: scale(1.1);
+}
+
+/* 模式切换时的图标动画 */
+.engine-icon.mode-switching {
+    animation: engineIconSwitch 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes engineIconSwitch {
+    0% { transform: scale(0.5) rotate(0deg); opacity: 0; }
+    30% { transform: scale(0.6) rotate(180deg); opacity: 0.5; }
+    60% { transform: scale(1.2) rotate(360deg); opacity: 1; }
+    100% { transform: scale(1) rotate(360deg); }
+}
+
+/* 模式指示器 - 双击切换模式时短暂显示 */
+.mode-indicator {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    color: var(--text-color);
+    font-size: 24px;
+    line-height: 1;
+    opacity: 0;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s ease;
+    z-index: 3;
+    pointer-events: none;
+}
+
+.mode-indicator.show {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+}
+
+.mode-indicator.fade-out {
+    transform: translate(-50%, -50%) scale(0.5);
+    opacity: 0;
+    transition: transform 0.25s ease-in, opacity 0.2s ease-in;
 }
 
 /* 搜索引擎图标 */
@@ -154,8 +161,8 @@
 .baidu-icon { background-image: url('https://www.baidu.com/favicon.ico'); }
 .yahoo-icon { background-image: url('https://favicone.com/yahoo.com?s=256'); }
 .brave-icon { background-image: url('https://favicone.com/brave.com?s=256'); }
-.qwant-icon { background-image: url('https://favicone.com/qwant.com?s=256'); }
-.aol-icon { background-image: url('https://favicone.com/aol.com?s=256'); }
+.qwant-icon { background-image: url('https://www.qwant.com/public/apple-touch-icon-144x144.6fdb01169d8537aeadd4f95dce2982e4.png'); }
+.aol-icon { background-image: url('https://s.yimg.com/pv/static/img/aol_touch_icon_dkblue_120.png'); }
 
 /* 资源搜索引擎图标 */
 .zhihu-icon { background-image: url('https://static.zhihu.com/heifetz/favicon.ico'); }
@@ -177,6 +184,7 @@
     color: var(--text-color); 
 }
 
+/* 搜索输入框 */
 .search-input {
     flex: 1;
     border: none;
@@ -197,7 +205,16 @@
     margin-right: 8px;
 }
 
-/* Webkit浏览器滚动条样式 */
+.search-input::placeholder {
+    color: var(--text-secondary);
+    animation: placeholder-breathe 3s ease-in-out infinite;
+}
+
+@keyframes placeholder-breathe {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 0.85; }
+}
+
 .search-input::-webkit-scrollbar {
     width: 6px;
 }
@@ -215,32 +232,40 @@
     background-color: rgba(255, 255, 255, 0.5);
 }
 
+/* 搜索按钮 */
 .search-buttons { 
     display: flex; 
     gap: 8px; 
 }
 
 .search-btn {
-    width: 36px;
-    height: 36px;
+    width: 38px;
+    height: 38px;
     border: none;
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(20px) saturate(1.8);
+    -webkit-backdrop-filter: blur(20px) saturate(1.8);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     color: var(--text-color);
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.1);
-    -webkit-tap-highlight-color: transparent; /* 禁用移动端点击高亮 */
-    transform: translateZ(0);
-    will-change: transform;
+    font-size: 14px;
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    -webkit-tap-highlight-color: transparent;
 }
 
 .search-btn:hover {
-    transform: scale(1.03);
+    transform: scale(1.1);
+    background: rgba(255, 255, 255, 0.18);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.search-btn:active {
+    transform: scale(0.95);
 }
 
 .header-controls {
@@ -249,33 +274,35 @@
     align-items: center;
 }
 
+/* 引擎下拉菜单 */
 .engine-dropdown {
     position: absolute;
     top: 100%;
     left: 0;
     width: 300px;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-radius: 16px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-    padding: 8px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(40px) saturate(1.8);
+    -webkit-backdrop-filter: blur(40px) saturate(1.8);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    box-shadow:
+        0 16px 64px var(--glass-shadow),
+        0 4px 16px var(--glass-shadow),
+        inset 0 1px 0 var(--glass-highlight);
+    padding: 0 8px;
     margin-top: 8px;
     z-index: 1001;
-    border: 1px solid rgba(255, 255, 255, 0.2);
     opacity: 0;
     visibility: hidden;
-    transform: translateY(-10px);
-    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
+    transform: translateY(-8px) scale(0.96);
+    transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), visibility 0.25s ease, max-height 0.25s ease, padding 0.25s ease;
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 4px;
-    max-height: 250px; /* 限制最大高度 */
-    overflow-y: auto; /* 超出时显示垂直滚动条 */
-    will-change: opacity, transform;
+    max-height: 0;
+    overflow: hidden;
 }
 
-/* 隐藏滚动条 */
 .engine-dropdown::-webkit-scrollbar {
     width: 0;
     background: transparent;
@@ -284,21 +311,30 @@
 .engine-dropdown.show {
     opacity: 1;
     visibility: visible;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
+    padding: 8px;
+    max-height: 250px;
+    overflow-y: auto;
 }
 
 .engine-option {
     display: flex;
     align-items: center;
-    padding: 12px;
-    border-radius: 12px;
+    padding: 10px 12px;
+    border-radius: var(--radius-sm);
     cursor: pointer;
-    transition: background 0.2s ease;
-    gap: 12px;
+    transition: background 0.2s ease, transform 0.15s ease;
+    gap: 10px;
+    text-shadow: var(--glass-text-shadow);
 }
 
 .engine-option:hover { 
-    background: var(--hover-color); 
+    background: rgba(255, 255, 255, 0.1);
+    transform: scale(1.02);
+}
+
+.engine-option:active {
+    transform: scale(0.98);
 }
 
 /* 搜索建议列表 */
@@ -307,44 +343,48 @@
     top: 100%;
     left: 0;
     width: 100%;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 16px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    background: var(--glass-bg);
+    backdrop-filter: blur(32px) saturate(1.8);
+    -webkit-backdrop-filter: blur(32px) saturate(1.8);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    box-shadow:
+        0 16px 64px var(--glass-shadow),
+        0 4px 16px var(--glass-shadow),
+        inset 0 1px 0 var(--glass-highlight);
     padding: 8px;
     margin-top: 8px;
     z-index: 1000;
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.2s ease, visibility 0.2s ease;
-    max-height: calc(400px);
+    transform: translateY(-8px) scale(0.96);
+    transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), visibility 0.25s ease;
+    max-height: 400px;
     overflow-y: hidden;
-    will-change: opacity;
 }
 
 .suggestions-container.show {
     opacity: 1;
     visibility: visible;
+    transform: translateY(0) scale(1);
 }
 
 /* 搜索建议项 */
 .suggestion-item {
     padding: 12px 16px;
-    border-radius: 12px;
+    border-radius: var(--radius-sm);
     cursor: pointer;
     color: var(--text-color);
     font-size: 16px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    transition: background 0.2s ease, color 0.2s ease;
-    will-change: background, color;
+    transition: background 0.15s ease, color 0.15s ease;
+    text-shadow: var(--glass-text-shadow);
 }
 
 .suggestion-item:hover {
-    background: var(--hover-color);
+    background: rgba(255, 255, 255, 0.08);
 }
 
 .suggestion-item.active {
@@ -356,9 +396,9 @@
 .suggestion-source {
     font-size: 12px;
     color: var(--text-secondary);
-    background: rgba(0, 0, 0, 0.1);
-    padding: 2px 6px;
-    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.08);
+    padding: 2px 8px;
+    border-radius: var(--radius-xs);
     margin-left: 10px;
 }
 
@@ -367,7 +407,6 @@
     background: rgba(255, 255, 255, 0.2);
 }
 
-/* 隐藏滚动条 */
 .suggestions-container::-webkit-scrollbar {
     width: 0;
     background: transparent;

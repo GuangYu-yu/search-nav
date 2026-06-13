@@ -1,6 +1,7 @@
 import { LinkItem, ResourceItem, GridLayout } from './types'
 import { links, resources, initializeDataPreview } from './dataManager'
 import { getCachedFaviconUrl, getFaviconUrl, formatUrl, clearDomainCache, showEditDialog, showEditResourceDialog, deleteLink, deleteResource } from './linkManager'
+import { showToast } from './toast'
 
 function calculateGridLayout(totalItems: number): GridLayout {
   const maxColumns = 5
@@ -16,6 +17,19 @@ function calculateGridLayout(totalItems: number): GridLayout {
     columns: itemsPerRow,
     rows: rows
   }
+}
+
+function loadFaviconAsync(el: HTMLElement, url: string): void {
+  const img = new Image()
+  img.onload = () => {
+    el.style.backgroundImage = `url('${url}')`
+    el.classList.add('loaded')
+  }
+  img.onerror = () => {
+    el.classList.add('loaded')
+  }
+  // 延迟触发加载，优先渲染框架
+  requestIdleCallback ? requestIdleCallback(() => { img.src = url }) : setTimeout(() => { img.src = url }, 1)
 }
 
 function renderQuickLinks(): void {
@@ -39,9 +53,11 @@ function renderQuickLinks(): void {
 
     const icon = document.createElement("div")
     icon.className = "quick-link-icon"
-    icon.style.backgroundImage = `url('${
-      link.faviconUrl || getCachedFaviconUrl(link.url)
-    }')`
+    icon.setAttribute('data-initial', link.name.charAt(0).toUpperCase())
+
+    const faviconUrl = link.faviconUrl || getCachedFaviconUrl(link.url)
+    // 异步加载真实 favicon，先展示首字母占位
+    loadFaviconAsync(icon, faviconUrl)
 
     const name = document.createElement("div")
     name.className = "quick-link-name"
@@ -118,7 +134,8 @@ function renderListItems(containerId: string, items: (LinkItem | ResourceItem)[]
 
     const favicon = document.createElement("div")
     favicon.className = "link-favicon"
-    favicon.style.backgroundImage = `url('${item.faviconUrl}')`
+    const faviconSrc = item.faviconUrl || getCachedFaviconUrl(item.url)
+    favicon.style.backgroundImage = `url('${faviconSrc}')`
 
     const details = document.createElement("div")
     details.className = "link-details"
@@ -137,13 +154,13 @@ function renderListItems(containerId: string, items: (LinkItem | ResourceItem)[]
     const actions = document.createElement("div")
     actions.className = "link-actions"
 
-    const editBtn = document.createElement("button")
-    editBtn.className = "edit-btn"
-    editBtn.textContent = "修改"
+    const editBtn = document.createElement("i")
+    editBtn.className = "fas fa-pen link-action-edit"
+    editBtn.title = "修改"
     
-    const deleteBtn = document.createElement("button")
-    deleteBtn.className = "delete-btn"
-    deleteBtn.textContent = "删除"
+    const deleteBtn = document.createElement("i")
+    deleteBtn.className = "fas fa-trash link-action-delete"
+    deleteBtn.title = "删除"
 
     if (type === "link") {
       editBtn.onclick = () => showEditDialog(index)
@@ -173,7 +190,7 @@ function renderResources(): void {
 
 function saveLink(index: number, name: string, url: string, imageUrl: string = ""): void {
   if (!url) {
-    alert("请填写网站地址")
+    showToast("请填写网站地址", 'error')
     return
   }
 
