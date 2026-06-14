@@ -21,7 +21,6 @@
     padding: 6px;
     justify-content: center;
     margin: 0 auto;
-    max-width: calc(6 * (80px + 12px) + 24px);
     overflow-y: hidden;
     overflow-x: auto;
     border-radius: 12px;
@@ -69,27 +68,46 @@
     width: 56px;
     height: 56px;
     border-radius: 50%;
-    background-color: rgba(255, 255, 255, 0.9);
-    border: 2px solid #ffffff;
+    background-color: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.06);
     box-shadow: 
-        0 0 0 2px #000000,
-        0 4px 20px rgba(0, 0, 0, 0.4), 
-        0 0 20px rgba(255, 255, 255, 0.6);
-    background-size: 80%;
+        0 0 0 1px rgba(0, 0, 0, 0.05),
+        0 4px 16px rgba(0, 0, 0, 0.12);
+    background-size: 75%;
     background-repeat: no-repeat;
     background-position: center;
     cursor: pointer;
     position: relative;
     overflow: hidden;
+    will-change: transform;
     transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s ease;
+}
+
+/* Favicon 加载中的首字母占位 */
+.quick-link-icon::after {
+    content: attr(data-initial);
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    font-weight: 600;
+    color: #333;
+    text-shadow: none;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+}
+
+.quick-link-icon.loaded::after {
+    opacity: 0;
 }
 
 .quick-link-icon:hover {
     transform: scale(1.1);
     box-shadow: 
-        0 0 0 2px #000000,
-        0 6px 25px rgba(0, 0, 0, 0.5), 
-        0 0 25px rgba(255, 255, 255, 0.8);
+        0 0 0 1px rgba(0, 0, 0, 0.08),
+        0 8px 24px rgba(0, 0, 0, 0.18);
 }
 
 .quick-link-icon:active {
