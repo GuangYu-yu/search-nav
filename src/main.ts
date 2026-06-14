@@ -27,7 +27,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const searchInput = document.getElementById("searchQuery") as HTMLInputElement | null
   if (searchInput) {
-    searchInput.addEventListener("input", (e) => {
+    let isComposing = false
+
+    const handleSuggestionInput = (e: Event) => {
       const query = (e.target as HTMLInputElement).value
       if (currentMode === "search") {
         fetchSuggestions(query).then((suggestions) =>
@@ -36,6 +38,16 @@ document.addEventListener("DOMContentLoaded", function () {
       } else {
         hideSuggestions()
       }
+    }
+
+    searchInput.addEventListener("compositionstart", () => { isComposing = true })
+    searchInput.addEventListener("compositionend", (e) => {
+      isComposing = false
+      handleSuggestionInput(e)
+    })
+    searchInput.addEventListener("input", (e) => {
+      if (isComposing) return
+      handleSuggestionInput(e)
     })
 
     searchInput.addEventListener("keydown", handleSuggestionNavigation)

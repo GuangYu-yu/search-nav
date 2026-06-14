@@ -1,10 +1,71 @@
 import { SuggestionItem, SuggestionAPI } from './types'
 import { handleSearch } from './searchHandler'
 
-// JSONP 响应内部结构（360搜索建议API）
-interface So360SuggestionResult {
-  result?: { word: string }[]
+interface EngineConfig {
+  api: SuggestionAPI
+  parse(data: unknown): string[]
+  lastRequestTime: number
 }
+
+const ENGINE_CONFIGS: Record<string, EngineConfig> = {
+  // 360 搜索建议
+  // ["so360"]: {
+  //   api: {
+  //     url: "https://sug.so.360.cn/suggest",
+  //     params: {
+  //       word: "",
+  //       encodein: "utf-8",
+  //       encodeout: "utf-8",
+  //       callback: "callback"
+  //     }
+  //   },
+  //   parse(data: unknown): string[] {
+  //     const d = data as { result?: { word: string }[] }
+  //     return d.result ? d.result.map(item => item.word) : []
+  //   },
+  //   lastRequestTime: 0
+  // },
+
+  // 百度搜索建议（JSONP）
+  baidu: {
+    api: {
+      url: "https://suggestion.baidu.com/su",
+      params: {
+        wd: "",
+        cb: "callback"
+      }
+    },
+    parse(data: unknown): string[] {
+      const d = data as { s?: string[] }
+      return d.s || []
+    },
+    lastRequestTime: 0
+  },
+
+  // Google 搜索建议
+  google: {
+    api: {
+      url: "https://www.google.com/complete/search",
+      params: {
+        q: "",
+        client: "gws-wiz",
+        hl: "zh-CN",
+        callback: "callback"
+      }
+    },
+    parse(data: unknown): string[] {
+      const d = data as [Array<[string]>, unknown]
+      return Array.isArray(d) && Array.isArray(d[0]) ? d[0].map(item => item[0]) : []
+    },
+    lastRequestTime: 0
+  }
+}
+
+const ACTIVE_ENGINES = ["google"]
+
+// ============================================================
+// 全局状态
+// ============================================================
 
 let jsonpCounter = 0
 let suggestionCache: Map<string, SuggestionItem[]> = new Map()
@@ -12,26 +73,19 @@ let currentSuggestions: SuggestionItem[] = []
 let activeSuggestionIndex: number = -1
 let debounceTimer: NodeJS.Timeout | null = null
 
-const engineLastRequestTime: Record<string, number> = {
-  so360: 0
+const MAX_SUGGESTIONS = 8
+
+// 清理引号字符，避免被编码为 %27 等导致关键词中断
+function sanitizeQuery(query: string): string {
+  return query.replace(/[''""`'"]/g, '')
 }
 
-const SUGGESTION_APIS: Record<string, SuggestionAPI> = {
-  so360: {
-    url: "https://sug.so.360.cn/suggest",
-    params: {
-      word: "",
-      encodein: "utf-8",
-      encodeout: "utf-8",
-      callback: "callback"
-    }
-  }
-}
-
-function performRequest(engine: string, api: SuggestionAPI, query: string): Promise<SuggestionItem[]> {
+function performRequest(engine: string, config: EngineConfig, query: string): Promise<SuggestionItem[]> {
   return new Promise((resolve, reject) => {
+    const safeQuery = sanitizeQuery(query)
     const callbackName = `jsonp_callback_${Date.now()}_${++jsonpCounter}`
     const win = (window as unknown) as Record<string, unknown>
+    const api = config.api
 
     const script = document.createElement("script")
 
@@ -40,19 +94,11 @@ function performRequest(engine: string, api: SuggestionAPI, query: string): Prom
       delete win[callbackName]
 
       try {
-        let suggestions: string[] = []
-        if (engine === "so360") {
-          const soData = data as So360SuggestionResult
-          suggestions = soData.result
-            ? soData.result.map((item) => item.word)
-            : []
-        }
-
+        const suggestions: string[] = config.parse(data)
         const result: SuggestionItem[] = suggestions.map((text) => ({
           text,
           source: engine
         }))
-
         resolve(result)
       } catch (error) {
         reject(error)
@@ -63,10 +109,10 @@ function performRequest(engine: string, api: SuggestionAPI, query: string): Prom
       ...api.params,
       [Object.keys(api.params).find(
         (key) =>
-          key === "q" || key === "query" || key === "command" || key === "word"
-      ) || "q"]: query,
+          key === "q" || key === "query" || key === "command" || key === "word" || key === "wd" || key === "qry"
+      ) || "q"]: safeQuery,
       [Object.keys(api.params).find(
-        (key) => key === "callback" || key === "JsonpCallback"
+        (key) => key === "callback" || key === "JsonpCallback" || key === "cb"
       ) || "callback"]: callbackName
     })
     const url = `${api.url}?${params}`
@@ -107,28 +153,26 @@ async function fetchSuggestions(query: string): Promise<SuggestionItem[]> {
         return
       }
 
-      const enginesToQuery = ["so360"]
-
       try {
-        const requests = enginesToQuery.map((engine) => {
-          const api = SUGGESTION_APIS[engine]
-          if (!api) {
+        const requests = ACTIVE_ENGINES.map((engine) => {
+          const config = ENGINE_CONFIGS[engine]
+          if (!config) {
             return Promise.resolve([])
           }
 
           const now = Date.now()
-          const timeSinceLastRequest = now - engineLastRequestTime[engine]
+          const timeSinceLastRequest = now - config.lastRequestTime
 
           return new Promise<SuggestionItem[]>((resolve) => {
             if (timeSinceLastRequest < 200) {
               const delay = 200 - timeSinceLastRequest
               setTimeout(() => {
-                engineLastRequestTime[engine] = Date.now()
-                resolve(performRequest(engine, api, query))
+                config.lastRequestTime = Date.now()
+                resolve(performRequest(engine, config, query))
               }, delay)
             } else {
-              engineLastRequestTime[engine] = now
-              resolve(performRequest(engine, api, query))
+              config.lastRequestTime = now
+              resolve(performRequest(engine, config, query))
             }
           })
         })
@@ -168,7 +212,7 @@ function showSuggestions(suggestions: SuggestionItem[], query: string): void {
 
   suggestionsContainer.innerHTML = ""
 
-  const limitedSuggestions = suggestions.slice(0, 6)
+  const limitedSuggestions = suggestions.slice(0, MAX_SUGGESTIONS)
 
   limitedSuggestions.forEach((suggestion, index) => {
     const suggestionItem = document.createElement("div")
@@ -233,7 +277,7 @@ function handleSuggestionNavigation(event: KeyboardEvent): void {
       event.preventDefault()
       if (suggestionItems.length > 0) {
         activeSuggestionIndex =
-          (activeSuggestionIndex + 1) % Math.min(currentSuggestions.length, 6)
+          (activeSuggestionIndex + 1) % Math.min(currentSuggestions.length, MAX_SUGGESTIONS)
         updateActiveSuggestion(suggestionItems)
       }
       break
@@ -241,8 +285,8 @@ function handleSuggestionNavigation(event: KeyboardEvent): void {
       event.preventDefault()
       if (suggestionItems.length > 0) {
         activeSuggestionIndex =
-          (activeSuggestionIndex - 1 + Math.min(currentSuggestions.length, 6)) %
-          Math.min(currentSuggestions.length, 6)
+          (activeSuggestionIndex - 1 + Math.min(currentSuggestions.length, MAX_SUGGESTIONS)) %
+          Math.min(currentSuggestions.length, MAX_SUGGESTIONS)
         updateActiveSuggestion(suggestionItems)
       }
       break
