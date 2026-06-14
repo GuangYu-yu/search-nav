@@ -1,23 +1,7 @@
-import { LinkItem, ResourceItem, GridLayout } from './types'
+import { LinkItem, ResourceItem } from './types'
 import { links, resources, initializeDataPreview } from './dataManager'
 import { getCachedFaviconUrl, getFaviconUrl, formatUrl, clearDomainCache, showEditDialog, showEditResourceDialog, deleteLink, deleteResource } from './linkManager'
 import { showToast } from './toast'
-
-function calculateGridLayout(totalItems: number): GridLayout {
-  const maxColumns = 5
-
-  if (totalItems <= maxColumns) {
-    return { columns: totalItems, rows: 1 }
-  }
-
-  const rows = Math.ceil(totalItems / maxColumns)
-  const itemsPerRow = Math.ceil(totalItems / rows)
-
-  return {
-    columns: itemsPerRow,
-    rows: rows
-  }
-}
 
 function loadFaviconAsync(el: HTMLElement, url: string): void {
   const img = new Image()
@@ -32,6 +16,29 @@ function loadFaviconAsync(el: HTMLElement, url: string): void {
   requestIdleCallback ? requestIdleCallback(() => { img.src = url }) : setTimeout(() => { img.src = url }, 1)
 }
 
+const ITEM_W = 100
+
+function calculateColumns(containerWidth: number): number {
+  const gap = 6
+  const padding = 12
+  const availableWidth = containerWidth - padding
+  const maxColumns = Math.max(1, Math.floor((availableWidth + gap) / (ITEM_W + gap)))
+  return Math.min(maxColumns, 5)
+}
+
+function calculateGridLayout(totalItems: number, maxColumns: number): { columns: number; rows: number } {
+  if (totalItems <= maxColumns) {
+    return { columns: totalItems, rows: 1 }
+  }
+  const rows = Math.ceil(totalItems / maxColumns)
+  const itemsPerRow = Math.ceil(totalItems / rows)
+
+  return {
+    columns: itemsPerRow,
+    rows: rows
+  }
+}
+
 function renderQuickLinks(): void {
   const container = document.getElementById("quickLinksContainer") as HTMLElement | null
   if (!container) return
@@ -39,10 +46,12 @@ function renderQuickLinks(): void {
   container.innerHTML = ""
   if (!links.length) return
 
-  const layout = calculateGridLayout(links.length)
+  const parentWidth = container.parentElement?.clientWidth ?? 800
+  const maxColumns = calculateColumns(parentWidth)
+  const layout = calculateGridLayout(links.length, maxColumns)
+  const gap = computeGap(layout.columns, parentWidth)
 
-  container.style.gridTemplateColumns = `repeat(${layout.columns}, 80px)`
-  container.style.gridTemplateRows = `repeat(${layout.rows}, 1fr)`
+  applyGridLayout(container, layout.columns, layout.rows, gap)
 
   const fragment = document.createDocumentFragment()
 
@@ -69,6 +78,37 @@ function renderQuickLinks(): void {
 
   container.appendChild(fragment)
   container.classList.toggle("overflowing", layout.rows > 3)
+}
+
+function applyGridLayout(container: HTMLElement, columns: number, rows: number, gap: number): void {
+  container.style.gridTemplateColumns = `repeat(${columns}, 80px)`
+  container.style.gridTemplateRows = `repeat(${rows}, 1fr)`
+  container.style.columnGap = `${gap}px`
+}
+
+// 窗口大小改变时重新计算列数（不重建 DOM）
+window.addEventListener("resize", () => {
+  const container = document.getElementById("quickLinksContainer")
+  if (!container || !links.length) return
+  relayoutGrid(container)
+})
+
+function relayoutGrid(container: HTMLElement): void {
+  const parentWidth = container.parentElement?.clientWidth ?? 800
+  const maxColumns = calculateColumns(parentWidth)
+  const layout = calculateGridLayout(links.length, maxColumns)
+  const gap = computeGap(layout.columns, parentWidth)
+  applyGridLayout(container, layout.columns, layout.rows, gap)
+  container.classList.toggle("overflowing", layout.rows > 3)
+}
+
+// 每行少于5个且容器有余量时扩大间距，下限8px上限48px
+function computeGap(cols: number, containerWidth: number): number {
+  if (cols <= 1 || cols >= 5) return 8
+  const pad = 12
+  const availableWidth = containerWidth - pad
+  const naturalGap = Math.floor((availableWidth - cols * ITEM_W) / (cols - 1))
+  return Math.max(8, Math.min(42, naturalGap))
 }
 
 document.addEventListener("click", function (event: Event): void {
@@ -215,7 +255,6 @@ function applyFocusTransition(isFocused: boolean): void {
 }
 
 export { 
-  calculateGridLayout, 
   renderQuickLinks, 
   openSettings, 
   closeSettings, 

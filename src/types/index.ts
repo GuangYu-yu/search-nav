@@ -15,11 +15,6 @@ export interface SuggestionItem {
   source: string
 }
 
-export interface GridLayout {
-  columns: number
-  rows: number
-}
-
 export interface FaviconCache {
   faviconUrl: string
   timestamp: number

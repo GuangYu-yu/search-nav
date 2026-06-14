@@ -21,7 +21,7 @@ function loadDefaultEngines(): Record<Mode, { engine: string; displayName: strin
   if (saved) {
     try {
       return JSON.parse(saved)
-    } catch { /* ignore */ }
+    } catch { localStorage.removeItem("modeDefaultEngines") }
   }
   return {
     search: { engine: "google", displayName: "Google" },

@@ -8,8 +8,14 @@ type DataConfig = {
   resources: ResourceItem[]
 }
 
-let links: LinkItem[] = JSON.parse(localStorage.getItem("navLinks") || "[]") || []
-let resources: ResourceItem[] = JSON.parse(localStorage.getItem("navResources") || "[]") || []
+function safeParse<T>(raw: string | null, fallback: T): T {
+  if (!raw) return fallback
+  try { return JSON.parse(raw) } catch { /* ignore */ }
+  return fallback
+}
+
+let links: LinkItem[] = safeParse<LinkItem[]>(localStorage.getItem("navLinks"), [])
+let resources: ResourceItem[] = safeParse<ResourceItem[]>(localStorage.getItem("navResources"), [])
 
 function getLinks(): ReadonlyArray<LinkItem> { return links }
 function getResources(): ReadonlyArray<ResourceItem> { return resources }

@@ -57,7 +57,7 @@ interface CustomEngine {
 function loadCustomEngines(): CustomEngine[] {
   const saved = localStorage.getItem("customEngines")
   if (saved) {
-    try { return JSON.parse(saved) } catch { /* ignore */ }
+    try { return JSON.parse(saved) } catch { localStorage.removeItem("customEngines") }
   }
   return []
 }
@@ -70,7 +70,7 @@ function saveCustomEngines(engines: CustomEngine[]): void {
 function loadCustomFaviconOverrides(): Record<string, string> {
   const saved = localStorage.getItem("customFaviconOverrides")
   if (saved) {
-    try { return JSON.parse(saved) } catch { /* ignore */ }
+    try { return JSON.parse(saved) } catch { localStorage.removeItem("customFaviconOverrides") }
   }
   return {}
 }

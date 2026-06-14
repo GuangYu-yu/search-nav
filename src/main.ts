@@ -93,8 +93,8 @@ document.addEventListener("DOMContentLoaded", function () {
     })
   }
 
-  const savedTheme = localStorage.getItem("preferred-theme") || "light"
-  setTheme(savedTheme)
+  const savedTheme = localStorage.getItem("preferred-theme")
+  setTheme(savedTheme || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'))
 
   const defaultMode = (localStorage.getItem("defaultMode") || "search") as 'search' | 'translate' | 'resource'
   switchMode(defaultMode)

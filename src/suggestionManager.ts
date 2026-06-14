@@ -135,6 +135,10 @@ async function fetchSuggestions(query: string): Promise<SuggestionItem[]> {
 
         const result = await Promise.race(requests)
         suggestionCache.set(query, result)
+        if (suggestionCache.size > 50) {
+          const firstKey = suggestionCache.keys().next().value
+          if (firstKey !== undefined) suggestionCache.delete(firstKey)
+        }
         resolve(result)
       } catch (error) {
         console.error("获取搜索建议时出错:", error)
@@ -180,7 +184,8 @@ function showSuggestions(suggestions: SuggestionItem[], query: string): void {
 
     suggestionItem.dataset.index = String(index)
 
-    suggestionItem.addEventListener("click", () => {
+    suggestionItem.addEventListener("mousedown", (e) => {
+      e.preventDefault()
       searchInput.value = suggestion.text || ""
       handleSearch()
     })

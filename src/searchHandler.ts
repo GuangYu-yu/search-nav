@@ -8,7 +8,9 @@ function handleSearch(): void {
   const baseUrl = resolveEngineUrl(currentEngine, currentMode)
   if (!baseUrl) return
 
-  const url = baseUrl + encodeURIComponent(query)
+  const url = baseUrl.includes('%s')
+    ? baseUrl.replace('%s', encodeURIComponent(query))
+    : baseUrl + encodeURIComponent(query)
   // 安全校验：仅允许 http/https 协议跳转
   if (!/^https?:\/\//.test(url)) return
 

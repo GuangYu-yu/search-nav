@@ -17,11 +17,10 @@
 
 .quick-links-grid {
     display: grid;
-    gap: 8px;  /* 控制书签项之间的间距 */
+    gap: 8px;
     padding: 6px;
     justify-content: center;
     margin: 0 auto;
-    max-width: calc(6 * (80px + 12px) + 24px);
     overflow-y: hidden;
     overflow-x: auto;
     border-radius: 12px;
@@ -35,7 +34,6 @@
     -ms-overflow-style: none;
 }
 
-/* Chrome, Safari 和 Opera 隐藏滚动条 */
 .quick-links-grid.overflowing::-webkit-scrollbar {
     display: none;
 }
