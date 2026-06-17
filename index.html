@@ -11,8 +11,8 @@
     <link rel="stylesheet" href="css/theme.css">
 </head>
 <body>
-    <!-- 壁纸容器 -->
-    <div class="wallpaper-container" id="wallpaperContainer"></div>
+    <!-- 壁纸容器:外层 div 负责 transform/scale 过渡,内层 canvas 由 Pixi 渲染 -->
+    <div class="wallpaper-wrapper" id="wallpaperWrapper"><canvas id="wallpaperGL"></canvas></div>
     <!-- 全局控制栏 -->
     <div class="global-controls">
         <div class="theme-toggle-btn" id="themeToggleBtn">

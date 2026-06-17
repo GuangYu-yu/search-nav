@@ -31,8 +31,8 @@ body {
     border-radius: 4px;
 }
 
-/* 壁纸容器 */
-.wallpaper-container {
+/* 壁纸容器:外层 div,CSS 只负责位置/缩放/兜底色,模糊与亮度由 Pixi 在 canvas 上处理 */
+.wallpaper-wrapper {
     position: fixed;
     top: 0;
     left: 0;
@@ -41,20 +41,23 @@ body {
     z-index: -1;
     background: var(--background-color);
     transform-origin: center;
-    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), filter 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     backface-visibility: hidden;
 }
 
-/* 搜索聚焦时的壁纸效果 */
-.search-focused .wallpaper-container {
-    transform: scale(1.1);
-    filter: blur(10px) brightness(0.8);
+/* canvas 充满 wrapper */
+.wallpaper-wrapper > canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
 }
 
-/* 设置模态框打开时的壁纸效果 */
-body.settings-modal-open .wallpaper-container {
-  filter: blur(8px) brightness(0.7);
+/* 搜索聚焦时轻微放大;blur+brightness 由 WallpaperRenderer.setBlur(10, 0.8, 400) 处理 */
+.search-focused .wallpaper-wrapper {
+    transform: scale(1.1);
 }
+
+/* 设置模态框打开时:无 CSS transform,blur+brightness 由 WallpaperRenderer.setBlur(8, 0.7, 400) 处理 */
 
 .container {
     max-width: 800px;

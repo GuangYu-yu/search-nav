@@ -4,10 +4,12 @@ import { updateEngineDropdown, selectEngine } from "./engineManager"
 import { setTheme } from './themeManager'
 import { initializeEventHandlers } from './eventHandlers'
 import { initBuiltInEngines } from './builtInEngines'
-import { 
-  updateSVGWallpaper, 
-  initColorMixer 
+import {
+  updateSVGWallpaper,
+  initColorMixer,
+  restoreWallpaperFromStorage
 } from './wallpaperManager'
+import { initWallpaperRenderer } from './wallpaperRenderer'
 import { 
   fetchSuggestions, 
   showSuggestions, 
@@ -121,14 +123,7 @@ document.addEventListener("DOMContentLoaded", function () {
     btn.addEventListener("click", () => switchTab((btn as HTMLElement).dataset.tab || ""))
   })
 
-  const savedWallpaper = localStorage.getItem("customWallpaper")
-  if (savedWallpaper) {
-    const wallpaperContainer = document.getElementById("wallpaperContainer") as HTMLElement | null
-    if (wallpaperContainer) {
-      wallpaperContainer.style.background = savedWallpaper
-    }
-  }
-
+  // 恢复壁纸设置面板的输入框 UI 状态
   const savedWallpaperUrl = localStorage.getItem("customWallpaperUrl")
   if (savedWallpaperUrl) {
     const customWallpaperUrlInput = document.getElementById("customWallpaperUrl") as HTMLInputElement | null
@@ -145,16 +140,12 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  const svgActive = localStorage.getItem("svgWallpaper")
-  if (svgActive === "active") {
-    const savedSVGCode = localStorage.getItem("svgCode")
-    if (savedSVGCode) {
-      const svgCodeInput = document.getElementById("svgCode") as HTMLTextAreaElement | null
-      if (svgCodeInput) {
-        svgCodeInput.value = savedSVGCode
-      }
-      updateSVGWallpaper()
-    }
+  // 初始化 Pixi 渲染器并从 localStorage 恢复壁纸内容(异步,不阻塞其他初始化)
+  const wallpaperGL = document.getElementById("wallpaperGL") as HTMLCanvasElement | null
+  if (wallpaperGL) {
+    initWallpaperRenderer(wallpaperGL).then(() => {
+      void restoreWallpaperFromStorage()
+    })
   }
 
   initColorMixer()

@@ -2,6 +2,7 @@ import { LinkItem, ResourceItem } from './types'
 import { links, resources, initializeDataPreview } from './dataManager'
 import { getCachedFaviconUrl, getFaviconUrl, formatUrl, clearDomainCache, showEditDialog, showEditResourceDialog, deleteLink, deleteResource } from './linkManager'
 import { showToast } from './toast'
+import { tryGetWallpaperRenderer, computeBlurTarget } from './wallpaperRenderer'
 
 function loadFaviconAsync(el: HTMLElement, url: string): void {
   const img = new Image()
@@ -143,12 +144,16 @@ function openSettings(): void {
   modal?.classList.add("show")
   document.body.classList.add("settings-modal-open")
   renderLinks()
+  const t = computeBlurTarget()
+  tryGetWallpaperRenderer()?.setBlur(t.strength, t.brightness, 400)
 }
 
 function closeSettings(): void {
   const modal = document.getElementById("settingsModal")
   modal?.classList.remove("show")
   document.body.classList.remove("settings-modal-open")
+  const t = computeBlurTarget()
+  tryGetWallpaperRenderer()?.setBlur(t.strength, t.brightness, 400)
 }
 
 function switchTab(tabName: string): void {
@@ -252,6 +257,8 @@ function applyFocusTransition(isFocused: boolean): void {
   } else {
     document.body.classList.remove("search-focused")
   }
+  const t = computeBlurTarget()
+  tryGetWallpaperRenderer()?.setBlur(t.strength, t.brightness, 400)
 }
 
 export { 
