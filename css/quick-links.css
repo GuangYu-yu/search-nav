@@ -32,6 +32,8 @@
     overflow-y: auto;
     scrollbar-width: none;
     -ms-overflow-style: none;
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 20px, black calc(100% - 20px), transparent 100%);
+    mask-image: linear-gradient(to bottom, transparent 0%, black 20px, black calc(100% - 20px), transparent 100%);
 }
 
 .quick-links-grid.overflowing::-webkit-scrollbar {

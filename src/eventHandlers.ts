@@ -1,7 +1,7 @@
 import { setTheme, toggleThemeSwitcher } from './themeManager'
 import { openSettings, closeSettings } from './uiManager'
 import { toggleEngineDropdown, selectEngine } from './engineManager'
-import { cycleMode, setModeSwitchAnimating, isModeSwitchAnimating } from './modeManager'
+import { switchMode, currentMode } from './modeManager'
 import { handleSearch } from './searchHandler'
 
 import { 
@@ -45,33 +45,24 @@ export function initializeEventHandlers(): void {
 
   onClick('settingsBtn', openSettings)
 
-  const engineSelector = document.getElementById('engineSelector')
-  if (engineSelector) {
-    let clickCount = 0
-    let clickTimer: ReturnType<typeof setTimeout> | null = null
+  // 引擎选择器:单击打开/关闭 engine dropdown
+  onClick('engineSelector', toggleEngineDropdown)
 
-    engineSelector.addEventListener('click', () => {
-      if (isModeSwitchAnimating()) return
+  // 模式切换:点击图标切换,选中变大
+  const modeSegmented = document.getElementById('modeSegmented')
+  if (modeSegmented) {
+    const segments = modeSegmented.querySelectorAll('.mode-segment')
 
-      clickCount++
-      if (clickCount === 1) {
-        clickTimer = setTimeout(() => {
-          clickCount = 0
-          toggleEngineDropdown()
-        }, 250)
-      } else if (clickCount >= 2) {
-        if (clickTimer) {
-          clearTimeout(clickTimer)
-          clickTimer = null
-        }
-        clickCount = 0
-        const dropdown = document.getElementById('engineDropdown')
-        if (dropdown) dropdown.classList.remove('show')
-        const suggestionsContainer = document.getElementById('suggestionsContainer')
-        if (suggestionsContainer) suggestionsContainer.style.opacity = ""
-        setModeSwitchAnimating(true)
-        cycleMode()
-      }
+    segments.forEach(seg => {
+      seg.addEventListener('mousedown', (e) => e.preventDefault()) // 不抢焦点
+
+      seg.addEventListener('click', function(this: HTMLElement) {
+        const mode = this.getAttribute('data-mode')
+        if (!mode || mode === currentMode) return
+        segments.forEach(s => s.classList.remove('active'))
+        this.classList.add('active')
+        switchMode(mode as 'search' | 'translate' | 'resource')
+      })
     })
   }
 

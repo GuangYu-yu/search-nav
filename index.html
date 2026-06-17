@@ -34,12 +34,16 @@
     
     <div class="container">
         <div class="search-container">
+            <!-- 模式切换:三个图标,选中变大 -->
+            <div class="mode-segmented" id="modeSegmented">
+                <button class="mode-segment active" data-mode="search" title="搜索"><i class="fas fa-search"></i></button>
+                <button class="mode-segment" data-mode="translate" title="翻译"><i class="fas fa-language"></i></button>
+                <button class="mode-segment" data-mode="resource" title="资源"><i class="fas fa-compass"></i></button>
+            </div>
+
             <div class="search-box">
                 <div class="engine-selector" id="engineSelector">
                     <div class="engine-icon google-icon"></div>
-                    <div class="mode-indicator" id="modeIndicator">
-                        <i class="fas fa-search"></i>
-                    </div>
                 </div>
                 
                 <textarea class="search-input" id="searchQuery" autocomplete="off" rows="2"></textarea>
