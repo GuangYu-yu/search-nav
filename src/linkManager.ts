@@ -27,7 +27,6 @@ interface ItemTypeConfig {
   renderFunc: () => void
   editCloseDialogFunc: () => void
   editRenderFunc: () => void
-  confirmDialogFunc: () => void
   closeConfirmFunc: () => void
 }
 
@@ -55,7 +54,6 @@ function getItemConfig(type: ItemType): ItemTypeConfig {
         renderQuickLinks()
         initializeDataPreview()
       },
-      confirmDialogFunc: showConfirmDialog,
       closeConfirmFunc: closeConfirmDialog,
     }
   }
@@ -84,10 +82,6 @@ function getItemConfig(type: ItemType): ItemTypeConfig {
       if (currentMode === "resource") {
         updateEngineDropdown()
       }
-    },
-    confirmDialogFunc: () => {
-      const dialog = document.getElementById("confirmResourceDialog")
-      dialog?.classList.add("show")
     },
     closeConfirmFunc: () => {
       const dialog = document.getElementById("confirmResourceDialog")
@@ -379,10 +373,8 @@ export {
   addResource, 
   deleteLink, 
   deleteResource, 
-  showConfirmResourceDialog, 
   closeConfirmResourceDialog, 
   confirmDeleteResource, 
-  showConfirmDialog, 
   closeConfirmDialog, 
   confirmDeleteLink, 
   showEditDialog, 
@@ -394,8 +386,5 @@ export {
   getFaviconUrl, 
   getCachedFaviconUrl,
   formatUrl,
-  extractDomain,
   clearDomainCache,
-  validateFormData,
-  getDefaultFavicon
 }

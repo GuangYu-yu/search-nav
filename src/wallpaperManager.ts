@@ -3,7 +3,7 @@ import {
   WallpaperContent,
   ImageContent,
   GradientContent,
-  SVGContent,
+  InlineSVGContent,
   DefaultContent,
   getWallpaperRenderer,
 } from './wallpaperRenderer'
@@ -12,7 +12,7 @@ import {
 function parseWallpaperString(bg: string): WallpaperContent | null {
   bg = bg.trim()
   if (bg.startsWith('url(')) {
-    const m = bg.match(/url\(['"]?([^'")]+)['"]?\)/)
+    const m = bg.match(/url\(['"]?([^'"]+)['"]?\)/)
     if (m) return new ImageContent(m[1])
   } else if (bg.startsWith('linear-gradient(')) {
     // 格式: linear-gradient(135deg, #667eea 0%, #764ba2 100%)
@@ -40,7 +40,7 @@ export async function restoreWallpaperFromStorage(): Promise<void> {
   if (svgActive === 'active') {
     const savedSVGCode = localStorage.getItem('svgCode')
     if (savedSVGCode) {
-      await getWallpaperRenderer().setContent(new SVGContent(savedSVGCode))
+      await getWallpaperRenderer().setContent(new InlineSVGContent(savedSVGCode))
       return
     }
   }
@@ -221,7 +221,7 @@ function updateSVGWallpaper(): void {
   localStorage.setItem('svgWallpaper', 'active')
   localStorage.setItem('svgCode', svgCode)
 
-  void getWallpaperRenderer().setContent(new SVGContent(svgCode))
+  void getWallpaperRenderer().setContent(new InlineSVGContent(svgCode))
 }
 
 function applyCustomGradient(): void {
@@ -260,10 +260,6 @@ function initColorMixer(): void {
 export {
   setWallpaper,
   setCustomWallpaper,
-  getCurrentDirection,
-  updateGradientPreview,
-  getAllColors,
-  getGradientPairs,
   randomColors,
   updateSVGWallpaper,
   applyCustomGradient,

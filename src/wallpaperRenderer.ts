@@ -17,6 +17,15 @@ export interface WallpaperContent {
   toPixi(app: Application): Promise<Container>
 }
 
+/**
+ * 直接渲染在 DOM 容器里的壁纸。
+ * 用于需要保留 CSS/SMIL 动画的内容(如 inline SVG),不走 Pixi 纹理化路径。
+ */
+export interface DomWallpaperContent {
+  kind: 'dom'
+  renderTo(wrapper: HTMLElement): Promise<void>
+}
+
 function easeOutCubic(t: number): number {
   return 1 - Math.pow(1 - t, 3)
 }
@@ -74,10 +83,15 @@ export class GradientContent implements WallpaperContent {
   }
 }
 
-/** SVG 代码壁纸。通过 blob URL 加载为 Image 后上传 GPU 纹理。 */
-export class SVGContent implements WallpaperContent {
+/**
+ * 内联 SVG 壁纸。
+ * 直接把 SVG 代码作为 DOM 元素插入 wrapper,保留 CSS animation / SMIL 动画能力。
+ */
+export class InlineSVGContent implements DomWallpaperContent {
+  readonly kind = 'dom' as const
   constructor(private code: string) {}
-  async toPixi(_app: Application): Promise<Container> {
+
+  async renderTo(wrapper: HTMLElement): Promise<void> {
     const parser = new DOMParser()
     const doc = parser.parseFromString(this.code, 'image/svg+xml')
     const parserError = doc.querySelector('parsererror')
@@ -86,24 +100,16 @@ export class SVGContent implements WallpaperContent {
     const svg = doc.documentElement
     if (svg.nodeName !== 'svg') throw new Error('请输入有效的 SVG 代码')
 
-    // Image 元素需要明确的像素尺寸,不能是 100%
-    svg.setAttribute('width', String(window.innerWidth))
-    svg.setAttribute('height', String(window.innerHeight))
+    svg.setAttribute('width', '100%')
+    svg.setAttribute('height', '100%')
     if (!svg.getAttribute('preserveAspectRatio')) {
       svg.setAttribute('preserveAspectRatio', 'xMidYMid slice')
     }
 
-    const serialized = new XMLSerializer().serializeToString(svg)
-    const blob = new Blob([serialized], { type: 'image/svg+xml' })
-    const url = URL.createObjectURL(blob)
-    let img: HTMLImageElement
-    try {
-      img = await loadImage(url)
-    } finally {
-      // 延迟回收,确保 GPU 上传完成
-      setTimeout(() => URL.revokeObjectURL(url), 1000)
-    }
-    return new Sprite(Texture.from(img))
+    // 只移除旧 SVG,保留 canvas 等其他子节点
+    const oldSvg = wrapper.querySelector('svg')
+    if (oldSvg) oldSvg.remove()
+    wrapper.appendChild(document.importNode(svg, true))
   }
 }
 
@@ -128,13 +134,16 @@ export class WallpaperRenderer {
   private current: Container | null = null
   private currentBrightness = 1
   private contentToken = 0
+  private wrapper: HTMLElement | null = null
+  private domActive = false
 
   private anim = {
     blurFrom: 0, blurTo: 0, blurTime: 0, blurDur: 0,
     brightFrom: 1, brightTo: 1, brightTime: 0, brightDur: 0,
   }
 
-  async init(canvas: HTMLCanvasElement): Promise<void> {
+  async init(canvas: HTMLCanvasElement, wrapper: HTMLElement): Promise<void> {
+    this.wrapper = wrapper
     this.app = new Application()
     await this.app.init({
       canvas,
@@ -157,15 +166,31 @@ export class WallpaperRenderer {
     if (!this.app.ticker.started) this.app.render()
   }
 
-  async setContent(c: WallpaperContent): Promise<void> {
+  async setContent(c: WallpaperContent | DomWallpaperContent): Promise<void> {
     const token = ++this.contentToken
+    this.clearDomContent()
+    this.hidePixi(false)
+
     if (this.current) {
       this.layer.removeChild(this.current)
       this.current.destroy({ children: true })
       this.current = null
     }
+
+    // DOM 类型壁纸:直接渲染到 wrapper,Pixi canvas 暂停显示
+    if ('kind' in c && c.kind === 'dom') {
+      try {
+        await c.renderTo(this.wrapper!)
+        this.domActive = true
+        this.hidePixi(true)
+      } catch (e) {
+        console.error('DOM 壁纸渲染失败:', e)
+      }
+      return
+    }
+
     try {
-      const obj = await c.toPixi(this.app)
+      const obj = await (c as WallpaperContent).toPixi(this.app)
       // 期间若又切换了内容,丢弃这次结果
       if (token !== this.contentToken) {
         obj.destroy({ children: true })
@@ -178,6 +203,20 @@ export class WallpaperRenderer {
     } catch (e) {
       console.error('壁纸加载失败:', e)
     }
+  }
+
+  private clearDomContent(): void {
+    if (this.wrapper && this.domActive) {
+      const svg = this.wrapper.querySelector('svg')
+      if (svg) svg.remove()
+      this.wrapper.style.filter = ''
+      this.domActive = false
+    }
+  }
+
+  private hidePixi(hide: boolean): void {
+    if (!this.app?.canvas) return
+    this.app.canvas.style.display = hide ? 'none' : 'block'
   }
 
   /**
@@ -199,6 +238,7 @@ export class WallpaperRenderer {
       this.blur.strength = strength
       this.color.brightness(brightness, false)
       this.currentBrightness = brightness
+      if (this.domActive) this.setDomFilter(strength, brightness)
       if (!this.app.ticker.started) this.app.render()
     } else {
       this.app.ticker.start()
@@ -228,10 +268,18 @@ export class WallpaperRenderer {
       if (t >= 1) this.anim.brightDur = 0
     }
 
-    // 所有动画结束,停止 ticker 节省 GPU
+    if (this.domActive) {
+      this.setDomFilter(this.blur.strength, this.currentBrightness)
+    }
+
     if (this.anim.blurDur === 0 && this.anim.brightDur === 0) {
       this.app.ticker.stop()
     }
+  }
+
+  private setDomFilter(blur: number, brightness: number): void {
+    if (!this.wrapper) return
+    this.wrapper.style.filter = `blur(${blur}px) brightness(${brightness})`
   }
 
   /** cover 模式:缩放至铺满屏幕,居中,可能溢出 */
@@ -254,11 +302,12 @@ export class WallpaperRenderer {
 let rendererInstance: WallpaperRenderer | null = null
 
 export async function initWallpaperRenderer(
-  canvas: HTMLCanvasElement
+  canvas: HTMLCanvasElement,
+  wrapper: HTMLElement
 ): Promise<WallpaperRenderer> {
   if (!rendererInstance) {
     rendererInstance = new WallpaperRenderer()
-    await rendererInstance.init(canvas)
+    await rendererInstance.init(canvas, wrapper)
     // 初始化完成后,根据当前 body class 同步模糊状态(无动画)
     // 避免初始化期间用户的交互(如聚焦搜索)丢失模糊状态
     const t = computeBlurTarget()

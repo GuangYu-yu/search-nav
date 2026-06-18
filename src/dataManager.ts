@@ -17,9 +17,6 @@ function safeParse<T>(raw: string | null, fallback: T): T {
 let links: LinkItem[] = safeParse<LinkItem[]>(localStorage.getItem("navLinks"), [])
 let resources: ResourceItem[] = safeParse<ResourceItem[]>(localStorage.getItem("navResources"), [])
 
-function getLinks(): ReadonlyArray<LinkItem> { return links }
-function getResources(): ReadonlyArray<ResourceItem> { return resources }
-
 function initializeDataPreview(): void {
   const data: DataConfig = {
     links: links,
@@ -105,4 +102,4 @@ function updateDataPreview(data: string): void {
   }
 }
 
-export { links, resources, getLinks, getResources, initializeDataPreview, saveDataConfig, applyDataFromURL, updateDataPreview }
+export { links, resources, initializeDataPreview, saveDataConfig, applyDataFromURL }

@@ -142,8 +142,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // 初始化 Pixi 渲染器并从 localStorage 恢复壁纸内容(异步,不阻塞其他初始化)
   const wallpaperGL = document.getElementById("wallpaperGL") as HTMLCanvasElement | null
-  if (wallpaperGL) {
-    initWallpaperRenderer(wallpaperGL).then(() => {
+  const wallpaperWrapper = document.getElementById("wallpaperWrapper") as HTMLElement | null
+  if (wallpaperGL && wallpaperWrapper) {
+    initWallpaperRenderer(wallpaperGL, wallpaperWrapper).then(() => {
       void restoreWallpaperFromStorage()
     })
   }
