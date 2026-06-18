@@ -167,95 +167,75 @@
             
             <!-- 壁纸标签页 -->
             <div class="tab-content custom-scrollbar" id="wallpaper-tab">
+                <!-- 快速选择 -->
                 <div class="wallpaper-section">
-                    <h3>背景设置</h3>
-                    <div class="wallpaper-options">
-                        <div class="wallpaper-option" id="defaultWallpaperOption">
+                    <h3>快速选择</h3>
+                    <div class="wallpaper-options" id="wallpaperOptions">
+                        <div class="wallpaper-option" data-type="default">
                             <div class="wallpaper-preview default-bg"></div>
                             <span>默认</span>
                         </div>
-                        <div class="wallpaper-option" id="gradient1WallpaperOption">
+                        <div class="wallpaper-option" data-type="gradient1">
                             <div class="wallpaper-preview gradient1-bg"></div>
                             <span>渐变1</span>
                         </div>
-                        <div class="wallpaper-option" id="gradient2WallpaperOption">
+                        <div class="wallpaper-option" data-type="gradient2">
                             <div class="wallpaper-preview gradient2-bg"></div>
                             <span>渐变2</span>
                         </div>
-                        <div class="wallpaper-option" id="gradient3WallpaperOption">
+                        <div class="wallpaper-option" data-type="gradient3">
                             <div class="wallpaper-preview gradient3-bg"></div>
                             <span>渐变3</span>
                         </div>
-                        <div class="wallpaper-option" id="gradient4WallpaperOption">
+                        <div class="wallpaper-option" data-type="gradient4">
                             <div class="wallpaper-preview gradient4-bg"></div>
                             <span>渐变4</span>
                         </div>
-                        <div class="wallpaper-option" id="gradient5WallpaperOption">
+                        <div class="wallpaper-option" data-type="gradient5">
                             <div class="wallpaper-preview gradient5-bg"></div>
                             <span>渐变5</span>
                         </div>
                     </div>
-                    
-                    <div class="custom-wallpaper">
-                        <h4>自定义颜色混色</h4>
+
+                    <!-- 图片/视频 -->
+                    <span class="wallpaper-input-label">图片/视频</span>
+                    <div class="wallpaper-url-row">
+                        <input type="text" class="wallpaper-url-input" id="customWallpaperUrl" placeholder="输入URL或选择本地文件">
+                        <input type="file" class="wallpaper-file-input" id="imageFileInput" accept="image/*,video/*">
+                        <button class="icon-btn" id="pickImageFileBtn" title="选择本地文件">
+                            <i class="fas fa-folder-open"></i>
+                        </button>
+                        <button class="icon-btn" id="setCustomWallpaperBtn" title="应用壁纸">
+                            <i class="fas fa-check"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <hr class="wallpaper-divider">
+
+                <div class="wallpaper-section">
+                    <h3>自定义</h3>
+                    <div class="custom-body">
+                        <!-- 自选渐变 -->
+                        <span class="wallpaper-input-label">自选渐变</span>
                         <div class="color-mixer">
-                            <div class="color-controls-vertical">
-                                <div class="color-input-group">
-                                    <input type="color" class="color-input" id="color1" value="#667eea">
-                                    <span class="color-label">颜色1</span>
-                                </div>
-                                
-                                <div class="color-input-group">
-                                    <input type="color" class="color-input" id="color2" value="#764ba2">
-                                    <span class="color-label">颜色2</span>
-                                </div>
-                                
-                                <div class="gradient-direction">
-                                    <div class="direction-grid">
-                                        <button class="direction-btn" data-direction="315deg">↖</button>
-                                        <button class="direction-btn" data-direction="270deg">↑</button>
-                                        <button class="direction-btn" data-direction="225deg">↗</button>
-                                        <button class="direction-btn" data-direction="0deg">←</button>
-                                        <div class="direction-center"></div>
-                                        <button class="direction-btn" data-direction="180deg">→</button>
-                                        <button class="direction-btn" data-direction="45deg">↙</button>
-                                        <button class="direction-btn" data-direction="90deg">↓</button>
-                                        <button class="direction-btn active" data-direction="135deg">↘</button>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="gradient-action-container">
+                            <div class="color-mixer-row">
+                                <input type="color" id="color1" value="#667eea">
+                                <span class="mixer-arrow">→</span>
+                                <input type="color" id="color2" value="#764ba2">
                                 <div class="gradient-preview" id="gradientPreview"></div>
-                                <div class="action-buttons">
-                                    <button class="icon-action-btn random-btn" id="randomColorsBtn" title="随机混色">
-                                        <i class="fas fa-random"></i>
-                                    </button>
-                                    <button class="icon-action-btn apply-btn" id="applyCustomGradientBtn" title="应用背景">
-                                        <i class="fas fa-check"></i>
-                                    </button>
-                                </div>
+                                <button class="icon-action-btn random-btn" id="randomColorsBtn" title="随机混色">
+                                    <i class="fas fa-random"></i>
+                                </button>
+                                <button class="icon-action-btn apply-btn" id="applyCustomGradientBtn" title="应用背景">
+                                    <i class="fas fa-check"></i>
+                                </button>
                             </div>
                         </div>
-                        
-                        <h4 style="margin-top: 24px;">图片壁纸</h4>
-                        <div class="custom-wallpaper-controls">
-                            <div class="wallpaper-input-group">
-                                <input type="text" class="wallpaper-url-input" id="customWallpaperUrl" placeholder="输入图片URL">
-                                <div class="wallpaper-buttons">
-                                    <button class="icon-btn" id="setCustomWallpaperBtn" title="应用壁纸">
-                                        <i class="fas fa-check"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <h4 style="margin-top: 24px;">SVG壁纸</h4>
-                        <div class="custom-wallpaper-controls">
-                            <div class="svg-input-group">
-                                <textarea class="svg-code-input custom-scrollbar" id="svgCode" placeholder="输入SVG代码（实时生效，空白表示不使用SVG壁纸）..." rows="8"></textarea>
-                            </div>
-                        </div>
+
+                        <!-- SVG/Shader代码 -->
+                        <span class="wallpaper-input-label">SVG/Shader代码</span>
+                        <textarea class="svg-code-input custom-scrollbar" id="svgCode" placeholder="粘贴SVG或Shadertoy着色器代码，实时生效..." rows="10"></textarea>
                     </div>
                 </div>
             </div>

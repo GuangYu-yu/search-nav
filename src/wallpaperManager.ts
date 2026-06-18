@@ -4,9 +4,11 @@ import {
   ImageContent,
   GradientContent,
   InlineSVGContent,
+  VideoContent,
   DefaultContent,
   getWallpaperRenderer,
 } from './wallpaperRenderer'
+import { ShaderContent } from './shaderWallpaper'
 
 /** 解析 localStorage 里的 customWallpaper 字符串,还原为 ContentSource */
 function parseWallpaperString(bg: string): WallpaperContent | null {
@@ -40,13 +42,24 @@ export async function restoreWallpaperFromStorage(): Promise<void> {
   if (svgActive === 'active') {
     const savedSVGCode = localStorage.getItem('svgCode')
     if (savedSVGCode) {
-      await getWallpaperRenderer().setContent(new InlineSVGContent(savedSVGCode))
+      const content = isShaderCode(savedSVGCode)
+        ? new ShaderContent(savedSVGCode)
+        : new InlineSVGContent(savedSVGCode)
+      await getWallpaperRenderer().setContent(content)
       return
     }
   }
 
   const savedWallpaper = localStorage.getItem('customWallpaper')
   if (savedWallpaper) {
+    // 视频壁纸
+    if (savedWallpaper.startsWith('video(')) {
+      const m = savedWallpaper.match(/video\(['"]?([^'"]+)['"]?\)/)
+      if (m) {
+        await getWallpaperRenderer().setContent(new VideoContent(m[1]))
+        return
+      }
+    }
     const content = parseWallpaperString(savedWallpaper)
     if (content) {
       await getWallpaperRenderer().setContent(content)
@@ -72,7 +85,6 @@ function setWallpaper(type: string): void {
       content = new DefaultContent()
     }
   } else {
-    // type === 'default' 或其他
     content = new DefaultContent()
   }
 
@@ -83,47 +95,72 @@ function setWallpaper(type: string): void {
   }
   clearSVGState()
 
+  // 更新预设卡片选中态
+  document.querySelectorAll('.wallpaper-option').forEach(el => {
+    el.classList.toggle('active', (el as HTMLElement).dataset.type === type)
+  })
+
   void getWallpaperRenderer().setContent(content)
 }
 
 function setCustomWallpaper(): void {
   const url = (document.getElementById('customWallpaperUrl') as HTMLInputElement | null)?.value.trim()
-  if (!url) {
-    showToast('请输入图片URL', 'error')
-    return
-  }
+  if (!url) { showToast('请输入URL', 'error'); return }
+  applyMediaUrl(url)
+}
 
-  // 预验证图片可加载,与原逻辑保持一致(失败仅 console.log)
+/** 处理本地图片/视频文件选择 */
+export function handleImageFile(input: HTMLInputElement): void {
+  const file = input.files?.[0]
+  if (!file) return
+  if (file.type.startsWith('video/')) {
+    applyMediaUrl(URL.createObjectURL(file), 'video')
+  } else {
+    const reader = new FileReader()
+    reader.onload = () => {
+      applyMediaUrl(reader.result as string, 'image')
+      input.value = ''
+    }
+    reader.readAsDataURL(file)
+  }
+}
+
+/** 统一媒体应用: 自动判断视频或图片 */
+function applyMediaUrl(url: string, kind?: 'image' | 'video'): void {
+  const isVideo = kind === 'video' || /\.(mp4|webm|ogg|mov)($|\?)/i.test(url)
+  if (isVideo) return applyVideoUrl(url)
+  return applyImageUrl(url)
+}
+
+/** 应用图片 URL */
+function applyImageUrl(url: string): void {
   const img = new Image()
-  img.onload = function () {
-    const backgroundStyle = `url('${url}') center/cover no-repeat`
-    localStorage.setItem('customWallpaper', backgroundStyle)
+  img.onload = () => {
+    const style = `url('${url}') center/cover no-repeat`
+    localStorage.setItem('customWallpaper', style)
     localStorage.setItem('customWallpaperUrl', url)
     clearSVGState()
+    document.querySelectorAll('.wallpaper-option').forEach(el => el.classList.remove('active'))
     void getWallpaperRenderer().setContent(new ImageContent(url))
   }
-  img.onerror = function () {
-    console.log('图片加载失败，请检查URL是否正确')
-  }
+  img.onerror = () => showToast('图片加载失败', 'error')
   img.src = url
 }
 
-function getCurrentDirection(): string {
-  const activeBtn = document.querySelector('.direction-btn.active') as HTMLElement | null
-  return activeBtn?.dataset.direction || '135deg'
+/** 应用视频 URL */
+function applyVideoUrl(url: string): void {
+  localStorage.setItem('customWallpaper', `video(${url})`)
+  localStorage.setItem('customWallpaperUrl', url)
+  clearSVGState()
+  document.querySelectorAll('.wallpaper-option').forEach(el => el.classList.remove('active'))
+  void getWallpaperRenderer().setContent(new VideoContent(url))
 }
 
 function updateGradientPreview(): void {
-  const color1 = (document.getElementById('color1') as HTMLInputElement | null)?.value || '#667eea'
-  const color2 = (document.getElementById('color2') as HTMLInputElement | null)?.value || '#764ba2'
-  const direction = getCurrentDirection()
-
-  const gradient = `linear-gradient(${direction}, ${color1} 0%, ${color2} 100%)`
-
+  const c1 = (document.getElementById('color1') as HTMLInputElement | null)?.value || '#667eea'
+  const c2 = (document.getElementById('color2') as HTMLInputElement | null)?.value || '#764ba2'
   const preview = document.getElementById('gradientPreview') as HTMLElement | null
-  if (preview) {
-    preview.style.background = gradient
-  }
+  if (preview) preview.style.background = `linear-gradient(135deg, ${c1} 0%, ${c2} 100%)`
 }
 
 function getAllColors(): string[] {
@@ -167,37 +204,27 @@ function getGradientPairs(): string[][] {
 
 function randomColors(): void {
   const colors = getAllColors()
+  const c1 = colors[Math.floor(Math.random() * colors.length)]
+  let c2 = colors[Math.floor(Math.random() * colors.length)]
+  while (c2 === c1) c2 = colors[Math.floor(Math.random() * colors.length)]
 
-  const color1 = colors[Math.floor(Math.random() * colors.length)]
-  let color2 = colors[Math.floor(Math.random() * colors.length)]
-
-  while (color2 === color1) {
-    color2 = colors[Math.floor(Math.random() * colors.length)]
-  }
-
-  const color1Input = document.getElementById('color1') as HTMLInputElement | null
-  const color2Input = document.getElementById('color2') as HTMLInputElement | null
-
-  if (color1Input) color1Input.value = color1
-  if (color2Input) color2Input.value = color2
-
-  const directions = ['135deg', '45deg', '90deg', '0deg']
-  const randomDirection =
-    directions[Math.floor(Math.random() * directions.length)]
-
-  document.querySelectorAll('.direction-btn').forEach((btn) => {
-    btn.classList.toggle('active', (btn as HTMLElement).dataset.direction === randomDirection)
-  })
-
+  const i1 = document.getElementById('color1') as HTMLInputElement | null
+  const i2 = document.getElementById('color2') as HTMLInputElement | null
+  if (i1) i1.value = c1
+  if (i2) i2.value = c2
   updateGradientPreview()
 }
 
-function updateSVGWallpaper(): void {
-  const svgCode = (document.getElementById('svgCode') as HTMLTextAreaElement | null)?.value || ''
+/** 检测代码是否为 GLSL 着色器(Shadertoy 兼容) */
+function isShaderCode(code: string): boolean {
+  return /\bmainImage\s*\(/.test(code)
+}
 
-  if (!svgCode.trim()) {
-    // SVG 被清空,回退到之前保存的图片/渐变
-    localStorage.removeItem('svgWallpaper')
+function updateSVGWallpaper(): void {
+  const code = (document.getElementById('svgCode') as HTMLTextAreaElement | null)?.value || ''
+
+  if (!code.trim()) {
+    clearSVGState()
     const savedWallpaper = localStorage.getItem('customWallpaper')
     const content = savedWallpaper
       ? parseWallpaperString(savedWallpaper) ?? new DefaultContent()
@@ -206,10 +233,18 @@ function updateSVGWallpaper(): void {
     return
   }
 
-  // 验证 SVG 语法(与原逻辑保持一致,仅 console.error)
+  // 着色器代码: 直接走 ShaderContent
+  if (isShaderCode(code)) {
+    localStorage.setItem('svgWallpaper', 'active')
+    localStorage.setItem('svgCode', code)
+    void getWallpaperRenderer().setContent(new ShaderContent(code))
+    return
+  }
+
+  // 验证 SVG 语法
   try {
     const parser = new DOMParser()
-    const doc = parser.parseFromString(svgCode, 'image/svg+xml')
+    const doc = parser.parseFromString(code, 'image/svg+xml')
     const parserError = doc.querySelector('parsererror')
     if (parserError) throw new Error('SVG解析错误：' + parserError.textContent)
     if (doc.documentElement.nodeName !== 'svg') throw new Error('请输入有效的SVG代码')
@@ -219,41 +254,25 @@ function updateSVGWallpaper(): void {
   }
 
   localStorage.setItem('svgWallpaper', 'active')
-  localStorage.setItem('svgCode', svgCode)
-
-  void getWallpaperRenderer().setContent(new InlineSVGContent(svgCode))
+  localStorage.setItem('svgCode', code)
+  void getWallpaperRenderer().setContent(new InlineSVGContent(code))
 }
 
 function applyCustomGradient(): void {
-  const color1 = (document.getElementById('color1') as HTMLInputElement | null)?.value || '#667eea'
-  const color2 = (document.getElementById('color2') as HTMLInputElement | null)?.value || '#764ba2'
-  const direction = getCurrentDirection()
-
-  const gradient = `linear-gradient(${direction}, ${color1} 0%, ${color2} 100%)`
-
+  const c1 = (document.getElementById('color1') as HTMLInputElement | null)?.value || '#667eea'
+  const c2 = (document.getElementById('color2') as HTMLInputElement | null)?.value || '#764ba2'
+  const gradient = `linear-gradient(135deg, ${c1} 0%, ${c2} 100%)`
   localStorage.setItem('customWallpaper', gradient)
   clearSVGState()
-
-  void getWallpaperRenderer().setContent(new GradientContent(color1, color2, direction))
+  document.querySelectorAll('.wallpaper-option').forEach(el => el.classList.remove('active'))
+  void getWallpaperRenderer().setContent(new GradientContent(c1, c2, '135deg'))
 }
 
 function initColorMixer(): void {
-  document.querySelectorAll('.direction-btn').forEach((btn) => {
-    btn.addEventListener('click', function(this: HTMLElement) {
-      document
-        .querySelectorAll('.direction-btn')
-        .forEach((b) => b.classList.remove('active'))
-      this.classList.add('active')
-      updateGradientPreview()
-    })
-  })
-
-  const color1Input = document.getElementById('color1') as HTMLInputElement | null
-  const color2Input = document.getElementById('color2') as HTMLInputElement | null
-
-  color1Input?.addEventListener('input', updateGradientPreview)
-  color2Input?.addEventListener('input', updateGradientPreview)
-
+  const i1 = document.getElementById('color1') as HTMLInputElement | null
+  const i2 = document.getElementById('color2') as HTMLInputElement | null
+  i1?.addEventListener('input', updateGradientPreview)
+  i2?.addEventListener('input', updateGradientPreview)
   updateGradientPreview()
 }
 

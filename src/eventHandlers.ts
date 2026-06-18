@@ -16,7 +16,7 @@ import {
   addLink, 
   addResource 
 } from './linkManager'
-import { setWallpaper, randomColors, applyCustomGradient, setCustomWallpaper } from './wallpaperManager'
+import { setWallpaper, randomColors, applyCustomGradient, setCustomWallpaper, handleImageFile } from './wallpaperManager'
 import { saveDataConfig, applyDataFromURL } from './dataManager'
 
 function isAnyDialogOpen(): boolean {
@@ -79,19 +79,22 @@ export function initializeEventHandlers(): void {
   onClick('addLinkBtn', addLink)
   onClick('addResourceBtn', addResource)
 
-  // 壁纸选项：通过 ID 前缀规则绑定
-  const wallpaperMappings: [string, string][] = [
-    ['defaultWallpaperOption', 'default'],
-    ['gradient1WallpaperOption', 'gradient1'],
-    ['gradient2WallpaperOption', 'gradient2'],
-    ['gradient3WallpaperOption', 'gradient3'],
-    ['gradient4WallpaperOption', 'gradient4'],
-    ['gradient5WallpaperOption', 'gradient5'],
-  ]
-  wallpaperMappings.forEach(([id, type]) => {
-    const el = document.getElementById(id)
-    if (el) el.addEventListener('click', () => setWallpaper(type))
+  // 壁纸预设选项: data-type 驱动
+  const wallpaperOptions = document.querySelectorAll('.wallpaper-option')
+  wallpaperOptions.forEach(el => {
+    el.addEventListener('click', () => {
+      const type = (el as HTMLElement).dataset.type
+      if (type) setWallpaper(type)
+    })
   })
+
+  // 本地图片选择
+  const pickImageFileBtn = document.getElementById('pickImageFileBtn')
+  const imageFileInput = document.getElementById('imageFileInput') as HTMLInputElement | null
+  if (pickImageFileBtn && imageFileInput) {
+    pickImageFileBtn.addEventListener('click', () => imageFileInput.click())
+    imageFileInput.addEventListener('change', () => handleImageFile(imageFileInput))
+  }
 
   onClick('randomColorsBtn', randomColors)
   onClick('applyCustomGradientBtn', applyCustomGradient)
@@ -131,13 +134,11 @@ export function initializeEventHandlers(): void {
     }
   })
 
-  // 遮罩点击关闭设置面板
+  // 遮罩点击关闭设置面板(用 mousedown 避免文本选中拖拽误关)
   const settingsModal = document.getElementById('settingsModal')
   if (settingsModal) {
-    settingsModal.addEventListener('click', (e: Event) => {
-      if (e.target === settingsModal) {
-        closeSettings()
-      }
+    settingsModal.addEventListener('mousedown', (e: Event) => {
+      if (e.target === settingsModal) closeSettings()
     })
   }
 
@@ -152,10 +153,8 @@ export function initializeEventHandlers(): void {
   dialogIds.forEach(id => {
     const dialog = document.getElementById(id)
     if (dialog) {
-      dialog.addEventListener('click', (e: Event) => {
-        if (e.target === dialog) {
-          closeFuncs[id]()
-        }
+      dialog.addEventListener('mousedown', (e: Event) => {
+        if (e.target === dialog) closeFuncs[id]()
       })
     }
   })

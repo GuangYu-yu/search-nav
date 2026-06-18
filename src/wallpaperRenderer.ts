@@ -7,6 +7,7 @@ import {
   ColorMatrixFilter,
   Ticker,
 } from 'pixi.js'
+import { ShaderContent } from './shaderWallpaper'
 
 /**
  * 壁纸内容适配器接口。
@@ -18,11 +19,10 @@ export interface WallpaperContent {
 }
 
 /**
- * 直接渲染在 DOM 容器里的壁纸。
- * 用于需要保留 CSS/SMIL 动画的内容(如 inline SVG),不走 Pixi 纹理化路径。
+ * 直接渲染在 DOM 容器里的壁纸(SVG / WebGL canvas)。
+ * 与 WallpaperContent 互斥: 通过 renderTo 方法存在性在 setContent 中判别。
  */
 export interface DomWallpaperContent {
-  kind: 'dom'
   renderTo(wrapper: HTMLElement): Promise<void>
 }
 
@@ -113,6 +113,38 @@ export class InlineSVGContent implements DomWallpaperContent {
   }
 }
 
+/**
+ * 视频壁纸。走 DOM 路径,muted 自动播放循环。
+ * Chrome 自动播放策略要求 muted 才能无需用户手势启动。
+ */
+export class VideoContent implements DomWallpaperContent {
+  private video: HTMLVideoElement | null = null
+
+  constructor(private src: string) {}
+
+  async renderTo(wrapper: HTMLElement): Promise<void> {
+    const video = document.createElement('video')
+    video.src = this.src
+    video.muted = true
+    video.loop = true
+    video.autoplay = true
+    video.playsInline = true
+    video.style.cssText =
+      'position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;pointer-events:none'
+    wrapper.appendChild(video)
+    this.video = video
+    try { await video.play() } catch { /* autoplay 被拦截时静默 */ }
+  }
+
+  destroy(): void {
+    if (this.video) {
+      this.video.pause()
+      this.video.remove()
+      this.video = null
+    }
+  }
+}
+
 /** 默认壁纸:空容器,只显示 wrapper 的 background-color 兜底色 */
 export class DefaultContent implements WallpaperContent {
   async toPixi(_app: Application): Promise<Container> {
@@ -136,6 +168,7 @@ export class WallpaperRenderer {
   private contentToken = 0
   private wrapper: HTMLElement | null = null
   private domActive = false
+  private currentShader: ShaderContent | null = null
 
   private anim = {
     blurFrom: 0, blurTo: 0, blurTime: 0, blurDur: 0,
@@ -163,6 +196,7 @@ export class WallpaperRenderer {
 
   private onResize = () => {
     if (this.current) this.fitCover(this.current)
+    if (this.currentShader) this.currentShader.resize(this.wrapper!.clientWidth, this.wrapper!.clientHeight)
     if (!this.app.ticker.started) this.app.render()
   }
 
@@ -177,12 +211,13 @@ export class WallpaperRenderer {
       this.current = null
     }
 
-    // DOM 类型壁纸:直接渲染到 wrapper,Pixi canvas 暂停显示
-    if ('kind' in c && c.kind === 'dom') {
+    // DOM 类型(SVG/Shader): 直接渲染到 wrapper,Pixi canvas 暂停
+    if ('renderTo' in c) {
       try {
         await c.renderTo(this.wrapper!)
         this.domActive = true
         this.hidePixi(true)
+        if (c instanceof ShaderContent) this.currentShader = c
       } catch (e) {
         console.error('DOM 壁纸渲染失败:', e)
       }
@@ -206,9 +241,12 @@ export class WallpaperRenderer {
   }
 
   private clearDomContent(): void {
+    if (this.currentShader) {
+      this.currentShader.destroy()
+      this.currentShader = null
+    }
     if (this.wrapper && this.domActive) {
-      const svg = this.wrapper.querySelector('svg')
-      if (svg) svg.remove()
+      this.wrapper.querySelectorAll('svg, video').forEach(el => el.remove())
       this.wrapper.style.filter = ''
       this.domActive = false
     }
