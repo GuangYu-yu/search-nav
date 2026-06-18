@@ -131,183 +131,174 @@
     box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.15);
 }
 
-.links-list {
+/* 书签网格 - 横纵排列由 JS 同步首页 */
+.bookmark-grid {
     margin-top: 12px;
     flex: 1;
     min-height: 0;
+    display: grid;
+    gap: 8px;
+    padding: 6px;
+    justify-content: center;
     overflow-y: auto;
     scrollbar-width: none;
     -ms-overflow-style: none;
+    align-content: start;
+    /* 底部渐隐遮罩，与首页一致 */
+    -webkit-mask-image: linear-gradient(to bottom, black calc(100% - 40px), transparent 100%);
+    mask-image: linear-gradient(to bottom, black calc(100% - 40px), transparent 100%);
 }
 
-.links-list::-webkit-scrollbar {
+.bookmark-grid::-webkit-scrollbar {
     display: none;
 }
 
-.link-item {
-    background: rgba(255, 255, 255, 0.06);
-    padding: 12px 14px;
-    border-radius: var(--radius-sm);
+.bookmark-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 4px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+    user-select: none;
+    -webkit-user-select: none;
+    position: relative;
+    will-change: transform;
+}
+
+.bookmark-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: scale(1.05);
+}
+
+.bookmark-item:active {
+    transform: scale(0.95);
+}
+
+/* 拖动状态 */
+.bookmark-item.dragging {
+    opacity: 0.5;
+    transform: scale(0.9);
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.bookmark-item.drag-over {
+    background: rgba(var(--primary-color-rgb), 0.15);
+    outline: 2px solid rgba(var(--primary-color-rgb), 0.5);
+    outline-offset: -2px;
+    border-radius: 12px;
+}
+
+/* 插入指示器：左/右边缘高亮 */
+.bookmark-item.drag-before {
+    box-shadow: inset 3px 0 0 rgba(var(--primary-color-rgb), 0.6);
+    border-radius: 12px;
+}
+
+.bookmark-item.drag-after {
+    box-shadow: inset -3px 0 0 rgba(var(--primary-color-rgb), 0.6);
+    border-radius: 12px;
+}
+
+.bookmark-item.drag-source {
+    opacity: 0;
+    transform: scale(0.85);
+}
+
+.bookmark-item:hover .bookmark-icon {
+    transform: scale(1.08);
+    box-shadow: 
+        0 0 0 1px rgba(0, 0, 0, 0.08),
+        0 8px 24px rgba(0, 0, 0, 0.18);
+}
+
+.bookmark-name {
+    font-size: 11px;
+    color: var(--text-color);
+    text-align: center;
+    line-height: 1.2;
+    max-width: 68px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    pointer-events: none;
+    font-weight: 400;
+}
+
+/* 添加书签按钮 */
+.tab-btn i {
+    font-size: 14px;
+}
+
+/* 编辑对话框图标按钮 */
+.edit-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+}
+
+.edit-footer-right {
+    display: flex;
+    gap: 8px;
+}
+
+.icon-dialog-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 12px;
-    margin-bottom: 6px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
-}
-
-.link-item:hover {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.15);
-}
-
-/* 暗色主题下的链接项 */
-[data-theme="dark"] .link-item {
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-[data-theme="dark"] .link-item:hover {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.12);
-}
-
-.link-favicon {
-    width: 24px;
-    height: 24px;
-    border-radius: 6px;
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-    flex-shrink: 0;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-    position: relative;
-    overflow: hidden;
-}
-
-.link-favicon::after {
-    content: '';
-    position: absolute;
-    top: -10px;
-    left: -10px;
-    right: -10px;
-    bottom: -10px;
-    background: inherit;
-    background-size: cover;
-    filter: blur(10px);
-    z-index: -1;
-    transform: scale(1.2);
-}
-
-.link-favicon::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    border-radius: 6px;
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
-    pointer-events: none;
-    z-index: 1;
-}
-
-.link-details {
-    flex: 1;
-    min-width: 0;
-}
-
-.link-name {
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text-color);
-    margin-bottom: 2px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    text-shadow: var(--glass-text-shadow);
-}
-
-.link-url {
-    font-size: 11px;
-    color: var(--text-secondary);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    opacity: 0.7;
-}
-
-.link-actions {
-    display: flex;
-    gap: 6px;
-    flex-shrink: 0;
-}
-
-.edit-btn, .delete-btn {
-    border: none;
-    padding: 5px 10px;
-    border-radius: var(--radius-xs);
-    cursor: pointer;
-    font-size: 11px;
-    font-weight: 500;
+    justify-content: center;
+    font-size: 14px;
     transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
     -webkit-tap-highlight-color: transparent;
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--text-secondary);
 }
 
-.edit-btn {
-    background: rgba(var(--primary-color-rgb), 0.15);
-    color: var(--primary-color);
-    border: 1px solid rgba(var(--primary-color-rgb), 0.2);
+.icon-dialog-btn:hover {
+    transform: scale(1.1);
 }
 
-.edit-btn:hover {
-    background: rgba(var(--primary-color-rgb), 0.25);
-    transform: scale(1.05);
+.icon-dialog-btn:active {
+    transform: scale(0.92);
 }
 
-.delete-btn {
+.icon-dialog-btn.cancel {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-secondary);
+}
+
+.icon-dialog-btn.cancel:hover {
+    background: rgba(255, 255, 255, 0.14);
+    color: var(--text-color);
+}
+
+.icon-dialog-btn.confirm {
+    background: rgba(56, 161, 105, 0.2);
+    color: #38a169;
+    border-color: rgba(56, 161, 105, 0.25);
+}
+
+.icon-dialog-btn.confirm:hover {
+    background: rgba(56, 161, 105, 0.35);
+    box-shadow: 0 2px 12px rgba(56, 161, 105, 0.25);
+}
+
+.icon-dialog-btn.delete {
     background: rgba(229, 62, 62, 0.12);
     color: #e53e3e;
-    border: 1px solid rgba(229, 62, 62, 0.2);
+    border-color: rgba(229, 62, 62, 0.2);
 }
 
-.delete-btn:hover { 
-    background: rgba(229, 62, 62, 0.22);
-    transform: scale(1.05);
-}
-
-/* 保存和取消按钮样式 */
-.save-btn, .cancel-btn {
-    border: none;
-    padding: 5px 10px;
-    border-radius: var(--radius-xs);
-    cursor: pointer;
-    font-size: 11px;
-    font-weight: 500;
-    transition: background 0.15s ease, transform 0.15s ease;
-    -webkit-tap-highlight-color: transparent;
-}
-
-.save-btn {
-    background: rgba(56, 161, 105, 0.15);
-    color: #38a169;
-    border: 1px solid rgba(56, 161, 105, 0.2);
-}
-
-.save-btn:hover {
-    background: rgba(56, 161, 105, 0.25);
-    transform: scale(1.05);
-}
-
-.cancel-btn {
-    background: rgba(160, 160, 160, 0.12);
-    color: var(--text-secondary);
-    border: 1px solid rgba(160, 160, 160, 0.2);
-}
-
-.cancel-btn:hover {
-    background: rgba(160, 160, 160, 0.22);
-    transform: scale(1.05);
+.icon-dialog-btn.delete:hover {
+    background: rgba(229, 62, 62, 0.25);
+    box-shadow: 0 2px 12px rgba(229, 62, 62, 0.2);
 }
 
 .tab-nav {
@@ -614,6 +605,23 @@
 [data-theme="dark"] .edit-input:focus {
     background: rgba(255, 255, 255, 0.1);
     box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.15);
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    letter-spacing: 0.01em;
+}
+
+.checkbox-label input[type="checkbox"] {
+    accent-color: var(--primary-color);
+    width: 16px;
+    height: 16px;
 }
 
 /* Toast 通知 */

@@ -151,6 +151,9 @@
     max-height: 300px;
     overflow-y: auto;
     padding: 0 14px 12px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
 }
 
 .engine-section.expanded .engine-section-content::-webkit-scrollbar {
@@ -169,13 +172,15 @@
 .engine-item {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 8px 10px;
+    gap: 8px;
+    padding: 6px 8px;
     border-radius: var(--radius-sm);
     cursor: pointer;
-    transition: background 0.15s ease;
-    font-size: 13px;
+    transition: background 0.15s ease, box-shadow 0.15s ease;
+    font-size: 12px;
     color: var(--text-color);
+    position: relative;
+    will-change: transform;
 }
 
 .engine-item:hover {
@@ -197,81 +202,44 @@
 .engine-item .engine-name {
     flex: 1;
     text-shadow: var(--glass-text-shadow);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-.engine-item .engine-check {
-    font-size: 11px;
-    color: var(--text-secondary);
+/* 拖拽状态 */
+.engine-item.drag-source {
+    opacity: 0;
+    transform: scale(0.85);
+}
+
+.engine-item.dragging {
     opacity: 0.4;
-    transition: opacity 0.15s ease, color 0.15s ease;
-    cursor: pointer;
+    transform: scale(0.9);
+    background: rgba(255, 255, 255, 0.03);
 }
 
-.engine-item:hover .engine-check {
-    opacity: 0.7;
-    color: var(--primary-color);
+.engine-item.drag-over {
+    background: rgba(var(--primary-color-rgb), 0.15);
+    outline: 2px solid rgba(var(--primary-color-rgb), 0.5);
+    outline-offset: -2px;
+    border-radius: var(--radius-sm);
 }
 
-.engine-item:hover .engine-check:hover {
-    opacity: 1;
+.engine-item.drag-before {
+    box-shadow: inset 3px 0 0 rgba(var(--primary-color-rgb), 0.6);
+    border-radius: var(--radius-sm);
 }
 
+.engine-item.drag-after {
+    box-shadow: inset -3px 0 0 rgba(var(--primary-color-rgb), 0.6);
+    border-radius: var(--radius-sm);
+}
+
+/* 旧引擎编辑/删除按钮 - 移除 */
+.engine-item .engine-check,
 .engine-item .engine-delete {
-    font-size: 11px;
-    color: #ef4444;
-    opacity: 0.5;
-    transition: opacity 0.15s ease;
-    cursor: pointer;
-    margin-left: 4px;
-}
-
-.engine-item:hover .engine-delete {
-    opacity: 0.8;
-}
-
-.engine-item:hover .engine-delete:hover {
-    opacity: 1;
-}
-
-/* 书签列表操作按钮 */
-.link-actions {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    flex-shrink: 0;
-}
-
-.link-action-edit {
-    font-size: 11px;
-    color: var(--text-secondary);
-    opacity: 0.4;
-    transition: opacity 0.15s ease, color 0.15s ease;
-    cursor: pointer;
-}
-
-.link-item:hover .link-action-edit {
-    opacity: 0.7;
-    color: var(--primary-color);
-}
-
-.link-item:hover .link-action-edit:hover {
-    opacity: 1;
-}
-
-.link-action-delete {
-    font-size: 11px;
-    color: #ef4444;
-    opacity: 0.4;
-    transition: opacity 0.15s ease;
-    cursor: pointer;
-}
-
-.link-item:hover .link-action-delete {
-    opacity: 0.8;
-}
-
-.link-item:hover .link-action-delete:hover {
-    opacity: 1;
+    display: none;
 }
 
 /* 添加引擎表单 */
@@ -283,20 +251,6 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
-}
-
-.add-engine-header {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text-color);
-}
-
-.add-engine-header i {
-    color: var(--primary-color);
-    font-size: 14px;
 }
 
 .add-engine-fields {
@@ -338,6 +292,57 @@
     height: 1px;
     background: rgba(255, 255, 255, 0.08);
     margin: 16px 0;
+}
+
+/* 联想词来源切换 */
+.suggestion-source-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    margin-bottom: 4px;
+}
+
+.suggestion-source-label {
+    font-size: 11px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    opacity: 0.75;
+    flex-shrink: 0;
+}
+
+.suggestion-source-toggle {
+    display: flex;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
+    padding: 2px;
+}
+
+.ss-option {
+    flex: 1;
+    padding: 4px 10px;
+    font-size: 12px;
+    text-align: center;
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: color 0.2s, background 0.2s;
+    user-select: none;
+    -webkit-user-select: none;
+    white-space: nowrap;
+}
+
+.ss-option:hover {
+    color: var(--text-color);
+}
+
+.ss-option.active {
+    color: white;
+    background: var(--primary-color);
+    box-shadow: 0 1px 6px rgba(var(--primary-color-rgb), 0.3);
 }
 
 /* 数据标签页样式 */

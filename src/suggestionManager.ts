@@ -8,40 +8,6 @@ interface EngineConfig {
 }
 
 const ENGINE_CONFIGS: Record<string, EngineConfig> = {
-  // 360 搜索建议
-  // ["so360"]: {
-  //   api: {
-  //     url: "https://sug.so.360.cn/suggest",
-  //     params: {
-  //       word: "",
-  //       encodein: "utf-8",
-  //       encodeout: "utf-8",
-  //       callback: "callback"
-  //     }
-  //   },
-  //   parse(data: unknown): string[] {
-  //     const d = data as { result?: { word: string }[] }
-  //     return d.result ? d.result.map(item => item.word) : []
-  //   },
-  //   lastRequestTime: 0
-  // },
-
-  // 百度搜索建议（JSONP）
-  baidu: {
-    api: {
-      url: "https://suggestion.baidu.com/su",
-      params: {
-        wd: "",
-        cb: "callback"
-      }
-    },
-    parse(data: unknown): string[] {
-      const d = data as { s?: string[] }
-      return d.s || []
-    },
-    lastRequestTime: 0
-  },
-
   // Google 搜索建议
   google: {
     api: {
@@ -58,10 +24,34 @@ const ENGINE_CONFIGS: Record<string, EngineConfig> = {
       return Array.isArray(d) && Array.isArray(d[0]) ? d[0].map(item => item[0]) : []
     },
     lastRequestTime: 0
+  },
+  // 百度搜索建议
+  baidu: {
+    api: {
+      url: "https://suggestion.baidu.com/su",
+      params: {
+        wd: "",
+        cb: "callback"
+      }
+    },
+    parse(data: unknown): string[] {
+      const d = data as { s?: string[] }
+      return d?.s ?? []
+    },
+    lastRequestTime: 0
   }
 }
 
-const ACTIVE_ENGINES = ["google"]
+// 联想词来源偏好
+const SUGGESTION_SOURCE_KEY = "preferredSuggestionSource"
+
+function getSuggestionSource(): string {
+  return localStorage.getItem(SUGGESTION_SOURCE_KEY) || "google"
+}
+
+function setSuggestionSource(source: string): void {
+  localStorage.setItem(SUGGESTION_SOURCE_KEY, source)
+}
 
 // ============================================================
 // 全局状态
@@ -70,14 +60,14 @@ const ACTIVE_ENGINES = ["google"]
 let jsonpCounter = 0
 let suggestionCache: Map<string, SuggestionItem[]> = new Map()
 let currentSuggestions: SuggestionItem[] = []
-let activeSuggestionIndex: number = -1
+let activeSuggestionIndex = -1
 let debounceTimer: NodeJS.Timeout | null = null
 
 const MAX_SUGGESTIONS = 8
 
-// 清理引号字符，避免被编码为 %27 等导致关键词中断
+// 中/英文引号替换为空格，避免被编码为 %27 / %22 导致 JSONP 请求中断
 function sanitizeQuery(query: string): string {
-  return query.replace(/[''""`'"]/g, '')
+  return query.replace(/[''""`'"]/g, ' ').trim()
 }
 
 function performRequest(engine: string, config: EngineConfig, query: string): Promise<SuggestionItem[]> {
@@ -154,36 +144,35 @@ async function fetchSuggestions(query: string): Promise<SuggestionItem[]> {
       }
 
       try {
-        const requests = ACTIVE_ENGINES.map((engine) => {
-          const config = ENGINE_CONFIGS[engine]
-          if (!config) {
-            return Promise.resolve([])
-          }
-
-          const now = Date.now()
-          const timeSinceLastRequest = now - config.lastRequestTime
-
-          return new Promise<SuggestionItem[]>((resolve) => {
-            if (timeSinceLastRequest < 200) {
-              const delay = 200 - timeSinceLastRequest
-              setTimeout(() => {
-                config.lastRequestTime = Date.now()
-                resolve(performRequest(engine, config, query))
-              }, delay)
-            } else {
-              config.lastRequestTime = now
-              resolve(performRequest(engine, config, query))
-            }
-          })
-        })
-
-        const result = await Promise.race(requests)
-        suggestionCache.set(query, result)
-        if (suggestionCache.size > 50) {
-          const firstKey = suggestionCache.keys().next().value
-          if (firstKey !== undefined) suggestionCache.delete(firstKey)
+        const source = getSuggestionSource()
+        const config = ENGINE_CONFIGS[source]
+        if (!config) {
+          resolve([])
+          return
         }
-        resolve(result)
+
+        const now = Date.now()
+        const timeSinceLastRequest = now - config.lastRequestTime
+
+        new Promise<SuggestionItem[]>((resolveReq) => {
+          if (timeSinceLastRequest < 200) {
+            const delay = 200 - timeSinceLastRequest
+            setTimeout(() => {
+              config.lastRequestTime = Date.now()
+              resolveReq(performRequest(source, config, query))
+            }, delay)
+          } else {
+            config.lastRequestTime = now
+            resolveReq(performRequest(source, config, query))
+          }
+        }).then(result => {
+          suggestionCache.set(query, result)
+          if (suggestionCache.size > 50) {
+            const firstKey = suggestionCache.keys().next().value
+            if (firstKey !== undefined) suggestionCache.delete(firstKey)
+          }
+          resolve(result)
+        })
       } catch (error) {
         console.error("获取搜索建议时出错:", error)
         resolve([])
@@ -334,9 +323,39 @@ function updateActiveSuggestion(suggestionItems: NodeListOf<Element>): void {
   }
 }
 
+/** 初始化设置页的联想词来源切换按钮状态和事件 */
+function initSuggestionSourceToggle(): void {
+  const toggle = document.getElementById("suggestionSourceToggle")
+  if (!toggle) return
+
+  // 从 localStorage 恢复选中态
+  const saved = getSuggestionSource()
+  toggle.querySelectorAll(".ss-option").forEach(el => {
+    el.classList.toggle("active", el.getAttribute("data-source") === saved)
+  })
+
+  // 点击切换
+  toggle.addEventListener("click", (e) => {
+    const option = (e.target as HTMLElement).closest(".ss-option")
+    if (!option) return
+    const source = option.getAttribute("data-source")
+    if (!source) return
+
+    toggle.querySelectorAll(".ss-option").forEach(el => el.classList.remove("active"))
+    option.classList.add("active")
+    setSuggestionSource(source)
+
+    // 切换后清空缓存，使下次联想词使用新源
+    suggestionCache.clear()
+  })
+}
+
 export { 
   fetchSuggestions, 
   showSuggestions, 
   hideSuggestions, 
-  handleSuggestionNavigation 
+  handleSuggestionNavigation,
+  getSuggestionSource,
+  setSuggestionSource,
+  initSuggestionSourceToggle,
 }

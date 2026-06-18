@@ -1,6 +1,7 @@
 import { Mode } from './types'
 import { setDefaultEngine, getDefaultEngine, currentMode } from './modeManager'
 import { searchEngines, translateEngines, resourceEngines } from './searchEngines'
+import { findDropTarget, applyDropIndicator, clearDropIndicators } from './dragDropUtils'
 
 interface EngineInfo {
   id: string
@@ -127,21 +128,150 @@ let pendingEditMode: Mode | null = null
 let pendingDeleteEngineId: string | null = null
 let pendingDeleteMode: Mode | null = null
 
-function showEditFaviconDialog(engineId: string, mode: Mode): void {
+function showEditEngineDialog(engineId: string, mode: Mode): void {
   pendingEditEngineId = engineId
   pendingEditMode = mode
-  const faviconOverrides = loadCustomFaviconOverrides()
-  const input = document.getElementById("editFaviconUrl") as HTMLInputElement
-  if (input) input.value = faviconOverrides[engineId] || ""
-  const dialog = document.getElementById("editFaviconDialog")
+
+  const engines = getEngineListForMode(mode)
+  const engine = engines.find(e => e.id === engineId)
+  if (!engine) return
+
+  const isBuiltIn = engine.builtIn
+
+  // 标题
+  const title = document.getElementById("editEngineTitle")
+  if (title) title.textContent = isBuiltIn ? "编辑图标" : "编辑引擎"
+
+  // 名称：内置引擎只读
+  const nameInput = document.getElementById("editEngineName") as HTMLInputElement
+  if (nameInput) {
+    nameInput.value = engine.name
+    nameInput.readOnly = isBuiltIn
+    nameInput.style.opacity = isBuiltIn ? "0.5" : ""
+  }
+
+  // URL：内置引擎隐藏
+  const urlGroup = document.getElementById("editEngineUrlGroup")
+  const urlInput = document.getElementById("editEngineUrl") as HTMLInputElement
+  if (isBuiltIn) {
+    if (urlGroup) urlGroup.style.display = "none"
+  } else {
+    if (urlGroup) urlGroup.style.display = ""
+    const custom = loadCustomEngines().find(e => e.id === engineId)
+    if (urlInput) urlInput.value = custom?.url || ""
+  }
+
+  // 图标URL
+  const iconInput = document.getElementById("editEngineIconUrl") as HTMLInputElement
+  if (iconInput) {
+    const faviconOverrides = loadCustomFaviconOverrides()
+    if (isBuiltIn) {
+      iconInput.value = faviconOverrides[engineId] || ""
+    } else {
+      const custom = loadCustomEngines().find(e => e.id === engineId)
+      iconInput.value = custom?.faviconUrl || ""
+    }
+  }
+
+  // 设为默认复选框
+  const defaultCheckbox = document.getElementById("editEngineSetDefault") as HTMLInputElement
+  if (defaultCheckbox) {
+    const currentDefault = getDefaultEngine(mode)
+    defaultCheckbox.checked = currentDefault.engine === engineId
+  }
+
+  // 删除按钮：内置引擎不可删除
+  const deleteBtn = document.getElementById("deleteEngineBtn")
+  if (deleteBtn) {
+    (deleteBtn as HTMLElement).style.display = isBuiltIn ? "none" : ""
+  }
+
+  const dialog = document.getElementById("editEngineDialog")
   if (dialog) dialog.classList.add("show")
+}
+
+function hideEditEngineDialog(): void {
+  const dialog = document.getElementById("editEngineDialog")
+  if (dialog) dialog.classList.remove("show")
+  pendingEditEngineId = null
+  pendingEditMode = null
 }
 
 function hideEditFaviconDialog(): void {
   const dialog = document.getElementById("editFaviconDialog")
   if (dialog) dialog.classList.remove("show")
-  pendingEditEngineId = null
-  pendingEditMode = null
+}
+
+function saveEditEngine(): void {
+  if (!pendingEditEngineId || !pendingEditMode) return
+
+  const engineId = pendingEditEngineId
+  const mode = pendingEditMode
+
+  const isBuiltIn = getEngineListForMode(mode).find(e => e.id === engineId)?.builtIn ?? false
+
+  if (isBuiltIn) {
+    // 内置引擎：只更新图标覆盖
+    const iconInput = document.getElementById("editEngineIconUrl") as HTMLInputElement
+    const newUrl = iconInput?.value.trim() ?? ""
+    const faviconOverrides = loadCustomFaviconOverrides()
+    if (newUrl === "") {
+      delete faviconOverrides[engineId]
+    } else {
+      faviconOverrides[engineId] = newUrl
+    }
+    saveCustomFaviconOverrides(faviconOverrides)
+  } else {
+    // 自定义引擎：更新名称、URL、图标
+    const nameInput = document.getElementById("editEngineName") as HTMLInputElement
+    const urlInput = document.getElementById("editEngineUrl") as HTMLInputElement
+    const iconInput = document.getElementById("editEngineIconUrl") as HTMLInputElement
+    const newName = nameInput?.value.trim() || ""
+    const newUrl = urlInput?.value.trim() || ""
+    const newIcon = iconInput?.value.trim() || ""
+
+    if (!newUrl) {
+      import("./toast").then(({ showToast }) => showToast("请填写搜索地址", 'error'))
+      return
+    }
+
+    let customEngines = loadCustomEngines()
+    const idx = customEngines.findIndex(e => e.id === engineId)
+    if (idx >= 0) {
+      customEngines[idx].name = newName
+      customEngines[idx].url = newUrl.startsWith("http") ? newUrl : "https://" + newUrl
+      customEngines[idx].faviconUrl = newIcon
+      saveCustomEngines(customEngines)
+    }
+  }
+
+  // 设为默认
+  const defaultCheckbox = document.getElementById("editEngineSetDefault") as HTMLInputElement
+  if (defaultCheckbox?.checked) {
+    const engine = getEngineListForMode(mode).find(e => e.id === engineId)
+    if (engine) setDefaultEngine(mode, engineId, engine.name)
+  }
+
+  const containerId = mode === "search" ? "searchEngineList"
+    : mode === "translate" ? "translateEngineList"
+    : "resourceEngineList"
+
+  hideEditEngineDialog()
+  renderEngineList(containerId, mode)
+  updateDefaultLabel(mode)
+
+  // 同步搜索框
+  if (mode === currentMode) {
+    import("./engineManager").then(({ updateEngineDropdown }) => updateEngineDropdown())
+  }
+}
+
+function deleteEditedEngine(): void {
+  if (!pendingEditEngineId || !pendingEditMode) return
+  const engineId = pendingEditEngineId
+  const mode = pendingEditMode
+  hideEditEngineDialog()
+  showDeleteEngineDialog(engineId, mode)
 }
 
 function showDeleteEngineDialog(engineId: string, mode: Mode): void {
@@ -159,7 +289,15 @@ function hideDeleteEngineDialog(): void {
 }
 
 function setupDialogListeners(): void {
-  // 编辑图标弹窗
+  // 编辑引擎弹窗
+  const closeEditEngineBtn = document.getElementById("closeEditEngineBtn")
+  const saveEditEngineBtn = document.getElementById("saveEditEngineBtn")
+  const deleteEngineBtn = document.getElementById("deleteEngineBtn")
+  if (closeEditEngineBtn) closeEditEngineBtn.addEventListener("click", hideEditEngineDialog)
+  if (saveEditEngineBtn) saveEditEngineBtn.addEventListener("click", saveEditEngine)
+  if (deleteEngineBtn) deleteEngineBtn.addEventListener("click", deleteEditedEngine)
+
+  // 编辑图标弹窗（保留旧弹窗兼容性）
   const closeEditBtn = document.getElementById("closeEditFaviconBtn")
   const saveEditBtn = document.getElementById("saveEditFaviconBtn")
   if (closeEditBtn) closeEditBtn.addEventListener("click", hideEditFaviconDialog)
@@ -183,7 +321,6 @@ function setupDialogListeners(): void {
         : "resourceEngineList"
       renderEngineList(containerId, mode)
 
-      // 同步搜索框图标
       const currentDefault = getDefaultEngine(mode)
       if (mode === currentMode && currentDefault.engine === engineId) {
         import("./engineManager").then(({ selectEngine }) => {
@@ -208,7 +345,6 @@ function setupDialogListeners(): void {
       customEngines = customEngines.filter(e => e.id !== engineId)
       saveCustomEngines(customEngines)
 
-      // 如果删除的是当前默认引擎，修正为列表第一个
       const currentDefault = getDefaultEngine(mode)
       if (currentDefault.engine === engineId) {
         const remaining = getEngineListForMode(mode)
@@ -225,7 +361,13 @@ function setupDialogListeners(): void {
     })
   }
 
-  // 点击遮罩关闭
+  // 遮罩关闭
+  const editEngineDialog = document.getElementById("editEngineDialog")
+  if (editEngineDialog) {
+    editEngineDialog.addEventListener("click", (e) => {
+      if (e.target === editEngineDialog) hideEditEngineDialog()
+    })
+  }
   const editDialog = document.getElementById("editFaviconDialog")
   if (editDialog) {
     editDialog.addEventListener("click", (e) => {
@@ -247,20 +389,38 @@ function renderEngineList(
   const container = document.getElementById(containerId)
   if (!container) return
 
-  const engines = getEngineListForMode(mode)
+  let engines = getEngineListForMode(mode)
+
+  // 应用自定义排序
+  const order = loadEngineOrder(mode)
+  if (order.length > 0) {
+    const orderMap = new Map(order.map((id, i) => [id, i]))
+    engines = [...engines].sort((a, b) => {
+      const ai = orderMap.get(a.id)
+      const bi = orderMap.get(b.id)
+      if (ai !== undefined && bi !== undefined) return ai - bi
+      if (ai !== undefined) return -1
+      if (bi !== undefined) return 1
+      return 0
+    })
+  }
+
   const currentDefault = getDefaultEngine(mode)
   const faviconOverrides = loadCustomFaviconOverrides()
   const customEngines = loadCustomEngines()
   container.innerHTML = ""
 
-  engines.forEach(engine => {
+  engines.forEach((engine) => {
     const item = document.createElement("div")
     const isActive = engine.id === currentDefault.engine
     item.className = "engine-item" + (isActive ? " active" : "")
+    item.setAttribute("data-engine", engine.id)
+    item.setAttribute("data-mode", mode)
+    item.draggable = true
 
     // 图标渲染
-    let iconHtml: string
     const overrideUrl = faviconOverrides[engine.id]
+    let iconHtml: string
     if (overrideUrl) {
       iconHtml = `<div class="engine-icon" style="background-image: url('${overrideUrl}'); background-size: contain; background-repeat: no-repeat; background-position: center;"></div>`
     } else if (engine.builtIn) {
@@ -276,32 +436,175 @@ function renderEngineList(
     item.innerHTML = `
       ${iconHtml}
       <span class="engine-name">${engine.name}</span>
-      <i class="fas fa-pen engine-check" title="编辑图标"></i>
-      ${!engine.builtIn ? '<i class="fas fa-trash engine-delete" title="删除"></i>' : ''}
     `
 
-    // 点击设为默认
-    item.addEventListener("click", (e) => {
-      const target = e.target as HTMLElement
-      // 如果点击的是铅笔图标，打开编辑图标弹窗
-      if (target.classList.contains("engine-check")) {
-        e.stopPropagation()
-        showEditFaviconDialog(engine.id, mode)
-        return
-      }
-      // 如果点击的是删除图标
-      if (target.classList.contains("engine-delete")) {
-        e.stopPropagation()
-        showDeleteEngineDialog(engine.id, mode)
-        return
-      }
-      setDefaultEngine(mode, engine.id, engine.name)
-      renderEngineList(containerId, mode)
-      updateDefaultLabel(mode)
+    // 点击打开编辑弹窗
+    item.addEventListener("click", () => {
+      if (item.classList.contains("dragging")) return
+      showEditEngineDialog(engine.id, mode)
     })
+
+    // 拖拽
+    setupEngineDrag(item, container, mode)
 
     container.appendChild(item)
   })
+
+  // 容器级 dragover/drop
+  container.addEventListener("dragover", (e) => {
+    e.preventDefault()
+    e.dataTransfer!.dropEffect = "move"
+    const target = findDropTarget(e.clientX, e.clientY, container, ".engine-item")
+    if (target) {
+      applyDropIndicator(container, target.item, target.position)
+    }
+  })
+
+  container.addEventListener("drop", (e) => {
+    e.preventDefault()
+    const fromId = e.dataTransfer!.getData("text/plain")
+    const target = findDropTarget(e.clientX, e.clientY, container, ".engine-item")
+    clearDropIndicators(container)
+    if (target && fromId) {
+      const toId = target.item.getAttribute("data-engine")
+      if (toId && fromId !== toId) {
+        executeEngineDrop(container, mode, fromId, toId, target.position)
+      }
+    }
+  })
+}
+
+// 自定义引擎排序
+function loadEngineOrder(mode: Mode): string[] {
+  const key = `engine_order_${mode}`
+  const saved = localStorage.getItem(key)
+  if (saved) {
+    try { return JSON.parse(saved) } catch { localStorage.removeItem(key) }
+  }
+  return []
+}
+
+function saveEngineOrder(mode: Mode, order: string[]): void {
+  localStorage.setItem(`engine_order_${mode}`, JSON.stringify(order))
+}
+
+// 引擎拖拽
+function setupEngineDrag(item: HTMLElement, container: HTMLElement, mode: Mode): void {
+  let ghost: HTMLElement | null = null
+
+  item.addEventListener("dragstart", (e) => {
+    ghost = item.cloneNode(true) as HTMLElement
+    ghost.style.position = "fixed"
+    ghost.style.left = "-9999px"
+    ghost.style.top = "-9999px"
+    ghost.classList.remove("drag-source", "dragging", "drag-over", "drag-before", "drag-after")
+    document.body.appendChild(ghost)
+    ghost.offsetHeight
+    e.dataTransfer!.setDragImage(ghost, ghost.offsetWidth / 2, ghost.offsetHeight / 2)
+    item.classList.add("drag-source")
+    e.dataTransfer!.effectAllowed = "move"
+    e.dataTransfer!.setData("text/plain", item.getAttribute("data-engine")!)
+  })
+
+  item.addEventListener("dragend", () => {
+    ghost?.remove()
+    ghost = null
+    container.querySelectorAll(".drag-source, .drag-over, .drag-before, .drag-after").forEach(el => {
+      el.classList.remove("drag-source", "drag-over", "drag-before", "drag-after")
+    })
+  })
+
+  // 触摸长按拖拽
+  let longPressTimer: ReturnType<typeof setTimeout> | null = null
+  let isDragging = false
+  let startX = 0, startY = 0
+
+  item.addEventListener("touchstart", (e) => {
+    const touch = e.touches[0]
+    startX = touch.clientX
+    startY = touch.clientY
+    isDragging = false
+    longPressTimer = setTimeout(() => {
+      isDragging = true
+      item.classList.add("dragging")
+    }, 400)
+  }, { passive: true })
+
+  item.addEventListener("touchmove", (e) => {
+    if (!isDragging) {
+      const touch = e.touches[0]
+      if (Math.abs(touch.clientX - startX) > 8 || Math.abs(touch.clientY - startY) > 8) {
+        if (longPressTimer) { clearTimeout(longPressTimer); longPressTimer = null }
+      }
+      return
+    }
+    e.preventDefault()
+    const touch = e.touches[0]
+    const target = findDropTarget(touch.clientX, touch.clientY, container, ".engine-item")
+    if (target) {
+      applyDropIndicator(container, target.item, target.position)
+    } else {
+      clearDropIndicators(container)
+    }
+  }, { passive: false })
+
+  item.addEventListener("touchend", (e) => {
+    if (longPressTimer) { clearTimeout(longPressTimer); longPressTimer = null }
+    if (!isDragging) return
+    isDragging = false
+    item.classList.remove("dragging")
+    const touch = e.changedTouches[0]
+    const target = findDropTarget(touch.clientX, touch.clientY, container, ".engine-item")
+    clearDropIndicators(container)
+    if (!target) return
+
+    const fromId = item.getAttribute("data-engine")!
+    const toId = target.item.getAttribute("data-engine")!
+    if (fromId === toId) return
+    executeEngineDrop(container, mode, fromId, toId, target.position)
+  })
+}
+
+function executeEngineDrop(
+  container: HTMLElement,
+  mode: Mode,
+  fromId: string,
+  toId: string,
+  position: 'before' | 'over' | 'after'
+): void {
+  const allItems = [...container.querySelectorAll<HTMLElement>(".engine-item")]
+  const sourceEl = allItems.find(el => el.getAttribute("data-engine") === fromId)
+  const targetEl = allItems.find(el => el.getAttribute("data-engine") === toId)
+  if (!sourceEl || !targetEl) return
+
+  if (position === 'over') {
+    // 交换位置
+    const placeholder = document.createTextNode("")
+    targetEl.replaceWith(placeholder)
+    sourceEl.replaceWith(targetEl)
+    placeholder.replaceWith(sourceEl)
+  } else if (position === 'before') {
+    container.insertBefore(sourceEl, targetEl)
+  } else {
+    const afterTarget = targetEl.nextSibling
+    if (afterTarget) {
+      container.insertBefore(sourceEl, afterTarget)
+    } else {
+      container.appendChild(sourceEl)
+    }
+  }
+
+  // 保存新顺序
+  const newOrder = [...container.querySelectorAll<HTMLElement>(".engine-item")]
+    .map(el => el.getAttribute("data-engine")!)
+    .filter(Boolean)
+  saveEngineOrder(mode, newOrder)
+
+  // 重新渲染以同步 active 状态和 data 属性
+  const containerId = mode === "search" ? "searchEngineList"
+    : mode === "translate" ? "translateEngineList"
+    : "resourceEngineList"
+  renderEngineList(containerId, mode)
 }
 
 function addCustomEngine(name: string, url: string, faviconUrl: string, category: Mode): void {
@@ -360,4 +663,4 @@ function initBuiltInEngines(): void {
   setupDialogListeners()
 }
 
-export { initBuiltInEngines, addCustomEngine, loadCustomEngines, loadCustomFaviconOverrides, getEngineListForMode, resolveEngineUrl }
+export { initBuiltInEngines, addCustomEngine, loadCustomEngines, loadCustomFaviconOverrides, getEngineListForMode, resolveEngineUrl, hideEditEngineDialog, hideDeleteEngineDialog, renderEngineList, updateDefaultLabel }

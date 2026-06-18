@@ -14,13 +14,13 @@ import {
   fetchSuggestions, 
   showSuggestions, 
   hideSuggestions, 
-  handleSuggestionNavigation 
+  handleSuggestionNavigation,
+  initSuggestionSourceToggle,
 } from './suggestionManager'
 import { handleSearch } from './searchHandler'
 import { 
   renderQuickLinks, 
   switchTab, 
-  renderResources, 
   applyFocusTransition 
 } from './uiManager'
 
@@ -29,7 +29,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const searchInput = document.getElementById("searchQuery") as HTMLInputElement | null
   if (searchInput) {
-    let isComposing = false
 
     const handleSuggestionInput = (e: Event) => {
       const query = (e.target as HTMLInputElement).value
@@ -42,15 +41,7 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }
 
-    searchInput.addEventListener("compositionstart", () => { isComposing = true })
-    searchInput.addEventListener("compositionend", (e) => {
-      isComposing = false
-      handleSuggestionInput(e)
-    })
-    searchInput.addEventListener("input", (e) => {
-      if (isComposing) return
-      handleSuggestionInput(e)
-    })
+    searchInput.addEventListener("input", handleSuggestionInput)
 
     searchInput.addEventListener("keydown", handleSuggestionNavigation)
 
@@ -116,8 +107,8 @@ document.addEventListener("DOMContentLoaded", function () {
   selectEngine("google", "Google")
 
   renderQuickLinks()
-  renderResources()
   initBuiltInEngines()
+  initSuggestionSourceToggle()
 
   document.querySelectorAll(".tab-btn").forEach((btn) => {
     btn.addEventListener("click", () => switchTab((btn as HTMLElement).dataset.tab || ""))

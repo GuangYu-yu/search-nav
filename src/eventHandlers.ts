@@ -6,21 +6,21 @@ import { handleSearch } from './searchHandler'
 
 import { 
   closeConfirmDialog, 
-  confirmDeleteLink, 
   closeEditDialog, 
-  saveEditedLink, 
   closeEditResourceDialog, 
-  saveEditedResource, 
+  saveEditedItem,
   closeConfirmResourceDialog, 
-  confirmDeleteResource, 
-  addLink, 
-  addResource 
+  confirmDeleteItem,
+  addItem,
+  addResource,
+  deleteEditedLink,
+  deleteEditedResource
 } from './linkManager'
 import { setWallpaper, randomColors, applyCustomGradient, setCustomWallpaper, handleImageFile } from './wallpaperManager'
 import { saveDataConfig, applyDataFromURL } from './dataManager'
 
 function isAnyDialogOpen(): boolean {
-  const dialogs = ['confirmDialog', 'editDialog', 'editResourceDialog', 'confirmResourceDialog']
+  const dialogs = ['confirmDialog', 'editDialog', 'editResourceDialog', 'confirmResourceDialog', 'editEngineDialog', 'confirmDeleteEngineDialog']
   return dialogs.some(id => {
     const el = document.getElementById(id)
     return el?.classList.contains('show')
@@ -69,14 +69,16 @@ export function initializeEventHandlers(): void {
   onClick('closeSettingsBtn', closeSettings)
   onClick('searchBtn', handleSearch)
   onClick('closeConfirmDialogBtn', closeConfirmDialog)
-  onClick('confirmDeleteLinkBtn', confirmDeleteLink)
+  onClick('confirmDeleteLinkBtn', () => confirmDeleteItem("link"))
   onClick('closeEditDialogBtn', closeEditDialog)
-  onClick('saveEditedLinkBtn', saveEditedLink)
+  onClick('saveEditedLinkBtn', () => saveEditedItem("link"))
+  onClick('deleteEditLinkBtn', deleteEditedLink)
   onClick('closeEditResourceDialogBtn', closeEditResourceDialog)
-  onClick('saveEditedResourceBtn', saveEditedResource)
+  onClick('saveEditedResourceBtn', () => saveEditedItem("resource"))
+  onClick('deleteEditResourceBtn', deleteEditedResource)
   onClick('closeConfirmResourceDialogBtn', closeConfirmResourceDialog)
-  onClick('confirmDeleteResourceBtn', confirmDeleteResource)
-  onClick('addLinkBtn', addLink)
+  onClick('confirmDeleteResourceBtn', () => confirmDeleteItem("resource"))
+  onClick('addLinkBtn', () => addItem("link"))
   onClick('addResourceBtn', addResource)
 
   // 壁纸预设选项: data-type 驱动
@@ -125,6 +127,10 @@ export function initializeEventHandlers(): void {
         closeEditDialog()
         closeEditResourceDialog()
         closeConfirmResourceDialog()
+        import('./builtInEngines').then(m => {
+          m.hideEditEngineDialog?.()
+          m.hideDeleteEngineDialog?.()
+        })
       } else {
         const modal = document.getElementById('settingsModal')
         if (modal?.classList.contains('show')) {

@@ -143,4 +143,4 @@ function selectEngine(engine: string, displayName: string): void {
   }
 }
 
-export { updateEngineDropdown, toggleEngineDropdown, selectEngine }
+export { updateEngineDropdown, toggleEngineDropdown, selectEngine, defaultFaviconSvg }

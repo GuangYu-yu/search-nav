@@ -83,22 +83,22 @@
             
             <!-- 标签页导航 -->
             <div class="tab-nav">
-                <button class="tab-btn active" data-tab="bookmarks" id="bookmarksTabBtn">书签</button>
-                <button class="tab-btn" data-tab="resource" id="resourceTabBtn">资源</button>
-                <button class="tab-btn" data-tab="wallpaper" id="wallpaperTabBtn">壁纸</button>
-                <button class="tab-btn" data-tab="data" id="dataTabBtn">数据</button>
+                <button class="tab-btn active" data-tab="bookmarks" title="书签"><i class="fas fa-bookmark"></i></button>
+                <button class="tab-btn" data-tab="resource" title="资源"><i class="fas fa-cubes"></i></button>
+                <button class="tab-btn" data-tab="wallpaper" title="壁纸"><i class="fas fa-image"></i></button>
+                <button class="tab-btn" data-tab="data" title="数据"><i class="fas fa-database"></i></button>
             </div>
             
             <!-- 书签标签页 -->
             <div class="tab-content custom-scrollbar active" id="bookmarks-tab">
                 <div class="add-link-form">
-                    <input type="text" class="add-link-input" id="linkName" placeholder="输入网站名称">
-                    <input type="text" class="add-link-input" id="linkUrl" placeholder="输入网站地址">
-                    <input type="text" class="add-link-input" id="linkImageUrl" placeholder="输入图标URL（可选）">
-                    <button class="primary-btn" id="addLinkBtn">添加书签</button>
+                    <input type="text" class="add-link-input" id="linkName" placeholder="网站名称">
+                    <input type="text" class="add-link-input" id="linkUrl" placeholder="网站地址">
+                    <input type="text" class="add-link-input" id="linkImageUrl" placeholder="图标URL（可选）">
+                    <button class="primary-btn" id="addLinkBtn">添加</button>
                 </div>
                 
-                <div class="links-list" id="linksContainer">
+                <div class="bookmark-grid" id="linksContainer">
                     <!-- 书签将在这里动态显示 -->
                 </div>
             </div>
@@ -107,10 +107,6 @@
             <div class="tab-content custom-scrollbar" id="resource-tab">
                 <!-- 添加引擎表单 - 置顶 -->
                 <div class="add-engine-form">
-                    <div class="add-engine-header">
-                        <i class="fas fa-plus-circle"></i>
-                        <span>添加引擎</span>
-                    </div>
                     <div class="add-engine-fields">
                         <input type="text" class="add-link-input" id="resourceName" placeholder="引擎名称">
                         <input type="text" class="add-link-input" id="resourceUrl" placeholder="搜索地址（%s 代表搜索词）">
@@ -121,16 +117,25 @@
                             <option value="resource" selected>资源引擎</option>
                         </select>
                     </div>
-                    <button class="primary-btn" id="addResourceBtn">添加引擎</button>
+                    <button class="primary-btn" id="addResourceBtn">添加</button>
                 </div>
 
                 <div class="resource-divider"></div>
+
+                <!-- 联想词来源 -->
+                <div class="suggestion-source-row">
+                    <span class="suggestion-source-label">联想词</span>
+                    <div class="suggestion-source-toggle" id="suggestionSourceToggle">
+                        <span class="ss-option active" data-source="google">Google</span>
+                        <span class="ss-option" data-source="baidu">百度</span>
+                    </div>
+                </div>
 
                 <!-- 内置引擎区域 -->
                 <div class="built-in-engines">
                     <div class="engine-section">
                         <div class="engine-section-header" id="searchEngineHeader">
-                            <span class="engine-section-title"><i class="fas fa-search"></i> 搜索引擎</span>
+                            <span class="engine-section-title"><i class="fas fa-search"></i></span>
                             <span class="engine-section-default" id="searchEngineDefault">Google</span>
                             <i class="fas fa-chevron-down engine-section-arrow"></i>
                         </div>
@@ -140,7 +145,7 @@
                     </div>
                     <div class="engine-section">
                         <div class="engine-section-header" id="translateEngineHeader">
-                            <span class="engine-section-title"><i class="fas fa-language"></i> 翻译引擎</span>
+                            <span class="engine-section-title"><i class="fas fa-language"></i></span>
                             <span class="engine-section-default" id="translateEngineDefault">Google翻译</span>
                             <i class="fas fa-chevron-down engine-section-arrow"></i>
                         </div>
@@ -150,7 +155,7 @@
                     </div>
                     <div class="engine-section">
                         <div class="engine-section-header" id="resourceEngineHeader">
-                            <span class="engine-section-title"><i class="fas fa-compass"></i> 资源引擎</span>
+                            <span class="engine-section-title"><i class="fas fa-compass"></i></span>
                             <span class="engine-section-default" id="resourceEngineDefault">哔哩哔哩</span>
                             <i class="fas fa-chevron-down engine-section-arrow"></i>
                         </div>
@@ -159,10 +164,6 @@
                         </div>
                     </div>
                 </div>
-                
-                <div class="links-list" id="resourcesContainer">
-                    <!-- 自定义资源将在这里动态显示 -->
-                </div>
             </div>
             
             <!-- 壁纸标签页 -->
@@ -170,7 +171,7 @@
                 <!-- 快速选择 -->
                 <div class="wallpaper-section">
                     <h3>快速选择</h3>
-                    <div class="wallpaper-options" id="wallpaperOptions">
+                    <div class="wallpaper-options">
                         <div class="wallpaper-option" data-type="default">
                             <div class="wallpaper-preview default-bg"></div>
                             <span>默认</span>
@@ -295,9 +296,18 @@
                     </div>
                 </div>
             </div>
-            <div class="confirm-footer">
-                <button class="confirm-btn cancel" id="closeEditDialogBtn">取消</button>
-                <button class="confirm-btn confirm" id="saveEditedLinkBtn">确定</button>
+            <div class="confirm-footer edit-footer">
+                <button class="icon-dialog-btn delete" id="deleteEditLinkBtn" title="删除">
+                    <i class="fas fa-trash"></i>
+                </button>
+                <div class="edit-footer-right">
+                    <button class="icon-dialog-btn cancel" id="closeEditDialogBtn" title="取消">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <button class="icon-dialog-btn confirm" id="saveEditedLinkBtn" title="保存">
+                        <i class="fas fa-check"></i>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -324,9 +334,18 @@
                     </div>
                 </div>
             </div>
-            <div class="confirm-footer">
-                <button class="confirm-btn cancel" id="closeEditResourceDialogBtn">取消</button>
-                <button class="confirm-btn confirm" id="saveEditedResourceBtn">确定</button>
+            <div class="confirm-footer edit-footer">
+                <button class="icon-dialog-btn delete" id="deleteEditResourceBtn" title="删除">
+                    <i class="fas fa-trash"></i>
+                </button>
+                <div class="edit-footer-right">
+                    <button class="icon-dialog-btn cancel" id="closeEditResourceDialogBtn" title="取消">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <button class="icon-dialog-btn confirm" id="saveEditedResourceBtn" title="保存">
+                        <i class="fas fa-check"></i>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -364,6 +383,49 @@
             <div class="confirm-footer">
                 <button class="confirm-btn cancel" id="closeEditFaviconBtn">取消</button>
                 <button class="confirm-btn confirm" id="saveEditFaviconBtn" style="background: rgba(var(--primary-color-rgb), 0.85); border-color: rgba(var(--primary-color-rgb), 0.3);">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 编辑引擎弹窗（点击展开列表条目） -->
+    <div class="confirm-dialog" id="editEngineDialog">
+        <div class="confirm-content">
+            <div class="confirm-header">
+                <h3 id="editEngineTitle">编辑引擎</h3>
+            </div>
+            <div class="confirm-body">
+                <div class="edit-form">
+                    <div class="form-group" id="editEngineNameGroup">
+                        <label for="editEngineName">名称</label>
+                        <input type="text" id="editEngineName" class="edit-input">
+                    </div>
+                    <div class="form-group" id="editEngineUrlGroup">
+                        <label for="editEngineUrl">搜索地址（%s 代表搜索词）</label>
+                        <input type="text" id="editEngineUrl" class="edit-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="editEngineIconUrl">图标URL（留空使用默认）</label>
+                        <input type="text" id="editEngineIconUrl" class="edit-input" placeholder="https://example.com/icon.png">
+                    </div>
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="editEngineSetDefault"> 设为默认引擎
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="confirm-footer edit-footer">
+                <button class="icon-dialog-btn delete" id="deleteEngineBtn" title="删除">
+                    <i class="fas fa-trash"></i>
+                </button>
+                <div class="edit-footer-right">
+                    <button class="icon-dialog-btn cancel" id="closeEditEngineBtn" title="取消">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <button class="icon-dialog-btn confirm" id="saveEditEngineBtn" title="保存">
+                        <i class="fas fa-check"></i>
+                    </button>
+                </div>
             </div>
         </div>
     </div>

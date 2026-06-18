@@ -261,12 +261,6 @@
     transform: scale(0.95);
 }
 
-.header-controls {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-}
-
 /* 引擎下拉菜单 */
 .engine-dropdown {
     position: absolute;

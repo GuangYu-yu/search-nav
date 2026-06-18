@@ -1,8 +1,8 @@
 import { LinkItem, ResourceItem, FaviconCache, Mode } from './types'
 import { links, resources, initializeDataPreview } from './dataManager'
-import { renderQuickLinks, renderLinks, renderResources } from './uiManager'
+import { renderQuickLinks, renderLinks } from './uiManager'
 import { currentMode } from './modeManager'
-import { updateEngineDropdown } from './engineManager'
+import { updateEngineDropdown, defaultFaviconSvg } from './engineManager'
 import { addCustomEngine } from './builtInEngines'
 import { showToast } from './toast'
 
@@ -70,14 +70,12 @@ function getItemConfig(type: ItemType): ItemTypeConfig {
     dialogId: "editResourceDialog",
     closeDialogFunc: closeConfirmResourceDialog,
     renderFunc: () => {
-      renderResources()
       if (currentMode === "resource") {
         updateEngineDropdown()
       }
     },
     editCloseDialogFunc: closeEditResourceDialog,
     editRenderFunc: () => {
-      renderResources()
       initializeDataPreview()
       if (currentMode === "resource") {
         updateEngineDropdown()
@@ -121,10 +119,6 @@ function addItem(type: ItemType): void {
   initializeDataPreview()
 }
 
-function addLink(): void {
-  addItem("link")
-}
-
 function addResource(): void {
   const name = (document.getElementById("resourceName") as HTMLInputElement | null)?.value.trim() || ""
   const url = (document.getElementById("resourceUrl") as HTMLInputElement | null)?.value.trim() || ""
@@ -140,10 +134,9 @@ function addResource(): void {
     return
   }
 
-  const formattedUrl = url.startsWith("http") ? url : "https://" + url
+  const formattedUrl = formatUrl(url)
   const faviconUrl = imageUrl || getCachedFaviconUrl(formattedUrl)
 
-  console.log("[addResource] calling addCustomEngine:", name, formattedUrl, faviconUrl, category)
   addCustomEngine(name, formattedUrl, faviconUrl, category)
 
   const nameInput = document.getElementById("resourceName") as HTMLInputElement | null
@@ -156,16 +149,6 @@ function addResource(): void {
 
   updateEngineDropdown()
   initializeDataPreview()
-}
-
-function deleteLink(index: number): void {
-  pendingDeleteIndex = index
-  showConfirmDialog()
-}
-
-function deleteResource(index: number): void {
-  pendingDeleteResourceIndex = index
-  showConfirmResourceDialog()
 }
 
 function showConfirmResourceDialog(): void {
@@ -200,10 +183,6 @@ function confirmDeleteItem(type: ItemType): void {
   cfg.closeDialogFunc()
 }
 
-function confirmDeleteResource(): void {
-  confirmDeleteItem("resource")
-}
-
 function showConfirmDialog(): void {
   const dialog = document.getElementById("confirmDialog")
   dialog?.classList.add("show")
@@ -213,10 +192,6 @@ function closeConfirmDialog(): void {
   const dialog = document.getElementById("confirmDialog")
   dialog?.classList.remove("show")
   pendingDeleteIndex = -1
-}
-
-function confirmDeleteLink(): void {
-  confirmDeleteItem("link")
 }
 
 function showEditDialogByType(index: number, type: ItemType): void {
@@ -240,14 +215,6 @@ function showEditDialogByType(index: number, type: ItemType): void {
 
   const dialog = document.getElementById(cfg.dialogId)
   dialog?.classList.add("show")
-}
-
-function showEditDialog(index: number): void {
-  showEditDialogByType(index, "link")
-}
-
-function showEditResourceDialog(index: number): void {
-  showEditDialogByType(index, "resource")
 }
 
 function closeEditDialog(): void {
@@ -314,33 +281,33 @@ function saveEditedItem(type: ItemType): void {
   cfg.editCloseDialogFunc()
 }
 
-function saveEditedLink(): void {
-  saveEditedItem("link")
+function deleteEditedLink(): void {
+  pendingDeleteIndex = currentEditIndex
+  closeEditDialog()
+  showConfirmDialog()
 }
 
-function saveEditedResource(): void {
-  saveEditedItem("resource")
-}
-
-function getDefaultFavicon(): string {
-  return 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23666"%3E%3Cpath d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.94-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/%3E%3C/svg%3E'
+function deleteEditedResource(): void {
+  pendingDeleteResourceIndex = currentEditIndex
+  closeEditResourceDialog()
+  showConfirmResourceDialog()
 }
 
 function getFaviconUrl(url: string): string {
   try {
     const domain = extractDomain(url)
-    if (!domain) return getDefaultFavicon()
+    if (!domain) return defaultFaviconSvg()
     
     return `https://favicone.com/${domain}?s=256`
   } catch {
-    return getDefaultFavicon()
+    return defaultFaviconSvg()
   }
 }
 
 function getCachedFaviconUrl(url: string): string {
   try {
     const domain = extractDomain(url)
-    if (!domain) return getDefaultFavicon()
+    if (!domain) return defaultFaviconSvg()
     
     const cacheKey = `favicon_cache_${domain}`
 
@@ -364,27 +331,21 @@ function getCachedFaviconUrl(url: string): string {
 
     return faviconeUrl
   } catch {
-    return getDefaultFavicon()
+    return defaultFaviconSvg()
   }
 }
 
 export { 
-  addLink, 
+  addItem,
   addResource, 
-  deleteLink, 
-  deleteResource, 
   closeConfirmResourceDialog, 
-  confirmDeleteResource, 
+  confirmDeleteItem,
   closeConfirmDialog, 
-  confirmDeleteLink, 
-  showEditDialog, 
-  showEditResourceDialog, 
   closeEditDialog, 
   closeEditResourceDialog, 
-  saveEditedLink, 
-  saveEditedResource, 
-  getFaviconUrl, 
+  saveEditedItem,
+  showEditDialogByType,
+  deleteEditedLink,
+  deleteEditedResource,
   getCachedFaviconUrl,
-  formatUrl,
-  clearDomainCache,
 }

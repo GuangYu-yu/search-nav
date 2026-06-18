@@ -1,11 +1,27 @@
-import { LinkItem, ResourceItem } from './types'
+import { LinkItem, ResourceItem, Mode } from './types'
 import { updateEngineDropdown } from './engineManager'
-import { renderLinks, renderResources, renderQuickLinks } from './uiManager'
+import { renderLinks, renderQuickLinks } from './uiManager'
 import { showToast } from './toast'
+
+interface CustomEngine {
+  id: string
+  name: string
+  url: string
+  faviconUrl: string
+  category: Mode
+}
+
+interface EngineOrderMap {
+  search: string[]
+  translate: string[]
+  resource: string[]
+}
 
 type DataConfig = {
   links: LinkItem[]
-  resources: ResourceItem[]
+  customEngines: CustomEngine[]
+  customFaviconOverrides: Record<string, string>
+  engineOrders: EngineOrderMap
 }
 
 function safeParse<T>(raw: string | null, fallback: T): T {
@@ -14,14 +30,43 @@ function safeParse<T>(raw: string | null, fallback: T): T {
   return fallback
 }
 
-let links: LinkItem[] = safeParse<LinkItem[]>(localStorage.getItem("navLinks"), [])
-let resources: ResourceItem[] = safeParse<ResourceItem[]>(localStorage.getItem("navResources"), [])
+let links = safeParse<LinkItem[]>(localStorage.getItem("navLinks"), [])
+let resources = safeParse<ResourceItem[]>(localStorage.getItem("navResources"), [])
+
+function loadAllData(): DataConfig {
+  return {
+    links: [...links],
+    customEngines: safeParse<CustomEngine[]>(localStorage.getItem("customEngines"), []),
+    customFaviconOverrides: safeParse<Record<string, string>>(localStorage.getItem("customFaviconOverrides"), {}),
+    engineOrders: {
+      search: safeParse<string[]>(localStorage.getItem("engine_order_search"), []),
+      translate: safeParse<string[]>(localStorage.getItem("engine_order_translate"), []),
+      resource: safeParse<string[]>(localStorage.getItem("engine_order_resource"), [])
+    }
+  }
+}
+
+function saveAllData(data: DataConfig): void {
+  // 书签
+  links.length = 0
+  links.push(...data.links)
+  localStorage.setItem("navLinks", JSON.stringify(links))
+
+  // 自定义引擎
+  localStorage.setItem("customEngines", JSON.stringify(data.customEngines || []))
+
+  // 引擎图标覆盖
+  localStorage.setItem("customFaviconOverrides", JSON.stringify(data.customFaviconOverrides || {}))
+
+  // 引擎排序
+  const orders = data.engineOrders || { search: [], translate: [], resource: [] }
+  localStorage.setItem("engine_order_search", JSON.stringify(orders.search || []))
+  localStorage.setItem("engine_order_translate", JSON.stringify(orders.translate || []))
+  localStorage.setItem("engine_order_resource", JSON.stringify(orders.resource || []))
+}
 
 function initializeDataPreview(): void {
-  const data: DataConfig = {
-    links: links,
-    resources: resources
-  }
+  const data = loadAllData()
   const dataStr = JSON.stringify(data, null, 2)
   updateDataPreview(dataStr)
 }
@@ -31,17 +76,20 @@ function saveDataConfig(): void {
   if (previewElement) {
     try {
       const data: DataConfig = JSON.parse(previewElement.value)
-      if (data.links && data.resources) {
-        links.length = 0
-        links.push(...data.links)
-        resources.length = 0
-        resources.push(...data.resources)
-        localStorage.setItem("navLinks", JSON.stringify(links))
-        localStorage.setItem("navResources", JSON.stringify(resources))
+      if (data.links) {
+        saveAllData(data)
         renderLinks()
-        renderResources()
         renderQuickLinks()
         updateEngineDropdown()
+        // 重新渲染引擎列表
+        import('./builtInEngines').then(m => {
+          m.renderEngineList("searchEngineList", "search")
+          m.renderEngineList("translateEngineList", "translate")
+          m.renderEngineList("resourceEngineList", "resource")
+          m.updateDefaultLabel("search")
+          m.updateDefaultLabel("translate")
+          m.updateDefaultLabel("resource")
+        })
         showToast("配置已保存", 'success')
       } else {
         showToast("数据格式不正确", 'error')
@@ -77,7 +125,7 @@ function applyDataFromURL(): void {
       return response.json()
     })
     .then((data: DataConfig) => {
-      if (data.links && data.resources) {
+      if (data.links) {
         const dataStr = JSON.stringify(data, null, 2)
         updateDataPreview(dataStr)
         showToast("数据已从URL获取，请点击保存配置应用更改", 'success')

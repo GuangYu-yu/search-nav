@@ -28,7 +28,6 @@
 
     /* 动画缓动 */
     --ease-out: cubic-bezier(0.4, 0, 0.2, 1);
-    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 /* 暗色主题下的表面 token */
@@ -44,34 +43,35 @@
     --placeholder-stroke-color: rgba(0, 0, 0, 0.4);
 }
 
+/* 玻璃面板 token —— 大面积保持中性灰基底，主题色仅用于边框和顶部高光微暗示 */
 [data-theme="red"] {
-    --surface-solid: rgba(255, 245, 245, 0.92);
-    --glass-bg: rgba(60, 15, 15, 0.75);
-    --glass-border: rgba(220, 38, 38, 0.25);
-    --glass-shadow: rgba(40, 10, 10, 0.4);
-    --glass-highlight: rgba(255, 200, 200, 0.08);
-    --glass-text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
-    --placeholder-stroke-color: rgba(0, 0, 0, 0.45);
+    --surface-solid: rgba(245, 240, 240, 0.94);
+    --glass-bg: rgba(25, 22, 22, 0.68);
+    --glass-border: rgba(220, 38, 38, 0.10);
+    --glass-shadow: rgba(0, 0, 0, 0.3);
+    --glass-highlight: rgba(255, 225, 225, 0.05);
+    --glass-text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    --placeholder-stroke-color: rgba(0, 0, 0, 0.3);
 }
 
 [data-theme="purple"] {
-    --surface-solid: rgba(250, 245, 255, 0.92);
-    --glass-bg: rgba(30, 15, 60, 0.75);
-    --glass-border: rgba(124, 58, 237, 0.25);
-    --glass-shadow: rgba(20, 10, 40, 0.4);
-    --glass-highlight: rgba(200, 180, 255, 0.08);
-    --glass-text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
-    --placeholder-stroke-color: rgba(0, 0, 0, 0.45);
+    --surface-solid: rgba(242, 240, 248, 0.94);
+    --glass-bg: rgba(22, 20, 38, 0.68);
+    --glass-border: rgba(124, 58, 237, 0.10);
+    --glass-shadow: rgba(0, 0, 0, 0.3);
+    --glass-highlight: rgba(225, 220, 255, 0.05);
+    --glass-text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    --placeholder-stroke-color: rgba(0, 0, 0, 0.3);
 }
 
 [data-theme="gold"] {
-    --surface-solid: rgba(255, 250, 240, 0.92);
-    --glass-bg: rgba(50, 30, 5, 0.75);
-    --glass-border: rgba(217, 119, 6, 0.25);
-    --glass-shadow: rgba(30, 15, 0, 0.4);
-    --glass-highlight: rgba(255, 220, 150, 0.08);
-    --glass-text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
-    --placeholder-stroke-color: rgba(0, 0, 0, 0.45);
+    --surface-solid: rgba(245, 242, 237, 0.94);
+    --glass-bg: rgba(28, 24, 20, 0.68);
+    --glass-border: rgba(217, 119, 6, 0.10);
+    --glass-shadow: rgba(0, 0, 0, 0.3);
+    --glass-highlight: rgba(255, 242, 215, 0.05);
+    --glass-text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    --placeholder-stroke-color: rgba(0, 0, 0, 0.3);
 }
 
 [data-theme="light"] {
@@ -191,41 +191,41 @@ body {
     --input-background: #2c2c2e;
 }
 
-/* 姨妈红主题 */
+/* 页面整体 token —— 底色接近中性灰，文字色保持低彩度 */
 [data-theme="red"] {
-    --background-color: #ffe6e6;
-    --card-background: #fff0f0;
-    --text-color: #7c2d2d;
-    --text-secondary: #9b4d4d;
+    --background-color: #f3f1f0;
+    --card-background: #faf8f8;
+    --text-color: #2a2020;
+    --text-secondary: #78706e;
     --primary-color: #dc2626;
     --primary-color-rgb: 220, 38, 38;
-    --border-color: #fecaca;
-    --hover-color: #fee2e2;
-    --input-background: #fff5f5;
+    --border-color: #e5e0df;
+    --hover-color: #f0edec;
+    --input-background: #f5f2f1;
 }
 
 /* 科技紫主题 */
 [data-theme="purple"] {
-    --background-color: #f3e8ff;
-    --card-background: #faf5ff;
-    --text-color: #4c1d95;
-    --text-secondary: #6b46c1;
+    --background-color: #f2f0f6;
+    --card-background: #f9f8fc;
+    --text-color: #252133;
+    --text-secondary: #6b6880;
     --primary-color: #7c3aed;
     --primary-color-rgb: 124, 58, 237;
-    --border-color: #ddd6fe;
-    --hover-color: #ede9fe;
-    --input-background: #faf5ff;
+    --border-color: #e4e0ef;
+    --hover-color: #f0ecf8;
+    --input-background: #f5f2fa;
 }
 
 /* 尊贵金主题 */
 [data-theme="gold"] {
-    --background-color: #fef3c7;
-    --card-background: #fffbeb;
-    --text-color: #78350f;
-    --text-secondary: #92400e;
+    --background-color: #f4f1ed;
+    --card-background: #faf8f5;
+    --text-color: #2d251b;
+    --text-secondary: #7a7064;
     --primary-color: #d97706;
     --primary-color-rgb: 217, 119, 6;
-    --border-color: #fcd34d;
-    --hover-color: #fef3c7;
-    --input-background: #fffbeb;
+    --border-color: #e8e3db;
+    --hover-color: #f2ede6;
+    --input-background: #f6f3ee;
 }
