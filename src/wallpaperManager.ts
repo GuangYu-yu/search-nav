@@ -10,6 +10,10 @@ import {
 } from './wallpaperRenderer'
 import { ShaderContent } from './shaderWallpaper'
 
+// ──────────────────────────────────────────
+// 壁纸图片加载：依赖浏览器 HTTP 缓存
+// ──────────────────────────────────────────
+
 /** 解析 localStorage 里的 customWallpaper 字符串,还原为 ContentSource */
 function parseWallpaperString(bg: string): WallpaperContent | null {
   bg = bg.trim()
@@ -60,6 +64,16 @@ export async function restoreWallpaperFromStorage(): Promise<void> {
         return
       }
     }
+
+    // 图片壁纸：优先使用缓存
+    if (savedWallpaper.startsWith('url(')) {
+      const m = savedWallpaper.match(/url\(['"]?([^'"]+)['"]?\)/)
+      if (m) {
+        await getWallpaperRenderer().setContent(new ImageContent(m[1]))
+        return
+      }
+    }
+
     const content = parseWallpaperString(savedWallpaper)
     if (content) {
       await getWallpaperRenderer().setContent(content)
@@ -132,19 +146,25 @@ function applyMediaUrl(url: string, kind?: 'image' | 'video'): void {
   return applyImageUrl(url)
 }
 
-/** 应用图片 URL */
+/** 应用图片 URL — 依赖浏览器 HTTP 缓存 */
 function applyImageUrl(url: string): void {
-  const img = new Image()
-  img.onload = () => {
+  // data URL（本地文件）
+  if (url.startsWith('data:')) {
     const style = `url('${url}') center/cover no-repeat`
     localStorage.setItem('customWallpaper', style)
-    localStorage.setItem('customWallpaperUrl', url)
+    localStorage.removeItem('customWallpaperUrl')
     clearSVGState()
     document.querySelectorAll('.wallpaper-option').forEach(el => el.classList.remove('active'))
     void getWallpaperRenderer().setContent(new ImageContent(url))
+    return
   }
-  img.onerror = () => showToast('图片加载失败', 'error')
-  img.src = url
+
+  const style = `url('${url}') center/cover no-repeat`
+  localStorage.setItem('customWallpaper', style)
+  localStorage.setItem('customWallpaperUrl', url)
+  clearSVGState()
+  document.querySelectorAll('.wallpaper-option').forEach(el => el.classList.remove('active'))
+  void getWallpaperRenderer().setContent(new ImageContent(url))
 }
 
 /** 应用视频 URL */

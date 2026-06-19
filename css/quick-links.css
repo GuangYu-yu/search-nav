@@ -1,35 +1,26 @@
 /* 快速链接组件模块 */
-.quick-links {
-    margin: 16px 0;  /* 控制上下间距，左右间距 */
+
+/* ==========================================================================
+   包装器：相对定位锚点，毛玻璃层据此绝对定位
+   ========================================================================== */
+.quick-links-wrapper {
+    position: relative;
+    overflow: hidden;
+    margin: 16px 0;
     width: 100%;
     max-width: 800px;
+}
+
+/* ==========================================================================
+   动画容器：负责折叠/展开时的 scale + opacity 动画
+   内部只包含图标（无 backdrop-filter）和文字
+   position:relative + z-index:1 确保在毛玻璃层之上渲染
+   ========================================================================== */
+.quick-links {
+    position: relative;
+    z-index: 1;
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     backface-visibility: hidden;
-}
-
-.quick-links-grid {
-    display: grid;
-    gap: 8px;
-    padding: 6px;
-    justify-content: center;
-    margin: 0 auto;
-    overflow-y: hidden;
-    overflow-x: auto;
-    border-radius: 12px;
-    isolation: isolate;
-}
-
-.quick-links-grid.overflowing {
-    max-height: 300px;
-    overflow-y: auto;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 20px, black calc(100% - 20px), transparent 100%);
-    mask-image: linear-gradient(to bottom, transparent 0%, black 20px, black calc(100% - 20px), transparent 100%);
-}
-
-.quick-links-grid.overflowing::-webkit-scrollbar {
-    display: none;
 }
 
 /* 快速链接独立动画控制 */
@@ -40,7 +31,50 @@
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* 快速链接项样式 */
+.quick-links-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 12px;
+    padding: 16px;
+    justify-content: center;
+    margin: 0 auto;
+    max-width: 500px;
+    max-height: 350px;
+    align-content: start;
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.quick-links-grid::-webkit-scrollbar {
+    display: none;
+}
+
+/* ==========================================================================
+   毛玻璃层：绝对静止，永远待在根合成层直接采样壁纸
+   ========================================================================== */
+.quick-links-glass {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* 玻璃层绝不动，由 JS 持续对齐 */
+.quick-link-glass-block {
+    position: absolute;
+    background-color: var(--icon-glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: none;
+    border-radius: 16px;
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ==========================================================================
+   快速链接项（外层卡片）：统一的物理动效统治者
+   scale() 写在这里，毛玻璃子元素不动，仅跟随父级做 GPU 矩阵变换
+   ========================================================================== */
 .quick-link {
     display: flex;
     flex-direction: column;
@@ -50,32 +84,85 @@
     border-radius: 12px;
     min-width: 80px;
     flex-shrink: 0;
-    transition: background 0.2s ease, transform 0.2s ease;
+    position: relative;
+    z-index: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    will-change: transform;
+    /* 退出（鼠标挪开）回正曲线 — 平滑失重，无反向回弹 */
+    transition: transform 0.2s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
+/* 父级整体放大 */
 .quick-link:hover {
-    background: var(--hover-color);
-    transform: scale(1.05);
+    transform: translate3d(0, 0, 0) scale(1.08);
+    z-index: 10;
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* 书签图标共享基础样式 */
-.quick-link-icon,
-.bookmark-icon {
-    border-radius: 50%;
-    background-color: #fff;
-    border: 1px solid rgba(0, 0, 0, 0.06);
-    box-shadow: 
-        0 0 0 1px rgba(0, 0, 0, 0.05),
-        0 4px 16px rgba(0, 0, 0, 0.12);
-    background-size: 75%;
-    background-repeat: no-repeat;
-    background-position: center;
+.quick-link:active {
+    transform: translate3d(0, 0, 0) scale(0.96);
+    transition: transform 0.1s ease;
+}
+
+/* ==========================================================================
+   书签图标（首页）：只显示 favicon/首字母，无毛玻璃
+   毛玻璃效果已移至 .quick-link-glass-block（绝对定位层）
+   ========================================================================== */
+.quick-link-icon {
+    background-color: transparent;
+    border: none;
+    border-radius: 16px;
     position: relative;
     overflow: hidden;
-    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s ease;
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    background-size: 64%;
+    background-repeat: no-repeat;
+    background-position: center;
+    z-index: 1;
 }
 
-/* 首字母占位 */
+/* ==========================================================================
+   书签图标（设置弹窗）：保持毛玻璃，无折叠动画问题
+   ========================================================================== */
+.bookmark-icon {
+    background-color: var(--icon-glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: none;
+    border-radius: 16px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 
+        0 6px 16px rgba(0, 0, 0, 0.16),
+        0 1px 4px rgba(0, 0, 0, 0.08);
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    background-size: 64%;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+/* 尺寸声明 */
+.quick-link-icon {
+    width: 56px;
+    height: 56px;
+    cursor: pointer;
+}
+
+.bookmark-icon {
+    width: 48px;
+    height: 48px;
+    pointer-events: none;
+}
+
+/* ==========================================================================
+   首字母占位兜底
+   ========================================================================== */
 .quick-link-icon::after,
 .bookmark-icon::after {
     content: attr(data-initial);
@@ -87,48 +174,26 @@
     font-weight: 600;
     color: #333;
     pointer-events: none;
-    transition: opacity 0.2s ease;
+    z-index: 2;
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0s 0.2s;
 }
 
 .quick-link-icon::after  { font-size: 22px; }
 .bookmark-icon::after    { font-size: 20px; }
 
+/* 图标加载成功后淡出首字母 + 彻底隐藏 */
 .quick-link-icon.loaded::after,
 .bookmark-icon.loaded::after {
     opacity: 0;
+    transform: scale(0.8);
+    visibility: hidden;
 }
 
-.quick-link-icon {
-    width: 56px;
-    height: 56px;
-    cursor: pointer;
-    will-change: transform;
-}
-
-.bookmark-icon {
-    width: 48px;
-    height: 48px;
-    pointer-events: none;
-}
-
-.quick-link-icon:hover {
-    transform: scale(1.1);
-    box-shadow: 
-        0 0 0 1px rgba(0, 0, 0, 0.08),
-        0 8px 24px rgba(0, 0, 0, 0.18);
-}
-
-.quick-link-icon:active {
-    transform: scale(0.95);
-}
-
-.quick-link:hover .quick-link-icon {
-    transform: scale(1.05);
-}
-
+/* 链接名称 — 跟随父级 scale，只需控制透明度 */
 .quick-link-name {
     font-size: 13px;
-    color: var(--text-color);
+    color: #fff;
+    text-shadow: 0 0 2px #000, 0 1px 2px rgba(0,0,0,0.6);
     text-align: center;
     line-height: 1.2;
     max-width: 80px;
@@ -138,15 +203,9 @@
     font-weight: 400;
     pointer-events: none;
     opacity: 0;
-    transform: scale(0.8);
-    transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: opacity 0.25s ease;
 }
 
 .quick-link:hover .quick-link-name {
     opacity: 1;
-    transform: scale(1);
-}
-
-.search-focused .quick-link-icon {
-    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.4s ease;
 }

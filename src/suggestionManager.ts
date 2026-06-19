@@ -126,13 +126,13 @@ function performRequest(engine: string, config: EngineConfig, query: string): Pr
   })
 }
 
-async function fetchSuggestions(query: string): Promise<SuggestionItem[]> {
+function fetchSuggestions(query: string): Promise<SuggestionItem[]> {
   if (debounceTimer) {
     clearTimeout(debounceTimer)
   }
 
   return new Promise((resolve) => {
-    debounceTimer = setTimeout(async () => {
+    debounceTimer = setTimeout(() => {
       if (suggestionCache.has(query)) {
         resolve(suggestionCache.get(query) || [])
         return
@@ -355,7 +355,5 @@ export {
   showSuggestions, 
   hideSuggestions, 
   handleSuggestionNavigation,
-  getSuggestionSource,
-  setSuggestionSource,
   initSuggestionSourceToggle,
 }

@@ -131,12 +131,13 @@
     box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.15);
 }
 
-/* 书签网格 - 横纵排列由 JS 同步首页 */
+/* 书签网格 - 浏览器原生计算列数 */
 .bookmark-grid {
     margin-top: 12px;
     flex: 1;
     min-height: 0;
     display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
     gap: 8px;
     padding: 6px;
     justify-content: center;
@@ -144,9 +145,9 @@
     scrollbar-width: none;
     -ms-overflow-style: none;
     align-content: start;
-    /* 底部渐隐遮罩，与首页一致 */
-    -webkit-mask-image: linear-gradient(to bottom, black calc(100% - 40px), transparent 100%);
-    mask-image: linear-gradient(to bottom, black calc(100% - 40px), transparent 100%);
+    /* 上下渐隐遮罩 */
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 20px, black calc(100% - 24px), transparent 100%);
+    mask-image: linear-gradient(to bottom, transparent 0%, black 20px, black calc(100% - 24px), transparent 100%);
 }
 
 .bookmark-grid::-webkit-scrollbar {

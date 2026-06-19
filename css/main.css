@@ -7,11 +7,6 @@
 @import url('tab-components.css');
 @import url('wallpaper-components.css');
 
-/* 书签容器与搜索框间距 */
-.quick-links {
-    margin-top: 0px;
-}
-
 /* 搜索框与顶部间距 */
 .search-container {
     margin-top: 160px;

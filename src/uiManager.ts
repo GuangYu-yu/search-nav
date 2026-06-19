@@ -16,30 +16,7 @@ function loadFaviconAsync(el: HTMLElement, url: string): void {
   img.src = url
 }
 
-const ITEM_W = 100
-
-function calculateColumns(containerWidth: number): number {
-  const gap = 6
-  const padding = 12
-  const availableWidth = containerWidth - padding
-  const maxColumns = Math.max(1, Math.floor((availableWidth + gap) / (ITEM_W + gap)))
-  return Math.min(maxColumns, 5)
-}
-
-function calculateGridLayout(totalItems: number, maxColumns: number): { columns: number; rows: number } {
-  if (totalItems <= maxColumns) {
-    return { columns: totalItems, rows: 1 }
-  }
-  const rows = Math.ceil(totalItems / maxColumns)
-  const itemsPerRow = Math.ceil(totalItems / rows)
-
-  return {
-    columns: itemsPerRow,
-    rows: rows
-  }
-}
-
-/** 创建书签 DOM（icon + name），图标异步加载 favicon，首字母占位 */
+/** 创建书签 DOM（icon + name） */
 function createBookmarkDOM(link: LinkItem): { item: HTMLElement; icon: HTMLElement; name: HTMLElement } {
   const item = document.createElement("div")
   const icon = document.createElement("div")
@@ -60,14 +37,13 @@ function renderQuickLinks(): void {
   if (!container) return
 
   container.innerHTML = ""
+  const glass = document.getElementById("quickLinksGlass") as HTMLElement | null
+  if (glass) glass.innerHTML = ""
   if (!links.length) return
 
-  const parentWidth = container.parentElement?.clientWidth ?? 800
-  const maxColumns = calculateColumns(parentWidth)
-  const layout = calculateGridLayout(links.length, maxColumns)
-  const gap = computeGap(layout.columns, parentWidth)
-
-  applyGridLayout(container, layout.columns, layout.rows, gap)
+  // 计算最优行列数，确保对称
+  const layout = calculateGridLayout(links.length, maxColumnsForWidth())
+  container.style.gridTemplateColumns = `repeat(${layout.columns}, minmax(80px, 1fr))`
 
   const fragment = document.createDocumentFragment()
 
@@ -81,21 +57,95 @@ function renderQuickLinks(): void {
   })
 
   container.appendChild(fragment)
-  container.classList.toggle("overflowing", layout.rows > 3)
+
+  // 在毛玻璃层创建对应数量的玻璃块（backdrop-filter 在此层，不受动画影响）
+  if (glass) {
+    const isCollapsed = document.querySelector(".quick-links")?.classList.contains("collapsed")
+    links.forEach(() => {
+      const block = document.createElement("div")
+      block.className = "quick-link-glass-block"
+      if (isCollapsed) {
+        block.style.opacity = "0"
+        block.style.transition = "none"
+      }
+      glass.appendChild(block)
+    })
+    positionGlassBlocks()
+
+    // 悬浮时毛玻璃块跟随图标放大
+    const linkEls = container.querySelectorAll<HTMLElement>(".quick-link")
+    const blocks = glass.children
+    linkEls.forEach((linkEl, i) => {
+      if (i >= blocks.length) return
+      const block = blocks[i] as HTMLElement
+      linkEl.addEventListener("mouseenter", () => {
+        block.style.transform = "scale(1.08)"
+        block.style.transition = "transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)"
+      })
+      linkEl.addEventListener("mouseleave", () => {
+        block.style.transform = "scale(1)"
+        block.style.transition = "transform 0.2s cubic-bezier(0.25, 1, 0.5, 1)"
+      })
+    })
+  }
+
+  // 同步设置面板列数（renderQuickLinks 在 renderLinks 之后执行，此时列数才是最新）
+  syncSettingsGrid()
 }
 
-function applyGridLayout(container: HTMLElement, columns: number, rows: number, gap: number): void {
-  container.style.gridTemplateColumns = `repeat(${columns}, 80px)`
-  container.style.gridTemplateRows = `repeat(${rows}, 1fr)`
-  container.style.columnGap = `${gap}px`
-}
-
-// 窗口大小改变时重新计算列数（不重建 DOM）
-window.addEventListener("resize", () => {
-  const quickContainer = document.getElementById("quickLinksContainer")
-  if (quickContainer && links.length) relayoutGrid(quickContainer)
+/** 同步设置面板的网格列数与首页一致 */
+function syncSettingsGrid(): void {
   const settingsContainer = document.getElementById("linksContainer")
-  if (settingsContainer && links.length) syncHomepageLayout(settingsContainer)
+  if (!settingsContainer) return
+  const modal = document.getElementById("settingsModal")
+  if (!modal?.classList.contains("show")) return
+  const homeGrid = document.getElementById("quickLinksContainer")
+  if (!homeGrid) return
+  settingsContainer.style.gridTemplateColumns = getComputedStyle(homeGrid).gridTemplateColumns
+}
+
+/** 计算最优行列数，尽量让每行数量相等，最多 maxColumns 列 */
+function calculateGridLayout(totalItems: number, maxColumns: number): { columns: number; rows: number } {
+  if (totalItems <= maxColumns) {
+    return { columns: totalItems, rows: 1 }
+  }
+  const rows = Math.ceil(totalItems / maxColumns)
+  const itemsPerRow = Math.ceil(totalItems / rows)
+
+  return {
+    columns: itemsPerRow,
+    rows: rows
+  }
+}
+
+/** 将每个玻璃块精确对齐到对应图标的位置 */
+function positionGlassBlocks(): void {
+  const glass = document.getElementById("quickLinksGlass") as HTMLElement | null
+  if (!glass) return
+
+  const glassRect = glass.getBoundingClientRect()
+  const icons = document.querySelectorAll<HTMLElement>("#quickLinksContainer .quick-link-icon")
+  const blocks = glass.children
+
+  icons.forEach((icon, i) => {
+    if (i >= blocks.length) return
+    const block = blocks[i] as HTMLElement
+    const r = icon.getBoundingClientRect()
+    block.style.left = `${Math.round(r.left - glassRect.left)}px`
+    block.style.top = `${Math.round(r.top - glassRect.top)}px`
+    block.style.width = `${Math.round(r.width)}px`
+    block.style.height = `${Math.round(r.height)}px`
+  })
+}
+
+// 窗口改变时重新计算列数，同时重新对齐玻璃块位置
+window.addEventListener("resize", () => {
+  relayoutGrid()
+})
+
+// 网格滚动时重新对齐玻璃块
+document.getElementById("quickLinksContainer")?.addEventListener("scroll", () => {
+  positionGlassBlocks()
 })
 
 // 拖拽时：光标不在书签网格区域内时清除所有指示器
@@ -106,24 +156,6 @@ document.addEventListener("dragover", (e) => {
     clearDropIndicators(grid)
   }
 })
-
-function relayoutGrid(container: HTMLElement): void {
-  const parentWidth = container.parentElement?.clientWidth ?? 800
-  const maxColumns = calculateColumns(parentWidth)
-  const layout = calculateGridLayout(links.length, maxColumns)
-  const gap = computeGap(layout.columns, parentWidth)
-  applyGridLayout(container, layout.columns, layout.rows, gap)
-  container.classList.toggle("overflowing", layout.rows > 3)
-}
-
-// 每行少于5个且容器有余量时扩大间距，下限8px上限48px
-function computeGap(cols: number, containerWidth: number): number {
-  if (cols <= 1 || cols >= 5) return 8
-  const pad = 12
-  const availableWidth = containerWidth - pad
-  const naturalGap = Math.floor((availableWidth - cols * ITEM_W) / (cols - 1))
-  return Math.max(8, Math.min(42, naturalGap))
-}
 
 document.addEventListener("click", function (event: Event): void {
   const themeSwitcher = document.getElementById("themeSwitcher")
@@ -209,12 +241,11 @@ function renderLinks(): void {
       const origIcon = item.querySelector<HTMLElement>(".bookmark-icon")
       const ghostIcon = ghost.querySelector<HTMLElement>(".bookmark-icon")
       if (origIcon && ghostIcon) {
-        ghostIcon.style.backgroundImage = getComputedStyle(origIcon).backgroundImage
         if (!origIcon.classList.contains("loaded")) {
           // favicon 没加载完，补首字母占位
           const letter = document.createElement("span")
           letter.textContent = origIcon.getAttribute("data-initial") || ""
-          letter.style.cssText = "position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:600;color:#333;pointer-events:none"
+          letter.style.cssText = "position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:600;color:#333;pointer-events:none"
           ghostIcon.appendChild(letter)
         }
       }
@@ -312,17 +343,34 @@ function renderLinks(): void {
     }
   })
 
-  // 同步首页横纵排列
-  syncHomepageLayout(container)
+  // 同步首页列数（设置面板打开时立即对齐）
+  syncSettingsGrid()
 }
 
-function syncHomepageLayout(container: HTMLElement): void {
-  const homeGrid = document.getElementById("quickLinksContainer")
-  if (!homeGrid) return
-  const style = getComputedStyle(homeGrid)
-  container.style.gridTemplateColumns = style.gridTemplateColumns
-  container.style.columnGap = style.columnGap
-  container.style.gridTemplateRows = "auto"
+/** 根据容器宽度计算最大列数（响应式） */
+function maxColumnsForWidth(): number {
+  const grid = document.getElementById("quickLinksContainer")
+  if (!grid) return 5
+  const parentWidth = grid.parentElement?.clientWidth ?? 500
+  const padding = 32  // 16px × 2
+  const gap = 12
+  const itemWidth = 80
+  const available = parentWidth - padding
+  const cols = Math.max(1, Math.floor((available + gap) / (itemWidth + gap)))
+  return Math.min(cols, 5)
+}
+
+/** 重新计算首页网格列数并同步设置面板 */
+function relayoutGrid(): void {
+  const container = document.getElementById("quickLinksContainer")
+  if (!container) return
+  const maxCols = maxColumnsForWidth()
+  const layout = calculateGridLayout(links.length, maxCols)
+  container.style.gridTemplateColumns = `repeat(${layout.columns}, minmax(80px, 1fr))`
+  // 重新对齐玻璃块位置
+  positionGlassBlocks()
+  // 如果设置面板打开，同步列数
+  syncSettingsGrid()
 }
 
 function executeDrop(container: HTMLElement, fromIndex: number, targetIndex: number, position: 'before' | 'over' | 'after'): void {
@@ -440,6 +488,28 @@ function applyFocusTransition(isFocused: boolean): void {
   }
   const t = computeBlurTarget()
   tryGetWallpaperRenderer()?.setBlur(t.strength, t.brightness, 400)
+
+  // JS 控制玻璃块淡入淡出（CSS ~ 选择器不可靠）
+  const glass = document.getElementById("quickLinksGlass")
+  if (glass) {
+    const blocks = glass.children
+    for (let i = 0; i < blocks.length; i++) {
+      const block = blocks[i] as HTMLElement
+      block.style.transition = "opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
+      block.style.opacity = isFocused ? "0" : "1"
+    }
+  }
+
+  // 折叠/展开动画（300ms）期间每帧对齐玻璃块位置
+  const start = performance.now()
+  const duration = 300
+  function frame(now: number) {
+    positionGlassBlocks()
+    if (now - start < duration) {
+      requestAnimationFrame(frame)
+    }
+  }
+  requestAnimationFrame(frame)
 }
 
 export { 

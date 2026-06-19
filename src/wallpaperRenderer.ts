@@ -1,3 +1,4 @@
+import 'pixi.js/unsafe-eval'
 import {
   Application,
   Container,
@@ -31,11 +32,15 @@ function easeOutCubic(t: number): number {
 }
 
 function loadImage(src: string): Promise<HTMLImageElement> {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const img = new Image()
     img.crossOrigin = 'anonymous'
     img.onload = () => resolve(img)
-    img.onerror = () => reject(new Error('图片加载失败: ' + src))
+    img.onerror = () => {
+      const img2 = new Image()
+      img2.onload = () => resolve(img2)
+      img2.src = src
+    }
     img.src = src
   })
 }
