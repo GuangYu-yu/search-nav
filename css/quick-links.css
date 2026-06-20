@@ -1,7 +1,7 @@
 /* 快速链接组件模块 */
 
 /* ==========================================================================
-   包装器：相对定位锚点，毛玻璃层据此绝对定位
+   包装器：相对定位锚点
    ========================================================================== */
 .quick-links-wrapper {
     position: relative;
@@ -12,23 +12,26 @@
 }
 
 /* ==========================================================================
-   动画容器：负责折叠/展开时的 scale + opacity 动画
-   内部只包含图标（无 backdrop-filter）和文字
-   position:relative + z-index:1 确保在毛玻璃层之上渲染
+   动画容器：只做 transform 动画
+   opacity 交由子图标独立控制，避免 backdrop-filter 合成层被父级 opacity 提早丢弃
    ========================================================================== */
 .quick-links {
     position: relative;
     z-index: 1;
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     backface-visibility: hidden;
 }
 
-/* 快速链接独立动画控制 */
+/* 快速链接独立动画控制 — 只动 transform，不动 opacity */
 .quick-links.collapsed {
-    opacity: 0;
     transform: scale(0.9) translateY(-20px);
     pointer-events: none;
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 折叠时图标（含 backdrop-filter）独立淡出 */
+.quick-links.collapsed .quick-link-icon {
+    opacity: 0;
 }
 
 .quick-links-grid {
@@ -51,29 +54,7 @@
 }
 
 /* ==========================================================================
-   毛玻璃层：绝对静止，永远待在根合成层直接采样壁纸
-   ========================================================================== */
-.quick-links-glass {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    z-index: 0;
-}
-
-/* 玻璃层绝不动，由 JS 持续对齐 */
-.quick-link-glass-block {
-    position: absolute;
-    background-color: var(--icon-glass-bg);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: none;
-    border-radius: 16px;
-    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* ==========================================================================
-   快速链接项（外层卡片）：统一的物理动效统治者
-   scale() 写在这里，毛玻璃子元素不动，仅跟随父级做 GPU 矩阵变换
+   快速链接项（外层卡片）：纯布局容器，不参与变换动画
    ========================================================================== */
 .quick-link {
     display: flex;
@@ -86,47 +67,70 @@
     flex-shrink: 0;
     position: relative;
     z-index: 1;
-    transform: translate3d(0, 0, 0) scale(1);
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
-    will-change: transform;
-    /* 退出（鼠标挪开）回正曲线 — 平滑失重，无反向回弹 */
-    transition: transform 0.2s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
-/* 父级整体放大 */
 .quick-link:hover {
-    transform: translate3d(0, 0, 0) scale(1.08);
     z-index: 10;
+}
+
+/* 书签图标（首页）：backdrop-filter + transform 同层
+   ────────────────────────────────────────────────────
+   Chromium 缺陷：backdrop-filter 元素在 transform 动画结束
+   时（回到 scale(1)），合成器会重新评估层树，导致像素级别
+   的边界位移（右下角 1px 跳动）。
+
+   修复：保持恒定的微量旋转 rotate(0.005deg)，让变换矩阵
+   始终处于"复杂"状态，绕过 Chromium 的层简化优化。
+
+   注意：这是根据 Chromium 实现行为的 workaround，而非 CSS
+   规范设计的特性。未来 Chrome 版本如果改进了合成器优化逻
+   辑，可以尝试移除 rotate 并测试是否仍稳定。 */
+
+.quick-link-icon {
+    background-color: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    /* 透明 border 稳定 compositing boundary，防动画结束 1px 位移 */
+    border: 1px solid transparent;
+    background-clip: padding-box;
+    border-radius: 16px;
+    position: relative;
+    contain: paint;
+    background-size: 72%;
+    background-repeat: no-repeat;
+    background-position: center;
+    /* 阴影让图标在任何壁纸上都与背景分离 */
+    box-shadow:
+        0 2px 6px rgba(0, 0, 0, 0.15),
+        0 0 0 1px rgba(255, 255, 255, 0.06) inset;
+    /* translate3d 合成层 + scale(1) + rotate(0.005deg) 防 Chromium 层优化（见上方说明） */
+    transform: translate3d(0, 0, 0) scale(1) rotate(0.005deg);
+    transition:
+        transform 0.2s cubic-bezier(0.25, 1, 0.5, 1),
+        opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform, opacity;
+}
+
+/* 悬浮放大 — 保持微旋转 */
+.quick-link:hover .quick-link-icon {
+    transform: translate3d(0, 0, 0) scale(1.08) rotate(0.005deg);
     transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.quick-link:active {
-    transform: translate3d(0, 0, 0) scale(0.96);
+.quick-link:active .quick-link-icon {
+    transform: translate3d(0, 0, 0) scale(0.96) rotate(0.005deg);
     transition: transform 0.1s ease;
 }
 
-/* ==========================================================================
-   书签图标（首页）：只显示 favicon/首字母，无毛玻璃
-   毛玻璃效果已移至 .quick-link-glass-block（绝对定位层）
-   ========================================================================== */
+/* 尺寸声明（含 border 补偿：56px - 2px = 54px 内容区，border 补满 56px） */
 .quick-link-icon {
-    background-color: transparent;
-    border: none;
-    border-radius: 16px;
-    position: relative;
-    overflow: hidden;
-    transform: translate3d(0, 0, 0);
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
-    background-size: 64%;
-    background-repeat: no-repeat;
-    background-position: center;
-    z-index: 1;
+    width: 54px;
+    height: 54px;
+    cursor: pointer;
 }
 
 /* ==========================================================================
-   书签图标（设置弹窗）：保持毛玻璃，无折叠动画问题
+   书签图标（设置弹窗）
    ========================================================================== */
 .bookmark-icon {
     background-color: var(--icon-glass-bg);
@@ -139,19 +143,9 @@
     box-shadow: 
         0 6px 16px rgba(0, 0, 0, 0.16),
         0 1px 4px rgba(0, 0, 0, 0.08);
-    transform: translate3d(0, 0, 0);
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
     background-size: 64%;
     background-repeat: no-repeat;
     background-position: center;
-}
-
-/* 尺寸声明 */
-.quick-link-icon {
-    width: 56px;
-    height: 56px;
-    cursor: pointer;
 }
 
 .bookmark-icon {

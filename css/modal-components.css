@@ -139,9 +139,10 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
     gap: 8px;
-    padding: 6px;
+    padding: 6px 12px;
     justify-content: center;
     overflow-y: auto;
+    overflow-x: hidden;
     scrollbar-width: none;
     -ms-overflow-style: none;
     align-content: start;
@@ -167,11 +168,11 @@
     -webkit-user-select: none;
     position: relative;
     will-change: transform;
+    justify-self: center;
 }
 
 .bookmark-item:hover {
     background: rgba(255, 255, 255, 0.08);
-    transform: scale(1.05);
 }
 
 .bookmark-item:active {
