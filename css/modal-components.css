@@ -52,6 +52,7 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
+    padding-right: 8px;
 }
 
 .modal-header h2 {
@@ -666,13 +667,16 @@
 }
 
 .toast.toast-success {
-    border-left: 3px solid #38a169;
+    background: linear-gradient(135deg, #276749 0%, var(--glass-bg) 100%);
+    box-shadow: inset 0 0 0 1px rgba(56, 161, 105, 0.3);
 }
 
 .toast.toast-error {
-    border-left: 3px solid #e53e3e;
+    background: linear-gradient(135deg, #742a2a 0%, var(--glass-bg) 100%);
+    box-shadow: inset 0 0 0 1px rgba(229, 62, 62, 0.3);
 }
 
 .toast.toast-info {
-    border-left: 3px solid var(--primary-color);
+    background: linear-gradient(135deg, #2a4365 0%, var(--glass-bg) 100%);
+    box-shadow: inset 0 0 0 1px rgba(66, 153, 225, 0.3);
 }

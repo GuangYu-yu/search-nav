@@ -1,4 +1,7 @@
 /* 壁纸选择卡片 */
+.wallpaper-section {
+    padding: 0 4px;
+}
 .wallpaper-section h3 {
     margin: 0 0 14px;
     color: var(--text-color);
